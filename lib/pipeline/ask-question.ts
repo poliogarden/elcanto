@@ -1,46 +1,55 @@
 import { getAIProvider } from '@/lib/ai/openai'
-import { getCachedTranscript } from '@/lib/repositories/video-cache'
-import type { AskAnswer, SynthesisResult, VideoAnalysis } from '@/lib/types/analysis'
-import { chunkTranscript } from '@/lib/youtube/transcript'
+import { assertSynthesisCoverage } from '@/lib/synthesis/coverage'
+import { synthesisLog } from '@/lib/synthesis/logger'
+import { retrieveEvidenceForQuestion } from '@/lib/retrieval/evidence-retriever'
+import type { AskAnswer, SynthesisResult } from '@/lib/types/analysis'
+import type { SourceAnalysis } from '@/lib/types/source'
 
 export type AskQuestionInput = {
   question: string
   synthesis: SynthesisResult
-  analyses: VideoAnalysis[]
-  youtubeIds: string[]
+  sources: SourceAnalysis[]
+  scope?: { type: string; label: string; context: string }
+  outputLanguage?: import('@/lib/i18n/types').ResolvedOutputLanguage
 }
 
-function scoreChunk(question: string, text: string): number {
-  const q = question.toLowerCase().split(/\W+/).filter((w) => w.length > 3)
-  const t = text.toLowerCase()
-  return q.reduce((acc, word) => (t.includes(word) ? acc + 1 : acc), 0)
-}
+export async function askAcrossSources(input: AskQuestionInput): Promise<AskAnswer> {
+  const requiredIds = input.sources.map((s) => s.sourceId)
+  const scopedQuestion = input.scope
+    ? `[Scope: ${input.scope.type} — ${input.scope.label}]\nContext:\n${input.scope.context}\n\nQuestion: ${input.question}`
+    : input.question
 
-export async function askAcrossVideos(input: AskQuestionInput): Promise<AskAnswer> {
-  const relevantChunks: Array<{ videoId: string; chunks: Array<{ start: number; text: string }> }> =
-    []
-
-  for (const youtubeId of input.youtubeIds) {
-    const segments = await getCachedTranscript(youtubeId)
-    if (!segments) continue
-
-    const chunks = chunkTranscript(segments, 800)
-    const ranked = chunks
-      .map((c) => ({ ...c, score: scoreChunk(input.question, c.text) }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map(({ start, text }) => ({ start, text }))
-
-    if (ranked.length > 0) {
-      relevantChunks.push({ videoId: youtubeId, chunks: ranked })
-    }
-  }
+  const relevantChunks = await retrieveEvidenceForQuestion(scopedQuestion, input.sources)
 
   const ai = getAIProvider()
-  return ai.answerAcrossVideos({
-    question: input.question,
+  let answer = await ai.answerAcrossSources({
+    question: scopedQuestion,
     synthesis: input.synthesis,
-    analyses: input.analyses,
+    sources: input.sources,
     relevantChunks,
+    outputLanguage: input.outputLanguage,
   })
+
+  let coverage = assertSynthesisCoverage(requiredIds, answer.usedSourceIds)
+  if (!coverage.ok) {
+    synthesisLog('ask-retry', { missingSources: coverage.missingSourceIds.length })
+    answer = await ai.answerAcrossSources({
+      question: scopedQuestion,
+      synthesis: input.synthesis,
+      sources: input.sources,
+      relevantChunks,
+      missingSourceIds: coverage.missingSourceIds,
+      outputLanguage: input.outputLanguage,
+    })
+    coverage = assertSynthesisCoverage(requiredIds, answer.usedSourceIds)
+  }
+
+  synthesisLog('ask-complete', {
+    inputSources: requiredIds.length,
+    usedSources: answer.usedSourceIds.length,
+    missingSources: coverage.ok ? 0 : coverage.missingSourceIds.length,
+    chunkSources: relevantChunks.length,
+  })
+
+  return answer
 }

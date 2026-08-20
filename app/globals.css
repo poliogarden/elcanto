@@ -100,4 +100,34 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
+  .compose-asterism-pulse {
+    animation: asterism-emerge 2.4s ease-in-out infinite;
+  }
+  .synthesis-bar-glow {
+    animation: synthesis-bar-shimmer 2.2s ease-in-out infinite;
+  }
+}
+
+@keyframes asterism-emerge {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes synthesis-bar-shimmer {
+  0% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0.35;
+  }
 }

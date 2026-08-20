@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "compositionId": "92edf035-add8-46b2-ba77-5a44ef04a4e7",
+  "title": "Perception of Talent vs. Timing in Startups",
+  "thesis": "The two sources illuminate different dimensions of individual and organizational performance: one emphasizes self-perception challenges among skilled individuals, while the other highlights the critical importance of timing in the startup market. Together, they illustrate that psychological factors influence personal success, while external timing pressures are crucial for organizational success.",
+  "totalDurationSeconds": 46,
+  "clips": [
+    {
+      "id": "mock_clip_source_1",
+      "order": 0,
+      "sourceId": "source_1",
+      "voiceIndex": 1,
+      "youtubeId": "lzMdDfxuyDU",
+      "title": "왜 잘하는 사람은 자신의 재능을 모를까  #퍼셉션키",
+      "channel": "PerceptionKey 퍼셉션키",
+      "watchUrl": "https://www.youtube.com/watch?v=lzMdDfxuyDU&t=0s",
+      "startSeconds": 0,
+      "endSeconds": 20,
+      "durationSeconds": 20,
+      "quote": "Trust yourself.",
+      "role": "common_ground",
+      "sectionTitle": "THE COMMON GROUND",
+      "sectionType": "common_ground"
+    },
+    {
+      "id": "mock_clip_source_2",
+      "order": 2,
+      "sourceId": "source_2",
+      "voiceIndex": 2,
+      "youtubeId": "1lXMwmPomUY",
+      "title": "\"만들고 팔면 이미 늦습니다.\" #미국스타트업 #EO #피터신 #팀쿡",
+      "channel": "EO Korea",
+      "watchUrl": "https://www.youtube.com/watch?v=1lXMwmPomUY&t=199s",
+      "startSeconds": 199,
+      "endSeconds": 219,
+      "durationSeconds": 20,
+      "quote": "와이스에서 배웠던 거는 sell",
+      "role": "evidence",
+      "sectionTitle": "THE COMMON GROUND",
+      "sectionType": "common_ground"
+    }
+  ],
+  "interludes": [
+    {
+      "id": "mock_interlude_1",
+      "order": 1,
+      "text": "But when these arguments are placed next to each other, another possibility appears.",
+      "kind": "synthesis",
+      "durationSeconds": 6,
+      "audioUrl": "/api/files/render/61b192be-df72-4a8c-8941-23f38a157c82/interlude-mock_interlude_1.mp3"
+    }
+  ],
+  "attribution": [
+    {
+      "youtubeId": "lzMdDfxuyDU",
+      "title": "왜 잘하는 사람은 자신의 재능을 모를까  #퍼셉션키",
+      "channel": "PerceptionKey 퍼셉션키",
+      "watchUrl": "https://www.youtube.com/watch?v=lzMdDfxuyDU"
+    },
+    {
+      "youtubeId": "1lXMwmPomUY",
+      "title": "\"만들고 팔면 이미 늦습니다.\" #미국스타트업 #EO #피터신 #팀쿡",
+      "channel": "EO Korea",
+      "watchUrl": "https://www.youtube.com/watch?v=1lXMwmPomUY"
+    }
+  ]
+}

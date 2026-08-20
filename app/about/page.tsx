@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { IssueNavigation } from '@/components/issue-navigation'
+import { BrandFooter } from '@/components/brand/brand-footer'
+import { HomePageShell } from '@/components/home/home-page-shell'
 import { Masthead } from '@/components/masthead'
 
 const steps = [
@@ -14,9 +15,9 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-background">
       <Masthead />
-      <IssueNavigation issue="ABOUT" active="youtube" />
 
-      <section className="border-b border-line px-5 py-12 md:px-8 md:py-16">
+      <HomePageShell>
+      <section className="border-b border-line py-12 md:py-16">
         <div className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <p className="mono-label mb-6 text-xs text-ink-soft">About elcanto</p>
@@ -36,7 +37,7 @@ export default function AboutPage() {
         {steps.map(([title, body], i) => (
           <div
             key={title}
-            className="grid grid-cols-[auto_1fr] items-baseline gap-6 border-b border-line px-5 py-8 last:border-b-0 md:grid-cols-[6rem_16rem_1fr] md:px-8"
+            className="grid grid-cols-[auto_1fr] items-baseline gap-6 border-b border-line py-8 last:border-b-0 md:grid-cols-[6rem_16rem_1fr]"
           >
             <span className="mono text-sm text-ink-soft">{String(i + 1).padStart(2, '0')}</span>
             <h2 className="font-serif text-2xl font-medium md:text-3xl">{title}</h2>
@@ -47,7 +48,7 @@ export default function AboutPage() {
         ))}
       </section>
 
-      <section className="px-5 py-14 md:px-8 md:py-20">
+      <section className="py-14 md:py-20">
         <p className="max-w-3xl font-serif text-2xl leading-snug text-balance md:text-4xl">
           Many voices. One understanding. Currently, elcanto reads YouTube — and only YouTube — so
           it can do that one thing well.
@@ -59,6 +60,8 @@ export default function AboutPage() {
           Start a synthesis {'\u2192'}
         </Link>
       </section>
+      </HomePageShell>
+      <BrandFooter />
     </main>
   )
 }

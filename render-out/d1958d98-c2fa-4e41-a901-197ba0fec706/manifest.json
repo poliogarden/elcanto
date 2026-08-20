@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "compositionId": "8e30ab63-1938-4bbe-a459-92a9f9969f55",
+  "title": "재능 인식과 스타트업 성공에서 타이밍의 중요성",
+  "thesis": "스타트업의 성공에는 타이밍이 중요하며, 재능 인식의 한계가 개인의 성공에 미칠 수 있는 영향력이 있다. 두 소스는 각각의 주제에서 독립적인 인사이트를 제공한다.",
+  "totalDurationSeconds": 46,
+  "clips": [
+    {
+      "id": "mock_clip_source_1",
+      "order": 0,
+      "sourceId": "source_1",
+      "voiceIndex": 1,
+      "youtubeId": "1lXMwmPomUY",
+      "title": "\"만들고 팔면 이미 늦습니다.\" #미국스타트업 #EO #피터신 #팀쿡",
+      "channel": "EO Korea",
+      "watchUrl": "https://www.youtube.com/watch?v=1lXMwmPomUY&t=199s",
+      "startSeconds": 199,
+      "endSeconds": 219,
+      "durationSeconds": 20,
+      "quote": "와이스에서 배웠던 거는 sell",
+      "role": "common_ground",
+      "sectionTitle": "THE COMMON GROUND",
+      "sectionType": "common_ground"
+    },
+    {
+      "id": "mock_clip_source_2",
+      "order": 2,
+      "sourceId": "source_2",
+      "voiceIndex": 2,
+      "youtubeId": "lzMdDfxuyDU",
+      "title": "왜 잘하는 사람은 자신의 재능을 모를까  #퍼셉션키",
+      "channel": "PerceptionKey 퍼셉션키",
+      "watchUrl": "https://www.youtube.com/watch?v=lzMdDfxuyDU&t=0s",
+      "startSeconds": 0,
+      "endSeconds": 20,
+      "durationSeconds": 20,
+      "quote": "Trust yourself.",
+      "role": "evidence",
+      "sectionTitle": "THE COMMON GROUND",
+      "sectionType": "common_ground"
+    }
+  ],
+  "interludes": [
+    {
+      "id": "mock_interlude_1",
+      "order": 1,
+      "text": "But when these arguments are placed next to each other, another possibility appears.",
+      "kind": "synthesis",
+      "durationSeconds": 6,
+      "audioUrl": "/api/files/render/d1958d98-c2fa-4e41-a901-197ba0fec706/interlude-mock_interlude_1.mp3"
+    }
+  ],
+  "attribution": [
+    {
+      "youtubeId": "1lXMwmPomUY",
+      "title": "\"만들고 팔면 이미 늦습니다.\" #미국스타트업 #EO #피터신 #팀쿡",
+      "channel": "EO Korea",
+      "watchUrl": "https://www.youtube.com/watch?v=1lXMwmPomUY"
+    },
+    {
+      "youtubeId": "lzMdDfxuyDU",
+      "title": "왜 잘하는 사람은 자신의 재능을 모를까  #퍼셉션키",
+      "channel": "PerceptionKey 퍼셉션키",
+      "watchUrl": "https://www.youtube.com/watch?v=lzMdDfxuyDU"
+    }
+  ]
+}

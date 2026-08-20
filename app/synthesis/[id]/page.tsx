@@ -2,18 +2,27 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { IssueNavigation } from '@/components/issue-navigation'
+import { useEffect, useMemo, useState } from 'react'
+import { BrandFooter } from '@/components/brand/brand-footer'
+import { HomePageShell } from '@/components/home/home-page-shell'
 import { Masthead } from '@/components/masthead'
 import { SynthesisView } from '@/components/synthesis-view'
+import { SynthesisPerfDebug } from '@/components/synthesis/synthesis-perf-debug'
+import { useDeferredKnowledgeExtension } from '@/components/synthesis/use-deferred-knowledge-extension'
 import { loadSynthesisDocument } from '@/lib/storage/synthesis-session'
+import { useTranslation } from '@/lib/i18n/locale-context'
 import type { SynthesisDocument } from '@/lib/types/synthesis-document'
 import { toSynthesisViewModel } from '@/lib/synthesis/presenter'
 
 export default function SynthesisPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const id = params.id as string
   const [doc, setDoc] = useState<SynthesisDocument | null>(null)
+
+  useDeferredKnowledgeExtension(doc, setDoc)
+
+  const view = useMemo(() => (doc ? toSynthesisViewModel(doc) : null), [doc])
 
   useEffect(() => {
     async function load() {
@@ -44,30 +53,29 @@ export default function SynthesisPage() {
     return (
       <main className="min-h-screen bg-background">
         <Masthead />
-        <div className="px-5 py-20 md:px-8">
-          <p className="mono-label text-xs text-ink-soft">Synthesis not found</p>
+        <HomePageShell className="flex min-h-[40vh] flex-col items-center justify-center py-16 text-center">
+          <p className="mono-label text-xs text-ink-soft">{t('errors.synthesisNotFound')}</p>
           <Link href="/" className="mono-label mt-4 inline-block text-xs text-ink hover:opacity-60">
-            Start a new synthesis {'\u2192'}
+            {t('errors.startNew')}
           </Link>
-        </div>
+        </HomePageShell>
       </main>
     )
   }
 
-  const view = toSynthesisViewModel(doc)
   if (!view) {
     return (
       <main className="min-h-screen bg-background">
         <Masthead />
-        <div className="px-5 py-20 md:px-8">
-          <p className="mono-label text-xs text-ink-soft">Synthesis is still processing…</p>
+        <HomePageShell className="flex min-h-[40vh] flex-col items-center justify-center py-16 text-center">
+          <p className="mono-label text-xs text-ink-soft">{t('errors.stillProcessing')}</p>
           <Link
             href={`/synthesize/${id}`}
             className="mono-label mt-4 inline-block text-xs text-ink hover:opacity-60"
           >
-            Return to pipeline {'\u2192'}
+            {t('errors.returnPipeline')}
           </Link>
-        </div>
+        </HomePageShell>
       </main>
     )
   }
@@ -75,18 +83,9 @@ export default function SynthesisPage() {
   return (
     <main className="min-h-screen bg-background">
       <Masthead />
+      <SynthesisPerfDebug synthesisId={id} />
       <SynthesisView view={view} document={doc} />
-      <footer className="border-t border-line px-5 py-10 md:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <span className="font-serif text-2xl">
-            elcanto<span className="text-ink-soft">.</span>
-          </span>
-          <span className="mono-label text-[11px] text-ink-soft">Many voices. One understanding.</span>
-          <Link href="/" className="mono-label text-[11px] text-ink hover:opacity-60">
-            New synthesis {'\u2192'}
-          </Link>
-        </div>
-      </footer>
+      <BrandFooter />
     </main>
   )
 }

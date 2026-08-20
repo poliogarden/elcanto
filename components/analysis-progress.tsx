@@ -1,282 +1,466 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { VideoAnalysis } from '@/lib/types/analysis'
 import {
   countFailedVoices,
   countReadyVoices,
-  createSynthesisDocument,
   type SynthesisDocument,
 } from '@/lib/types/synthesis-document'
-import { loadDraft, saveSynthesisDocument } from '@/lib/storage/synthesis-session'
-import { mapWithConcurrency } from '@/lib/utils/concurrency'
-import { AI_CONFIG } from '@/lib/ai/config'
+import {
+  loadDraft,
+  loadSynthesisJobId,
+  saveSynthesisDocument,
+  saveSynthesisJobId,
+} from '@/lib/storage/synthesis-session'
+import { VoiceRelationshipCanvas } from '@/components/home/voice-relationship-canvas'
+import { useTranslation } from '@/lib/i18n/locale-context'
+import type { SynthesisPerfSummary } from '@/lib/synthesis/synthesis-perf'
+import type { SynthesisJobPhase, SynthesisJobPublic } from '@/lib/synthesis/synthesis-job-types'
+import {
+  createOrResumeSynthesisJob,
+  fetchSynthesisJob,
+  fetchSynthesisJobBySynthesisId,
+  isSynthesisJobTerminal,
+  jobPhaseLabel,
+  SYNTHESIS_JOB_POLL_MS,
+} from '@/lib/synthesis/synthesis-job-client'
+import { SynthesisLoadingBar } from '@/components/synthesis/synthesis-loading-bar'
+import type { SynthesisProgressPhase } from '@/lib/synthesis/progress-events'
 
-const SYNTHESIS_STEPS = [
-  'Reading transcripts',
-  'Understanding each argument',
-  'Extracting key claims',
-  'Finding agreements',
-  'Finding disagreements',
-  'Checking evidence',
-  'Building synthesis',
-] as const
+const USER_PHASE_IDS = ['listening', 'connecting', 'emerging'] as const
 
 type AnalysisProgressProps = {
   synthesisId: string
 }
 
+function uiPhaseFromJob(job: SynthesisJobPublic): 'analyzing' | 'synthesizing' | 'complete' | 'failed' {
+  if (job.status === 'failed') return 'failed'
+  if (job.status === 'completed' || job.phase === 'complete') return 'complete'
+  if (job.phase === 'analyzing' || job.phase === 'queued') return 'analyzing'
+  return 'synthesizing'
+}
+
+function synthesisStepFromJobPhase(phase: SynthesisJobPhase): number {
+  switch (phase) {
+    case 'connecting':
+      return 0
+    case 'synthesizing':
+    case 'exploring':
+      return 1
+    case 'complete':
+      return 2
+    default:
+      return 0
+  }
+}
+
+function backendPhaseFromJobPhase(phase: SynthesisJobPhase): SynthesisProgressPhase | null {
+  switch (phase) {
+    case 'connecting':
+      return 'relationship'
+    case 'synthesizing':
+      return 'emergent_insight'
+    case 'exploring':
+      return 'fourth_idea'
+    default:
+      return null
+  }
+}
+
 export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
   const router = useRouter()
-  const started = useRef(false)
-  const docRef = useRef<SynthesisDocument | null>(null)
-  const [doc, setDoc] = useState<SynthesisDocument | null>(null)
-  const [phase, setPhase] = useState<'analyzing' | 'synthesizing' | 'complete' | 'failed'>(
-    'analyzing',
-  )
-  const [activeStep, setActiveStep] = useState(0)
-  const [error, setError] = useState<string | null>(null)
+  const { t } = useTranslation()
+  const initStarted = useRef(false)
+  const completedHandled = useRef(false)
 
-  const updateDoc = useCallback((updater: (prev: SynthesisDocument) => SynthesisDocument) => {
-    setDoc((prev) => {
-      const base = prev ?? docRef.current
-      if (!base) return prev
-      const next = updater(base)
-      docRef.current = next
-      saveSynthesisDocument(next)
-      return next
-    })
-  }, [])
+  const [job, setJob] = useState<SynthesisJobPublic | null>(null)
+  const [doc, setDoc] = useState<SynthesisDocument | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [perfSummary, setPerfSummary] = useState<SynthesisPerfSummary | null>(null)
+  const [elapsedSec, setElapsedSec] = useState(0)
+  const [creatingJob, setCreatingJob] = useState(false)
+  const processingStartedAt = useRef<number | null>(null)
+
+  const phase = job ? uiPhaseFromJob(job) : creatingJob ? 'analyzing' : 'analyzing'
+  const total = doc?.voices.length ?? job?.analyzeTotal ?? 0
+  const ready = doc ? countReadyVoices(doc) : job?.analyzeCompleted ?? 0
+  const failed = doc ? countFailedVoices(doc) : 0
+  const synthesisStep = job ? synthesisStepFromJobPhase(job.phase) : 0
+  const canvasPhase = phase === 'complete' ? 'complete' : 'processing'
+  const statusLabel = job ? jobPhaseLabel(job) : creatingJob ? 'QUEUED' : 'QUEUED'
+
+  const userPhases = useMemo(
+    () =>
+      USER_PHASE_IDS.map((id) => ({
+        id,
+        label: t(`loading.${id}`),
+      })),
+    [t],
+  )
+
+  const synthesisSteps = useMemo(
+    () => [t('loading.synthStepConnecting'), t('loading.synthStepEmerging')] as const,
+    [t],
+  )
+
+  const currentStepLabel = useMemo(() => {
+    if (!job) return statusLabel
+    if (job.phase === 'queued') return 'QUEUED'
+    if (job.phase === 'analyzing') {
+      return job.analyzeTotal > 0
+        ? `ANALYZING ${job.analyzeCompleted} / ${job.analyzeTotal}`
+        : 'ANALYZING'
+    }
+    if (job.phase === 'connecting') return 'CONNECTING'
+    if (job.phase === 'synthesizing') return 'SYNTHESIZING'
+    if (job.phase === 'exploring') return 'EXPLORING'
+    if (job.phase === 'complete') return 'COMPLETE'
+    return statusLabel
+  }, [job, statusLabel])
 
   useEffect(() => {
-    if (started.current) return
-    started.current = true
-
-    async function run() {
-      const draft = loadDraft(synthesisId)
-      if (!draft || draft.length < 2) {
-        setError('Need at least two voices to synthesize.')
-        setPhase('failed')
-        return
-      }
-
-      let document = createSynthesisDocument(synthesisId, draft)
-      document.status = 'analyzing'
-      docRef.current = document
-      setDoc(document)
-      saveSynthesisDocument(document)
-
-      await mapWithConcurrency(document.voices, AI_CONFIG.maxConcurrency, async (entry, index) => {
-        updateDoc((prev) => {
-          const voices = [...prev.voices]
-          voices[index] = {
-            ...voices[index],
-            voice: { ...voices[index].voice, status: 'fetching_transcript' },
-          }
-          return { ...prev, voices }
-        })
-
-        updateDoc((prev) => {
-          const voices = [...prev.voices]
-          voices[index] = {
-            ...voices[index],
-            voice: { ...voices[index].voice, status: 'analyzing' },
-          }
-          return { ...prev, voices }
-        })
-
-        const res = await fetch('/api/videos/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            youtubeId: entry.voice.youtubeId,
-            title: entry.voice.title,
-            channel: entry.voice.channel,
-            voiceIndex: entry.voice.n,
-          }),
-        })
-
-        const data = (await res.json()) as {
-          analysis?: VideoAnalysis
-          error?: string
-        }
-
-        updateDoc((prev) => {
-          const voices = [...prev.voices]
-          if (!res.ok || !data.analysis) {
-            voices[index] = {
-              ...voices[index],
-              error: data.error ?? 'Analysis failed.',
-              voice: { ...voices[index].voice, status: 'failed' },
-            }
-          } else {
-            voices[index] = {
-              ...voices[index],
-              analysis: data.analysis,
-              voice: { ...voices[index].voice, status: 'done' },
-            }
-          }
-          return { ...prev, voices }
-        })
-
-        setActiveStep((s) => Math.min(s + 1, 4))
-      })
-
-      const workingDoc = docRef.current
-      if (!workingDoc) return
-
-      const ready = countReadyVoices(workingDoc)
-      if (ready < 1) {
-        updateDoc((prev) => ({ ...prev, status: 'failed' }))
-        setPhase('failed')
-        setError('No voices could be analyzed. Check transcript availability.')
-        return
-      }
-
-      setPhase('synthesizing')
-      setActiveStep(5)
-
-      const analyses = workingDoc.voices
-        .filter((v) => v.analysis)
-        .map((v) => ({
-          voiceIndex: v.voice.n,
-          youtubeId: v.voice.youtubeId,
-          analysis: v.analysis!,
-        }))
-
-      const synthRes = await fetch('/api/synthesis/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analyses }),
-      })
-
-      const synthData = (await synthRes.json()) as {
-        result?: SynthesisDocument['result']
-        error?: string
-      }
-
-      if (!synthRes.ok || !synthData.result) {
-        updateDoc((prev) => ({
-          ...prev,
-          status: 'failed',
-          synthesisError: synthData.error ?? 'Synthesis failed.',
-        }))
-        setPhase('failed')
-        setError(synthData.error ?? 'Synthesis failed.')
-        return
-      }
-
-      setActiveStep(7)
-      const finalDoc: SynthesisDocument = {
-        ...workingDoc,
-        status: 'complete',
-        result: synthData.result,
-        topic: synthData.result.topic,
-      }
-      docRef.current = finalDoc
-      saveSynthesisDocument(finalDoc)
-      setDoc(finalDoc)
-      setPhase('complete')
-      router.push(`/synthesis/${synthesisId}`)
+    if (phase === 'complete' || phase === 'failed') return
+    if (processingStartedAt.current == null) {
+      processingStartedAt.current = Date.now()
     }
 
-    void run()
-  }, [synthesisId, router, updateDoc])
+    const tick = window.setInterval(() => {
+      if (processingStartedAt.current == null) return
+      setElapsedSec(Math.floor((Date.now() - processingStartedAt.current) / 1000))
+    }, 1000)
 
-  const ready = doc ? countReadyVoices(doc) : 0
-  const failed = doc ? countFailedVoices(doc) : 0
-  const total = doc?.voices.length ?? 0
+    return () => window.clearInterval(tick)
+  }, [phase])
+
+  useEffect(() => {
+    if (initStarted.current) return
+    initStarted.current = true
+
+    async function bootstrap() {
+      setCreatingJob(true)
+      setError(null)
+
+      try {
+        const storedJobId = loadSynthesisJobId(synthesisId)
+        if (storedJobId) {
+          try {
+            const existing = await fetchSynthesisJob(storedJobId)
+            setJob(existing)
+            if (existing.document) setDoc(existing.document)
+            if (existing.perfSummary) setPerfSummary(existing.perfSummary)
+            if (existing.status === 'failed') {
+              setError(existing.error ?? t('loading.synthesisFailed'))
+            }
+            setCreatingJob(false)
+            return
+          } catch {
+            // fall through to recovery by synthesisId
+          }
+        }
+
+        const recovered = await fetchSynthesisJobBySynthesisId(synthesisId)
+        if (recovered) {
+          saveSynthesisJobId(synthesisId, recovered.id)
+          setJob(recovered)
+          if (recovered.document) setDoc(recovered.document)
+          if (recovered.perfSummary) setPerfSummary(recovered.perfSummary)
+          if (recovered.status === 'failed') {
+            setError(recovered.error ?? t('loading.synthesisFailed'))
+          }
+          setCreatingJob(false)
+          return
+        }
+
+        const draft = loadDraft(synthesisId)
+        if (!draft || draft.voices.length < 2) {
+          setError(t('loading.needTwoVoices'))
+          setCreatingJob(false)
+          return
+        }
+
+        const { job: created } = await createOrResumeSynthesisJob({ synthesisId, draft })
+        saveSynthesisJobId(synthesisId, created.id)
+        setJob(created)
+        if (created.document) setDoc(created.document)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('loading.synthesisFailed'))
+      } finally {
+        setCreatingJob(false)
+      }
+    }
+
+    void bootstrap()
+  }, [synthesisId, t])
+
+  useEffect(() => {
+    if (!job || isSynthesisJobTerminal(job)) return
+
+    const timer = window.setInterval(async () => {
+      try {
+        const next = await fetchSynthesisJob(job.id)
+        setJob(next)
+        if (next.document) setDoc(next.document)
+        if (next.perfSummary) setPerfSummary(next.perfSummary)
+      } catch {
+        // keep polling on transient errors
+      }
+    }, SYNTHESIS_JOB_POLL_MS)
+
+    return () => window.clearInterval(timer)
+  }, [job])
+
+  useEffect(() => {
+    if (!job || completedHandled.current) return
+
+    if (job.status === 'failed') {
+      completedHandled.current = true
+      setError(job.error ?? t('loading.synthesisFailed'))
+      if (job.document) {
+        saveSynthesisDocument({ ...job.document, status: 'failed', synthesisError: job.error })
+      }
+      return
+    }
+
+    if (job.status !== 'completed' || !job.document?.result) return
+
+    completedHandled.current = true
+    const finalDoc = job.document
+    saveSynthesisDocument(finalDoc)
+
+    if (job.perfSummary) {
+      try {
+        sessionStorage.setItem(`synthesis-perf-${synthesisId}`, JSON.stringify(job.perfSummary))
+      } catch {
+        // ignore
+      }
+    }
+
+    void (async () => {
+      await new Promise((resolve) => setTimeout(resolve, 900))
+      router.push(`/synthesis/${synthesisId}`)
+    })()
+  }, [job, router, synthesisId, t])
+
+  const analyzingIndex = job?.analyzeCompleted ?? 0
+  const backendPhase = job ? backendPhaseFromJobPhase(job.phase) : null
 
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-1px)] max-w-6xl flex-col justify-center px-5 py-16 md:px-8">
-      <p className="mono-label mb-8 text-xs text-ink-soft">
-        {doc?.number ?? 'SYNTHESIS'} / in production
-      </p>
+    <section className="mx-auto w-full max-w-[1280px] px-5 py-4 md:px-6 md:py-6">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p className="mono-label text-xs text-ink-soft">
+          {doc?.number ?? 'SYNTHESIS'} / {t('loading.inProduction')}
+        </p>
 
-      <h1 className="mb-6 font-serif text-5xl font-medium leading-[0.98] tracking-tight text-balance md:text-7xl">
-        {phase === 'synthesizing' ? (
+        <h1 className="mt-4 mb-3 font-serif text-3xl font-medium leading-tight tracking-tight text-balance md:text-4xl lg:text-5xl">
+          {phase === 'synthesizing' ? (
+            <>
+              {t('loading.bringingTogether')}
+              <br />
+              {t('loading.voicesTogether', { count: ready })}
+            </>
+          ) : (
+            <>
+              {t('loading.listeningTo')}
+              <br />
+              {t('loading.voices', { count: total })}
+            </>
+          )}
+        </h1>
+
+        <p className="mono text-sm text-ink" aria-live="polite">
+          {currentStepLabel}
+        </p>
+
+        {phase === 'synthesizing' && (
           <>
-            Building
-            <br />
-            synthesis.
-          </>
-        ) : (
-          <>
-            Listening to
-            <br />
-            {total} voices.
+            <p className="mono mt-2 text-[11px] text-ink-soft">
+              {elapsedSec > 0
+                ? t('loading.elapsedHint', { seconds: elapsedSec })
+                : t('loading.elapsedBody')}
+            </p>
+            <SynthesisLoadingBar
+              step={synthesisStep}
+              backendPhase={backendPhase}
+              elapsedSec={elapsedSec}
+              statusLabel={t('loading.synthesizing')}
+            />
           </>
         )}
-      </h1>
 
-      {total > 0 && (
-        <p className="mono-label mb-10 text-xs text-ink">
-          {ready} OF {total} VOICES READY
-          {failed > 0 && <span className="text-ink-soft"> / {failed} failed</span>}
-        </p>
-      )}
-
-      <ol className="border-t border-line">
-        {SYNTHESIS_STEPS.map((step, i) => {
-          const state = i < activeStep ? 'done' : i === activeStep ? 'now' : 'wait'
-          return (
-            <li
-              key={step}
-              className="flex items-center justify-between gap-4 border-b border-line py-4"
-            >
-              <div className="flex items-baseline gap-4">
-                <span className="mono text-xs text-ink-soft">{String(i + 1).padStart(2, '0')}</span>
-                <span
-                  className={`font-serif text-xl transition-colors md:text-2xl ${
-                    state === 'wait' ? 'text-ink-soft/50' : 'text-ink'
-                  }`}
-                >
-                  {step}
-                </span>
-              </div>
-              <span className="mono-label text-[10px]">
-                {state === 'done' && <span className="text-ink">done</span>}
-                {state === 'now' && (
-                  <span className="text-mint-ink">
-                    {phase === 'synthesizing' ? 'building…' : 'reading…'}
-                  </span>
-                )}
-                {state === 'wait' && <span className="text-ink-soft/40">—</span>}
+        {total > 0 && (
+          <p className="mono-label mt-4 text-xs text-ink">
+            {t('loading.voicesAnalyzed', { ready, total })}
+            {failed > 0 && (
+              <span className="text-ink-soft">
+                {t('loading.voicesFailed', { count: failed })}
               </span>
-            </li>
-          )
-        })}
-      </ol>
+            )}
+          </p>
+        )}
 
-      {doc && (
-        <div className="mt-8 border-t border-line pt-6">
+        {phase === 'analyzing' && analyzingIndex > 0 && (
+          <p className="mono-label mt-2 text-xs text-ink-soft">
+            {t('loading.analyzingVoice', { current: analyzingIndex, total })}
+          </p>
+        )}
+      </div>
+
+      {doc && phase === 'analyzing' && (
+        <div className="mx-auto mt-8 w-full max-w-2xl border-t border-line pt-4 text-left">
           {doc.voices.map((entry) => (
             <div
               key={entry.voice.id}
-              className="flex items-center justify-between border-b border-line py-3 last:border-b-0"
+              className="flex items-center justify-between gap-4 border-b border-line py-3 last:border-b-0"
             >
               <span className="mono text-xs text-ink-soft">
-                {String(entry.voice.n).padStart(2, '0')} / {entry.voice.title.slice(0, 48)}
+                {String(entry.voice.n).padStart(2, '0')} /{' '}
+                {entry.voice.title.slice(0, 48)}
                 {entry.voice.title.length > 48 ? '…' : ''}
               </span>
               <span
-                className={`mono-label text-[10px] uppercase ${
+                className={`mono-label shrink-0 text-[10px] uppercase ${
                   entry.voice.status === 'failed' ? 'text-destructive' : 'text-ink'
                 }`}
               >
-                {entry.error ? 'transcript unavailable' : entry.voice.status.replace(/_/g, ' ')}
+                {entry.error ? t('errors.transcriptUnavailable') : entry.voice.status.replace(/_/g, ' ')}
+                {entry.analysis ? ' ✓' : ''}
               </span>
             </div>
           ))}
         </div>
       )}
 
+      {(phase === 'synthesizing' || phase === 'complete') && doc && (
+        <div className="mx-auto mt-10 w-full max-w-3xl">
+          <p className="mono-label mb-4 text-center text-[10px] text-ink-soft">
+            {t('loading.bringingThemTogether')}
+          </p>
+          <VoiceRelationshipCanvas
+            voices={doc.voices.map((v) => v.voice)}
+            phase={canvasPhase}
+          />
+        </div>
+      )}
+
+      <ol className="mx-auto mt-10 w-full max-w-xl border-t border-line">
+        <ProgressRow
+          index={1}
+          phaseLabel={userPhases[0]?.label ?? ''}
+          label={
+            total > 0
+              ? phase === 'analyzing'
+                ? t('loading.videosProgress', { ready, total })
+                : t('source.videoCount', { count: total })
+              : t('loading.videos')
+          }
+          state={phase === 'analyzing' ? 'now' : phase === 'failed' && ready === 0 ? 'wait' : 'done'}
+          phase={phase}
+          t={t}
+        />
+        <ProgressRow
+          index={2}
+          phaseLabel={userPhases[1]?.label ?? ''}
+          label={synthesisSteps[0]}
+          state={
+            phase === 'synthesizing'
+              ? synthesisStep === 0
+                ? 'now'
+                : 'done'
+              : phase === 'complete'
+                ? 'done'
+                : 'wait'
+          }
+          phase={phase}
+          t={t}
+        />
+        <ProgressRow
+          index={3}
+          phaseLabel={userPhases[2]?.label ?? ''}
+          label={synthesisSteps[1]}
+          state={
+            phase === 'synthesizing'
+              ? synthesisStep >= 1
+                ? 'now'
+                : 'wait'
+              : phase === 'complete'
+                ? 'done'
+                : 'wait'
+          }
+          phase={phase}
+          t={t}
+        />
+      </ol>
+
+      {perfSummary && process.env.NODE_ENV !== 'production' && (
+        <div className="mono mx-auto mt-8 max-w-xl border border-line p-4 text-center text-[10px] text-ink-soft">
+          <p className="mb-2 text-ink">SYNTHESIS PERF (dev)</p>
+          {perfSummary.individualAnalysisMs != null && (
+            <p>individual_analysis: {perfSummary.individualAnalysisMs}ms</p>
+          )}
+          {perfSummary.phases.map((p) => (
+            <p key={p.name}>
+              {p.name}: {p.durationMs}ms
+            </p>
+          ))}
+          <p className="mt-2">
+            pipeline (wall): {(perfSummary.totalMs / 1000).toFixed(1)}s
+            {perfSummary.stagesMs > 0 && perfSummary.stagesMs !== perfSummary.totalMs
+              ? ` · stages sum: ${(perfSummary.stagesMs / 1000).toFixed(1)}s`
+              : ''}
+            {perfSummary.endToEndMs != null
+              ? ` · end-to-end: ${(perfSummary.endToEndMs / 1000).toFixed(1)}s`
+              : ''}
+          </p>
+          {perfSummary.pipelineRunId && (
+            <p className="mt-1 text-ink-soft">run: {perfSummary.pipelineRunId}</p>
+          )}
+        </div>
+      )}
+
       {error && (
-        <p className="mono mt-6 text-xs text-destructive" role="alert">
+        <p className="mono mx-auto mt-6 max-w-xl text-center text-xs text-destructive" role="alert">
           {error}
         </p>
       )}
     </section>
+  )
+}
+
+function ProgressRow({
+  index,
+  phaseLabel,
+  label,
+  state,
+  phase,
+  t,
+}: {
+  index: number
+  phaseLabel: string
+  label: string
+  state: 'done' | 'now' | 'wait'
+  phase: 'analyzing' | 'synthesizing' | 'complete' | 'failed'
+  t: (key: string, params?: Record<string, string | number>) => string
+}) {
+  return (
+    <li className="flex flex-col items-center gap-2 border-b border-line py-5 text-center">
+      <span className="mono-label text-[10px] text-ink-soft">{phaseLabel}</span>
+      <span
+        className={`font-serif text-xl transition-colors md:text-2xl ${
+          state === 'wait' ? 'text-ink-soft/50' : 'text-ink'
+        }`}
+      >
+        {label}
+      </span>
+      <span className="mono-label text-[10px]">
+        {state === 'done' && <span className="text-ink">{t('loading.done')}</span>}
+        {state === 'now' && (
+          <span className="text-mint-ink">
+            {phase === 'synthesizing' ? t('loading.synthesizing') : t('loading.readingStatus')}
+          </span>
+        )}
+        {state === 'wait' && <span className="text-ink-soft/40">—</span>}
+      </span>
+    </li>
   )
 }

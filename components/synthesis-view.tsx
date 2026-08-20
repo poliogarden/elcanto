@@ -1,36 +1,44 @@
 'use client'
 
-import Link from 'next/link'
-import { useState } from 'react'
-import { signIn, useSession } from 'next-auth/react'
-import { IssueNavigation } from '@/components/issue-navigation'
-import { AskSynthesis } from '@/components/synthesis/ask-synthesis'
-import { BottomLineFeature } from '@/components/synthesis/bottom-line-feature'
-import { ConsensusArticle } from '@/components/synthesis/consensus-article'
-import { DisagreementArticle } from '@/components/synthesis/disagreement-article'
-import { EvidenceArticle } from '@/components/synthesis/evidence-article'
-import { QuietVoiceArticle } from '@/components/synthesis/quiet-voice-article'
-import { VoiceIndex } from '@/components/voice-index'
+import { useRef, useState } from 'react'
+import { HomePageShell } from '@/components/home/home-page-shell'
+import { CreateFromSection } from '@/components/synthesis/result/create-from-section'
+import { ExploreDeeper } from '@/components/synthesis/result/explore-deeper'
+import { ResultActions } from '@/components/synthesis/result/result-actions'
+import { ResultAsk } from '@/components/synthesis/result/result-ask'
+import { ResultHero } from '@/components/synthesis/result/result-hero'
+import { WhyThisEmerged } from '@/components/synthesis/result/why-this-emerged'
+import { useTranslation } from '@/lib/i18n/locale-context'
 import { markSavedToArchive } from '@/lib/storage/synthesis-session'
 import type { SynthesisDocument } from '@/lib/types/synthesis-document'
 import type { SynthesisViewModel } from '@/lib/types/view-model'
+import type { KnowledgeExtensionStatus } from '@/components/synthesis/use-deferred-knowledge-extension'
 
 type SynthesisViewProps = {
   view: SynthesisViewModel
   document: SynthesisDocument
+  knowledgeExtensionStatus?: KnowledgeExtensionStatus
 }
 
-export function SynthesisView({ view, document }: SynthesisViewProps) {
-  const { data: session } = useSession()
+export type AskScope = {
+  type: string
+  label: string
+  context: string
+}
+
+export function SynthesisView({
+  view,
+  document,
+}: SynthesisViewProps) {
+  const { t } = useTranslation()
   const [saved, setSaved] = useState(document.savedToArchive ?? false)
   const [saving, setSaving] = useState(false)
+  const [askScope, setAskScope] = useState<AskScope | null>(null)
+  const [prefillQuestion, setPrefillQuestion] = useState('')
+  const whyRef = useRef<HTMLDivElement>(null)
+  const exploreRef = useRef<HTMLDivElement>(null)
 
   async function handleSave() {
-    if (!session) {
-      void signIn('google')
-      return
-    }
-
     setSaving(true)
     try {
       const res = await fetch('/api/archive', {
@@ -47,96 +55,77 @@ export function SynthesisView({ view, document }: SynthesisViewProps) {
     }
   }
 
+  function scrollToWhy() {
+    whyRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  function scrollToExplore(section?: string) {
+    exploreRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (section) {
+      window.setTimeout(() => {
+        const el = globalThis.document.getElementById(`explore-${section}`)
+        el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 400)
+    }
+  }
+
+  function scrollToAsk(question?: string) {
+    if (question) setPrefillQuestion(question)
+    globalThis.document.getElementById('ask')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
-    <>
-      <IssueNavigation issue={view.number} active="youtube" />
-
-      <section className="border-b border-line px-5 py-12 md:px-8 md:py-16">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-          <span className="mono-label text-xs text-ink">
-            elcanto / {view.number.toLowerCase()}
-          </span>
-          <span className="mono-label text-xs text-ink-soft">
-            {view.readyVoiceCount} of {view.voiceCount} voices / {view.totalDuration}
-          </span>
-        </div>
-
-        <h1 className="font-serif text-5xl font-medium leading-[0.98] tracking-tight text-balance md:text-7xl lg:text-8xl">
-          {view.question.includes('?') ? (
-            <>
-              {view.question.split('?')[0]}?
-              <br />
-              {view.question.split('?').slice(1).join('?').trim() || null}
-            </>
-          ) : (
-            view.question
-          )}
-        </h1>
-        <p className="mono-label mt-6 text-xs text-ink-soft">
-          A synthesis of {view.readyVoiceCount} YouTube voices.
-        </p>
-
-        <div className="mt-8">
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={saved || saving}
-            className="mono-label border border-line px-5 py-3 text-xs text-ink transition-colors hover:bg-ink hover:text-background disabled:opacity-40"
-          >
-            {saved ? 'Saved to archive' : saving ? 'Saving…' : 'Save this synthesis →'}
-          </button>
-          {!session && !saved && (
-            <p className="mono mt-2 text-[11px] text-ink-soft">
-              Sign in with Google to save to your archive.
-            </p>
-          )}
-        </div>
+    <HomePageShell>
+      <section className="flex justify-end py-4">
+        <ResultActions
+          synthesisId={document.id}
+          saved={saved}
+          saving={saving}
+          onSave={() => void handleSave()}
+        />
       </section>
 
-      <section className="border-b border-line px-5 py-8 md:px-8 md:py-10">
-        <div className="grid gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <BottomLineFeature view={view} />
-          </div>
-          <div className="flex flex-col gap-6 lg:col-span-5">
-            {view.consensus.map((c, i) => (
-              <ConsensusArticle
-                key={c.index}
-                item={c}
-                heading={i === 0 ? 'Where they agree' : 'And they also agree'}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <ResultHero
+        view={view}
+        onWhy={scrollToWhy}
+        onSeeDifferences={() => scrollToExplore('different')}
+      />
 
-      {view.disagreement && (
-        <section className="border-b border-line px-5 py-8 md:px-8 md:py-10">
-          <DisagreementArticle item={view.disagreement} />
-        </section>
-      )}
+      <div ref={whyRef}>
+        <WhyThisEmerged
+          view={view}
+          voices={view.voices}
+          onAskAboutInsight={(statement) => {
+            setAskScope({
+              type: 'insight',
+              label: t('result.insightScope'),
+              context: statement,
+            })
+            scrollToAsk(t('result.tellMeMore', { statement }))
+          }}
+        />
+      </div>
 
-      {view.minority && (
-        <section className="border-b border-line px-5 py-8 md:px-8 md:py-10">
-          <QuietVoiceArticle minority={view.minority} />
-        </section>
-      )}
+      <div ref={exploreRef}>
+        <ExploreDeeper
+          view={view}
+          document={document}
+          askScope={askScope}
+          onAskScope={setAskScope}
+          onAsk={scrollToAsk}
+        />
+      </div>
 
-      {view.evidence.length > 0 && (
-        <section className="border-b border-line px-5 py-8 md:px-8 md:py-10">
-          <EvidenceArticle items={view.evidence} />
-        </section>
-      )}
+      <ResultAsk
+        view={view}
+        document={document}
+        scope={askScope}
+        onClearScope={() => setAskScope(null)}
+        prefillQuestion={prefillQuestion}
+        onPrefillConsumed={() => setPrefillQuestion('')}
+      />
 
-      <section id="the-voices" className="px-5 pt-14 md:px-8">
-        <div className="mb-4 flex items-baseline justify-between border-b border-line pb-4">
-          <h2 className="font-serif text-4xl font-medium tracking-tight md:text-5xl">The voices</h2>
-          <span className="mono-label text-xs text-ink-soft">{view.voiceCount} sources</span>
-        </div>
-      </section>
-      <VoiceIndex voices={view.voices} />
-
-      <AskSynthesis view={view} document={document} />
-    </>
+      <CreateFromSection synthesisId={document.id} />
+    </HomePageShell>
   )
 }

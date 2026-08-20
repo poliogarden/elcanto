@@ -1,115 +1,124 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
-import { Hero } from '@/components/hero'
-import { IssueNavigation } from '@/components/issue-navigation'
+import { useState } from 'react'
+import { BrandFooter } from '@/components/brand/brand-footer'
+import { HomeContinueSection } from '@/components/home/home-continue-section'
+import { HomeHero } from '@/components/home/home-hero'
 import { Masthead } from '@/components/masthead'
-import { SynthesizeCTA } from '@/components/synthesize-cta'
-import { VoiceIndex } from '@/components/voice-index'
-import { YouTubeInput } from '@/components/youtube-input'
+import type { VideoSourceItem } from '@/lib/types/selected-source'
 import type { Voice } from '@/lib/types/voice'
 import { saveDraft } from '@/lib/storage/synthesis-session'
-import { formatTotalDuration } from '@/lib/youtube/url'
-
-function createVoiceId(): string {
-  return crypto.randomUUID()
-}
+import {
+  focusPresetToMode,
+  type SynthesisFocusPreset,
+} from '@/lib/types/synthesis-focus'
+import {
+  reindexVoices,
+  toggleVoiceForItem,
+  voiceFromSourceItem,
+} from '@/lib/voice/source-selection'
+import { validateBatchAdd } from '@/lib/voice/batch-add-guard'
+import { normalizeDraftVoice } from '@/lib/voice/normalize-voice'
+import { loadLocalePreferences } from '@/lib/i18n/storage'
+import { resolveResultLanguage } from '@/lib/i18n/resolve'
+import { useTranslation } from '@/lib/i18n/locale-context'
 
 export default function HomePage() {
   const router = useRouter()
+  const { t } = useTranslation()
   const [voices, setVoices] = useState<Voice[]>([])
+  const [batchError, setBatchError] = useState<string | null>(null)
+  const [focusPreset, setFocusPreset] = useState<SynthesisFocusPreset>('synthesize')
+  const [customPrompt, setCustomPrompt] = useState('')
 
-  async function handleAdd(url: string) {
-    const res = await fetch('/api/youtube/metadata', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
+  function handleToggleItem(item: VideoSourceItem) {
+    setBatchError(null)
+    setVoices((prev) => toggleVoiceForItem(prev, item))
+  }
+
+  function handleBatchAdd(items: VideoSourceItem[]) {
+    setBatchError(null)
+    const check = validateBatchAdd(items, voices)
+    if (!check.ok) {
+      setBatchError(
+        check.code === 'already_selected'
+          ? t('source.alreadySelected')
+          : t('source.batchMaxPlaylist', { max: check.max ?? 20 }),
+      )
+      return
+    }
+    setVoices((prev) => {
+      let next = [...prev]
+      for (const item of check.items) {
+        if (next.some((v) => v.youtubeId === item.videoId)) continue
+        next = [...next, voiceFromSourceItem(item, next.length + 1)]
+      }
+      return reindexVoices(next)
     })
-
-    const data = (await res.json()) as {
-      error?: string
-      youtubeId?: string
-      url?: string
-      title?: string
-      channel?: string
-      thumbnail?: string
-      duration?: string
-      durationSeconds?: number
-    }
-
-    if (!res.ok) {
-      throw new Error(data.error ?? 'Could not fetch video metadata.')
-    }
-
-    if (!data.youtubeId || !data.url || !data.title) {
-      throw new Error('Invalid metadata response.')
-    }
-
-    const duplicate = voices.some((v) => v.youtubeId === data.youtubeId)
-    if (duplicate) {
-      throw new Error('This video is already on the desk.')
-    }
-
-    const nextN = voices.length + 1
-    const voice: Voice = {
-      id: createVoiceId(),
-      n: nextN,
-      youtubeId: data.youtubeId,
-      url: data.url,
-      title: data.title,
-      channel: data.channel ?? 'Unknown channel',
-      thumbnail: data.thumbnail,
-      duration: data.duration ?? '—',
-      durationSeconds: data.durationSeconds,
-      status: 'ready',
-    }
-
-    setVoices((prev) => [...prev, voice])
   }
 
   function handleRemove(id: string) {
-    setVoices((prev) =>
-      prev
-        .filter((v) => v.id !== id)
-        .map((v, i) => ({ ...v, n: i + 1 })),
-    )
+    setVoices((prev) => reindexVoices(prev.filter((v) => v.id !== id)))
   }
 
   const readyVoices = voices.filter((v) => v.status === 'ready' || v.status === 'done')
-  const total = useMemo(() => formatTotalDuration(readyVoices), [readyVoices])
 
   function handleSynthesize() {
+    const normalized = readyVoices
+      .map((v) =>
+        normalizeDraftVoice({
+          id: v.id,
+          n: v.n,
+          youtubeId: v.youtubeId,
+          url: v.url,
+          title: v.title,
+          channel: v.channel,
+          thumbnail: v.thumbnail,
+          duration: v.duration,
+          durationSeconds: v.durationSeconds,
+        }),
+      )
+      .filter((v): v is NonNullable<typeof v> => v !== null)
+
+    if (normalized.length < 2) {
+      setBatchError(t('errors.needTwoValid'))
+      return
+    }
+
+    const prefs = loadLocalePreferences()
+    const outputLanguage = resolveResultLanguage(prefs.resultLanguage, prefs.interfaceLocale)
+
     const id = crypto.randomUUID()
-    saveDraft(
-      id,
-      readyVoices.map((v) => ({
-        id: v.id,
-        n: v.n,
-        youtubeId: v.youtubeId,
-        url: v.url,
-        title: v.title,
-        channel: v.channel,
-        thumbnail: v.thumbnail,
-        duration: v.duration,
-        durationSeconds: v.durationSeconds,
-      })),
-    )
+    const prompt = customPrompt.trim()
+    saveDraft(id, {
+      voices: normalized,
+      focusPreset,
+      mode: focusPresetToMode(focusPreset),
+      customPrompt: prompt || undefined,
+      outputLanguage,
+    })
     router.push(`/synthesize/${id}`)
   }
 
   return (
     <main className="min-h-screen bg-background">
       <Masthead />
-      <IssueNavigation issue="NEW SYNTHESIS" active="youtube" />
-      <Hero />
-      <YouTubeInput count={voices.length} onAdd={handleAdd} />
-      <VoiceIndex voices={voices} onRemove={handleRemove} />
-      <SynthesizeCTA
-        count={readyVoices.length}
-        totalDuration={total}
+      <HomeHero
+        voices={voices}
+        readyCount={readyVoices.length}
+        batchError={batchError}
+        focusPreset={focusPreset}
+        customPrompt={customPrompt}
+        onToggleItem={handleToggleItem}
+        onBatchAdd={handleBatchAdd}
+        onRemove={handleRemove}
+        onFocusPreset={setFocusPreset}
+        onCustomPrompt={setCustomPrompt}
         onSynthesize={handleSynthesize}
       />
+      <HomeContinueSection />
+      <BrandFooter />
     </main>
   )
 }

@@ -6,9 +6,10 @@ type YouTubeInputProps = {
   count: number
   disabled?: boolean
   onAdd: (url: string) => Promise<void>
+  compact?: boolean
 }
 
-export function YouTubeInput({ count, disabled, onAdd }: YouTubeInputProps) {
+export function YouTubeInput({ count, disabled, onAdd, compact }: YouTubeInputProps) {
   const [value, setValue] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -30,8 +31,8 @@ export function YouTubeInput({ count, disabled, onAdd }: YouTubeInputProps) {
   }
 
   return (
-    <div className="border-b border-line px-5 py-10 md:px-8 md:py-12">
-      <div className="mb-6 flex items-baseline justify-between">
+    <div className={compact ? '' : 'border-b border-line px-5 py-10 md:px-8 md:py-12'}>
+      <div className={`mb-4 flex items-baseline justify-between ${compact ? 'mb-3' : 'mb-6'}`}>
         <h2 className="mono-label text-xs text-ink">Add your voices</h2>
         <span className="mono-label text-xs text-ink-soft">
           {count} {count === 1 ? 'voice' : 'voices'}

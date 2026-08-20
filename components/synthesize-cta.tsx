@@ -1,3 +1,7 @@
+'use client'
+
+import { useTranslation } from '@/lib/i18n/locale-context'
+
 type SynthesizeCTAProps = {
   count: number
   totalDuration: string
@@ -5,36 +9,38 @@ type SynthesizeCTAProps = {
 }
 
 export function SynthesizeCTA({ count, totalDuration, onSynthesize }: SynthesizeCTAProps) {
+  const { t } = useTranslation()
   const disabled = count < 2
 
-  return (
-    <div className="px-5 py-12 md:px-8 md:py-16">
-      <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
-        <span className="mono-label text-xs text-ink-soft">
-          {count} {count === 1 ? 'voice' : 'voices'} on the desk
-        </span>
-        <span className="mono-label text-xs text-ink-soft">{totalDuration}</span>
-      </div>
-
-      <button
-        type="button"
-        onClick={onSynthesize}
-        disabled={disabled}
-        className="group flex w-full items-center justify-between gap-4 bg-ink px-6 py-8 text-left text-background transition-opacity enabled:hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 md:px-10 md:py-12"
-      >
-        <span className="font-serif text-3xl font-medium leading-none tracking-tight md:text-5xl">
-          Synthesize {count} voices
-        </span>
-        <span className="text-3xl transition-transform group-enabled:group-hover:translate-x-1 md:text-5xl">
-          {'\u2192'}
-        </span>
-      </button>
-
-      {disabled && (
-        <p className="mono mt-4 text-[11px] text-ink-soft">
-          Add at least two voices — synthesis needs more than one perspective to compare.
+  if (disabled) {
+    return (
+      <div className="border-b border-line px-5 py-6 md:px-8">
+        <p className="mono text-[11px] text-ink-soft">
+          {count === 0 ? t('selection.needTwoToBegin') : t('selection.needOneMoreToCompare')}
         </p>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-b border-line px-5 py-8 md:px-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 border border-line p-5 md:p-6">
+        <div>
+          <p className="mono-label text-[10px] text-ink-soft">
+            {t('selection.readyToCompare', { count })}
+          </p>
+          <p className="mono mt-1 text-[11px] text-ink-soft">
+            {t('selection.totalDuration', { duration: totalDuration })}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onSynthesize}
+          className="mono-label bg-ink px-6 py-3 text-[10px] text-background transition-opacity hover:opacity-90"
+        >
+          {t('selection.synthesize', { count })}
+        </button>
+      </div>
     </div>
   )
 }

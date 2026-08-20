@@ -1,6 +1,7 @@
 import { MemoryCache } from '@/lib/cache/memory'
 import { videoCacheKey } from '@/lib/cache/keys'
 import { formatDuration } from '@/lib/youtube/url'
+import { resolveVideoThumbnail } from '@/lib/youtube/thumbnail'
 import type { YouTubeMetadata } from '@/lib/types/voice'
 
 type OEmbedResponse = {
@@ -73,7 +74,7 @@ async function fetchDataApiMetadata(youtubeId: string): Promise<YouTubeMetadata 
     url: `https://www.youtube.com/watch?v=${youtubeId}`,
     title: item.snippet.title,
     channel: item.snippet.channelTitle ?? 'Unknown channel',
-    thumbnail,
+    thumbnail: resolveVideoThumbnail(youtubeId, thumbnail),
     duration: durationSeconds !== undefined ? formatDuration(durationSeconds) : '—',
     durationSeconds,
   }
@@ -107,7 +108,7 @@ export async function fetchYouTubeMetadata(
     url: canonicalUrl,
     title: oembed.title,
     channel: oembed.author_name ?? 'Unknown channel',
-    thumbnail: oembed.thumbnail_url,
+    thumbnail: resolveVideoThumbnail(youtubeId, oembed.thumbnail_url),
     duration: durationSeconds !== undefined ? formatDuration(durationSeconds) : '—',
     durationSeconds,
   }

@@ -16,7 +16,7 @@ export function EvidenceArticle({ items }: { items: EvidenceView[] }) {
       <div className="grid md:grid-cols-2">
         {items.map((e, i) => (
           <article
-            key={`${e.voice}-${e.timestamp}`}
+            key={e.id}
             className={`flex flex-col p-6 md:p-8 ${i % 2 === 0 ? 'md:border-r md:border-line' : ''} ${
               i >= 2 ? 'border-t border-line' : ''
             } ${i >= 1 && i < 2 ? 'border-t border-line md:border-t-0' : ''}`}

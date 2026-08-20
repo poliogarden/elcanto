@@ -24,23 +24,17 @@ function statusLabel(status: Voice['status']): string {
 }
 
 export function VoiceIndex({ voices, onRemove }: VoiceIndexProps) {
-  if (voices.length === 0) {
-    return (
-      <div className="border-b border-line px-5 py-16 text-center md:px-8">
-        <p className="mono-label text-xs text-ink-soft">The desk is empty</p>
-        <p className="mx-auto mt-3 max-w-md font-serif text-lg text-ink-soft">
-          Add a YouTube URL above and it appears here as a voice, ready to be read.
-        </p>
-      </div>
-    )
-  }
+  if (voices.length === 0) return null
 
   return (
     <div className="border-b border-line">
+      <div className="border-b border-line px-5 py-4 md:px-8">
+        <span className="mono-label text-[10px] text-ink-soft">ON THE DESK</span>
+      </div>
       {voices.map((v) => (
         <article
           key={v.id}
-          className="grid grid-cols-[auto_1fr] items-start gap-4 border-b border-line px-5 py-6 last:border-b-0 md:grid-cols-[3rem_9rem_1fr_auto] md:items-center md:gap-6 md:px-8"
+          className="grid grid-cols-[auto_1fr] items-start gap-4 border-b border-line px-5 py-4 last:border-b-0 md:grid-cols-[3rem_9rem_1fr_auto] md:items-center md:gap-6 md:px-8"
         >
           <span className="mono pt-1 text-sm text-ink-soft md:pt-0">
             {String(v.n).padStart(2, '0')}
@@ -51,13 +45,10 @@ export function VoiceIndex({ voices, onRemove }: VoiceIndexProps) {
           </div>
 
           <div className="min-w-0">
-            <p className="mono-label mb-1 text-[10px] text-ink-soft">
-              {String(v.n).padStart(2, '0')} / YouTube
-            </p>
-            <h3 className="font-serif text-xl leading-tight text-balance md:text-2xl">
+            <h3 className="font-serif text-lg leading-tight text-balance md:text-xl">
               {v.title || 'Fetching metadata…'}
             </h3>
-            <div className="mono mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-soft">
+            <div className="mono mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-soft">
               <span>{v.channel || '—'}</span>
               {v.duration !== '—' && (
                 <>

@@ -1,3 +1,21 @@
+import type {
+  ClaimRelationship,
+  CrossSourcePattern,
+  Insight,
+  RelationshipGraph,
+  SourceReasoning,
+  SynthesisConclusion,
+} from '@/lib/types/relationship'
+import type { KnowledgeExtension, SetAnalysis } from '@/lib/types/knowledge'
+import type { FourthIdea, FourthIdeaCandidate, UnderstandingChange } from '@/lib/types/fourth-idea'
+import type {
+  CrossSourceTheme,
+  EditorialComparison,
+  SynthesisFinding,
+  SynthesisReportMeta,
+} from '@/lib/types/synthesis-report'
+import type { InsightGraphData } from '@/lib/types/insight-graph'
+
 /** Structured output from per-video analysis (Phase 2+) */
 
 export type Claim = {
@@ -23,48 +41,53 @@ export type VideoAnalysis = {
   stance?: string
 }
 
-/** Structured output from multi-video synthesis (Phase 3+) */
-
-export type ConsensusItem = {
-  claim: string
-  supportingVoiceIds: string[]
-  evidenceIds: string[]
-  confidence: number
-}
-
-export type DisagreementSide = {
-  label: string
-  voiceIds: string[]
-  summary: string
-  evidenceIds: string[]
-}
-
-export type DisagreementItem = {
-  question: string
-  sides: DisagreementSide[]
-}
-
-export type MinorityInsight = {
-  claim: string
-  detail: string
-  voiceIds: string[]
-  evidenceIds: string[]
-  mentionedBy: number
-  total: number
-}
-
 export type SynthesisResult = {
-  topic: string
-  bottomLine: string
-  bottomLineHeadline?: string[]
-  consensus: ConsensusItem[]
-  disagreements: DisagreementItem[]
-  minorityInsights: MinorityInsight[]
-  overallConclusion: string
+  /** Claims used in synthesis per source */
+  sources: SourceReasoning[]
+  /** Claim-pair relationships discovered */
+  relationships: ClaimRelationship[]
+  /** Cross-source patterns derived from relationships */
+  patterns: CrossSourcePattern[]
+  /** Set analysis: intersection / difference / contradiction */
+  setAnalysis: SetAnalysis
+  /** Final synthesis conclusion */
+  synthesis: SynthesisConclusion
+  /** Insights with full lineage */
+  insights: Insight[]
+  /** Knowledge gaps and discovery recommendations */
+  knowledge: KnowledgeExtension
+  /** Selected emergent insight — visible only when sources are compared */
+  fourthIdea?: FourthIdea | null
+  /** Candidates considered for fourth idea selection */
+  fourthIdeaCandidates?: FourthIdeaCandidate[]
+  /** Before/after when understanding shifts on re-synthesis */
+  understandingChange?: UnderstandingChange | null
+  /** Full relationship graph including stats */
+  relationshipGraph?: RelationshipGraph
+  /** Cross-source themes (v2 report) */
+  themes?: CrossSourceTheme[]
+  /** Major findings derived from themes + relationships */
+  findings?: SynthesisFinding[]
+  /** Editorial agreement/disagreement cards */
+  editorialAgreements?: EditorialComparison[]
+  editorialDisagreements?: EditorialComparison[]
+  /** Report metadata for hero section */
+  reportMeta?: SynthesisReportMeta
+  /** Insight graph for relationship visualization */
+  insightGraph?: InsightGraphData
 }
 
 export type AskAnswer = {
   answer: string
-  basedOnVoiceIds: string[]
+  usedSourceIds: string[]
   evidence: Array<{ videoId: string; timestamp: number; text: string }>
+}
+
+/** Flat accessors for backward compatibility */
+export function getSynthesisTopic(result: SynthesisResult): string {
+  return result.synthesis.topic
+}
+
+export function getSynthesisUsedSourceIds(result: SynthesisResult): string[] {
+  return result.synthesis.usedSourceIds
 }

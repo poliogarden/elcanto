@@ -1,10 +1,14 @@
-import type { VideoAnalysis, SynthesisResult } from '@/lib/types/analysis'
+import type { SynthesisResult } from '@/lib/types/analysis'
+import { sourceFromVoice } from '@/lib/types/source'
+import type { Source, SourceAnalysis, SourceFailure } from '@/lib/types/source'
 import type { Voice } from '@/lib/types/voice'
 
 export type SynthesisVoiceEntry = {
   voice: Voice
-  analysis?: VideoAnalysis
+  source?: Source
+  analysis?: SourceAnalysis
   error?: string
+  failure?: SourceFailure
 }
 
 export type SynthesisStatus =
@@ -25,6 +29,10 @@ export type SynthesisDocument = {
   synthesisError?: string
   savedToArchive?: boolean
   userId?: string
+  /** Preserved when re-synthesizing after adding sources */
+  previousFourthIdea?: SynthesisResult['fourthIdea']
+  /** Synthesis mode — defaults to discover */
+  mode?: import('@/lib/types/synthesis-mode').SynthesisMode
 }
 
 export type DraftVoiceInput = {
@@ -50,6 +58,7 @@ export function createSynthesisDocument(id: string, voices: DraftVoiceInput[]): 
         ...v,
         status: 'pending',
       },
+      source: sourceFromVoice(v),
     })),
   }
 }

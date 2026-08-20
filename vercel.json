@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/youtube-sync",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/synthesis-jobs",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}

@@ -1,100 +1,143 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
+import { BrandLockup } from '@/components/brand/brand-lockup'
+import { HomePageShell } from '@/components/home/home-page-shell'
+import { LocaleSwitcher } from '@/components/i18n/locale-switcher'
+import { useTranslation } from '@/lib/i18n/locale-context'
 
-const nav = [
-  { label: 'New Synthesis', href: '/' },
-  { label: 'Archive', href: '/archive' },
-  { label: 'About', href: '/about' },
-]
+function isNavActive(href: string, pathname: string): boolean {
+  if (href === '/') return pathname === '/'
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+type NavLinkProps = {
+  href: string
+  label: string
+  pathname: string
+  onNavigate?: () => void
+  className?: string
+}
+
+function NavLink({ href, label, pathname, onNavigate, className = '' }: NavLinkProps) {
+  const active = isNavActive(href, pathname)
+
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? 'page' : undefined}
+      className={`mono-label text-[10px] transition-opacity hover:opacity-60 ${
+        active
+          ? 'border-b border-ink pb-0.5 text-ink'
+          : 'border-b border-transparent pb-0.5 text-ink-soft'
+      } ${className}`}
+    >
+      {label}
+    </Link>
+  )
+}
 
 export function Masthead() {
   const [open, setOpen] = useState(false)
   const { data: session } = useSession()
+  const pathname = usePathname()
+  const { t } = useTranslation()
+
+  const nav = [
+    { label: t('nav.newSynthesis'), href: '/' },
+    { label: t('nav.myYouTube'), href: '/personal' },
+    { label: t('nav.archive'), href: '/archive' },
+    { label: t('nav.settings'), href: '/settings' },
+    { label: t('nav.about'), href: '/about' },
+  ] as const
+
+  function closeMenu() {
+    setOpen(false)
+  }
 
   return (
     <header className="border-b border-line bg-background">
-      <div className="flex items-end justify-between px-5 py-6 md:px-8 md:py-8">
-        <Link href="/" className="group flex flex-col leading-none">
-          <span className="font-serif text-4xl font-medium tracking-tight md:text-5xl">
-            elcanto<span className="text-ink-soft">.</span>
-          </span>
-          <span className="mono-label mt-2 text-[10px] text-ink-soft md:text-[11px]">
-            Many voices. One understanding.
-          </span>
-        </Link>
+      <HomePageShell>
+        <div className="flex items-center justify-between py-4 md:py-5">
+          <BrandLockup symbolSize={34} />
 
-        <div className="hidden items-center gap-6 md:flex">
-          <nav className="flex items-center gap-6">
-            {nav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="mono-label text-xs text-ink transition-opacity hover:opacity-60"
+          <div className="hidden items-center gap-4 lg:gap-5 md:flex">
+            <nav className="flex items-center gap-5 lg:gap-6" aria-label="Primary">
+              {nav.map((item) => (
+                <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
+              ))}
+            </nav>
+            <LocaleSwitcher />
+            {session ? (
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="mono-label shrink-0 border border-line px-3 py-1.5 text-[10px] text-ink-soft transition-colors hover:bg-ink hover:text-background"
               >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          {session ? (
+                {t('nav.signOut')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void signIn('google')}
+                className="mono-label shrink-0 border border-line px-3 py-1.5 text-[10px] text-ink transition-colors hover:bg-ink hover:text-background"
+              >
+                {t('nav.signIn')}
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <LocaleSwitcher />
             <button
               type="button"
-              onClick={() => void signOut()}
-              className="mono-label border border-line px-3 py-2 text-[10px] text-ink-soft transition-colors hover:bg-ink hover:text-background"
+              aria-label={t('nav.menu')}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+              className="mono-label border border-line px-3 py-2 text-[10px] text-ink"
             >
-              Sign out
+              {t('nav.menu')}
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void signIn('google')}
-              className="mono-label border border-line px-3 py-2 text-[10px] text-ink transition-colors hover:bg-ink hover:text-background"
-            >
-              Sign in
-            </button>
-          )}
+          </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-11 flex-col items-center justify-center gap-[5px] border border-line md:hidden"
-        >
-          <span className="h-[2px] w-5 bg-ink" />
-          <span className="h-[2px] w-5 bg-ink" />
-          <span className="h-[2px] w-5 bg-ink" />
-        </button>
-      </div>
-
-      {open && (
-        <nav className="flex flex-col border-t border-line md:hidden">
-          {nav.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="mono-label border-b border-line px-5 py-4 text-xs text-ink last:border-b-0"
+        {open && (
+          <nav className="flex flex-col border-t border-line pb-2 md:hidden" aria-label="Mobile">
+            {nav.map((item) => {
+              const active = isNavActive(item.href, pathname)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeMenu}
+                  aria-current={active ? 'page' : undefined}
+                  className={`mono-label border-b border-line py-3.5 text-[10px] last:border-b-0 ${
+                    active ? 'text-ink' : 'text-ink-soft'
+                  }`}
+                >
+                  {item.label}
+                  {active ? ' •' : ''}
+                </Link>
+              )
+            })}
+            <button
+              type="button"
+              onClick={() => {
+                closeMenu()
+                if (session) void signOut()
+                else void signIn('google')
+              }}
+              className="mono-label mt-1 border border-line px-3 py-2.5 text-left text-[10px] text-ink"
             >
-              {item.label}
-            </Link>
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false)
-              if (session) void signOut()
-              else void signIn('google')
-            }}
-            className="mono-label px-5 py-4 text-left text-xs text-ink"
-          >
-            {session ? 'Sign out' : 'Sign in with Google'}
-          </button>
-        </nav>
-      )}
+              {session ? t('nav.signOut') : t('nav.signIn')}
+            </button>
+          </nav>
+        )}
+      </HomePageShell>
     </header>
   )
 }

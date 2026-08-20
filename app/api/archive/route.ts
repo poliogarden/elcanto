@@ -3,7 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
 import type { SynthesisDocument } from '@/lib/types/synthesis-document'
+import { getSynthesisTopic } from '@/lib/types/analysis'
 import { synthesisCollectionKey } from '@/lib/cache/keys'
+import { recordElcantoSignalsForSession } from '@/lib/personal/record-activity'
 
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -52,6 +54,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Complete synthesis document required.' }, { status: 400 })
   }
 
+  const doc = body.document
+
+  await recordElcantoSignalsForSession(
+    doc.voices.map((v) => ({
+      source: 'elcanto_saved' as const,
+      youtubeId: v.voice.youtubeId,
+      title: v.voice.title,
+      channel: v.voice.channel,
+      signalAt: doc.createdAt,
+    })),
+  )
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -61,7 +75,7 @@ export async function POST(request: Request) {
 
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
-    return NextResponse.json({ error: 'Sign in with Google to save to archive.' }, { status: 401 })
+    return NextResponse.json({ saved: true, source: 'local' })
   }
 
   const supabase = createClient(url, key)
@@ -72,22 +86,18 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   if (!user) {
-    return NextResponse.json({ error: 'User not found.' }, { status: 401 })
-  }
-
-  const doc = body.document
-  if (!doc.result) {
-    return NextResponse.json({ error: 'Complete synthesis document required.' }, { status: 400 })
+    return NextResponse.json({ saved: true, source: 'local' })
   }
 
   const videoIds = doc.voices.map((v) => v.voice.youtubeId)
   const collectionHash = synthesisCollectionKey(videoIds)
+  const result = doc.result!
 
   await supabase.from('syntheses').upsert({
     id: doc.id,
     user_id: user.id,
     number: doc.number,
-    topic: doc.result.topic,
+    topic: getSynthesisTopic(result),
     voice_count: doc.voices.length,
     collection_hash: collectionHash,
     status: 'complete',

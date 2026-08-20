@@ -1,0 +1,7 @@
+ffconcat version 1.0
+file 'C:/00.work/15.elcanto/elcanto/render-out/d1958d98-c2fa-4e41-a901-197ba0fec706/segments/seg_01.mp4'
+duration 20
+file 'C:/00.work/15.elcanto/elcanto/render-out/d1958d98-c2fa-4e41-a901-197ba0fec706/segments/seg_02.mp4'
+duration 6
+file 'C:/00.work/15.elcanto/elcanto/render-out/d1958d98-c2fa-4e41-a901-197ba0fec706/segments/seg_03.mp4'
+duration 20

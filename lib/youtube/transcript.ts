@@ -18,7 +18,14 @@ export type TranscriptSegment = {
 }
 
 export type TranscriptResult =
-  | { ok: true; videoId: string; segments: TranscriptSegment[]; language?: string }
+  | {
+      ok: true
+      videoId: string
+      segments: TranscriptSegment[]
+      language?: string
+      transcriptSource?: 'default' | 'lang_fallback'
+      requestedLang?: string
+    }
   | { ok: false; videoId: string; code: 'unavailable' | 'disabled' | 'error'; message: string }
 
 export interface TranscriptProvider {

@@ -1,20 +1,27 @@
 import type { DraftVoiceInput, SynthesisDocument } from '@/lib/types/synthesis-document'
+import { getSynthesisTopic } from '@/lib/types/analysis'
+import {
+  normalizeSynthesisDraft,
+  type SynthesisDraft,
+} from '@/lib/types/synthesis-draft'
 
 const DRAFT_PREFIX = 'elcanto-draft-'
 const DOC_PREFIX = 'elcanto-synthesis-'
+const JOB_PREFIX = 'elcanto-synthesis-job-'
 const ARCHIVE_KEY = 'elcanto-archive'
 
-export function saveDraft(id: string, voices: DraftVoiceInput[]): void {
+export function saveDraft(id: string, draft: SynthesisDraft | DraftVoiceInput[]): void {
   if (typeof window === 'undefined') return
-  sessionStorage.setItem(`${DRAFT_PREFIX}${id}`, JSON.stringify(voices))
+  const payload: SynthesisDraft = Array.isArray(draft) ? { voices: draft } : draft
+  sessionStorage.setItem(`${DRAFT_PREFIX}${id}`, JSON.stringify(payload))
 }
 
-export function loadDraft(id: string): DraftVoiceInput[] | null {
+export function loadDraft(id: string): SynthesisDraft | null {
   if (typeof window === 'undefined') return null
   const raw = sessionStorage.getItem(`${DRAFT_PREFIX}${id}`)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as DraftVoiceInput[]
+    return normalizeSynthesisDraft(JSON.parse(raw))
   } catch {
     return null
   }
@@ -60,7 +67,7 @@ export function listLocalArchive(): ArchiveEntry[] {
       entries.push({
         id: doc.id,
         number: doc.number,
-        question: doc.result.topic,
+        question: getSynthesisTopic(doc.result),
         voiceCount: doc.voices.length,
         date: new Date(doc.createdAt)
           .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -78,4 +85,18 @@ export function markSavedToArchive(id: string): void {
   if (!doc) return
   doc.savedToArchive = true
   saveSynthesisDocument(doc)
+}
+
+export function saveSynthesisJobId(synthesisId: string, jobId: string): void {
+  if (typeof window === 'undefined') return
+  sessionStorage.setItem(`${JOB_PREFIX}${synthesisId}`, jobId)
+  localStorage.setItem(`${JOB_PREFIX}${synthesisId}`, jobId)
+}
+
+export function loadSynthesisJobId(synthesisId: string): string | null {
+  if (typeof window === 'undefined') return null
+  return (
+    sessionStorage.getItem(`${JOB_PREFIX}${synthesisId}`) ??
+    localStorage.getItem(`${JOB_PREFIX}${synthesisId}`)
+  )
 }

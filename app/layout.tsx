@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Newsreader, Space_Mono } from 'next/font/google'
+import { Newsreader, Space_Grotesk, Space_Mono } from 'next/font/google'
 import { Providers } from '@/components/providers'
 import './globals.css'
 
@@ -11,6 +11,13 @@ const newsreader = Newsreader({
   style: ['normal', 'italic'],
 })
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['500'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+})
+
 const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'],
@@ -19,10 +26,12 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'elcanto — Many voices. One understanding.',
+  title: 'elcanto — Read three. Understand a fourth.',
   description:
-    'Bring the YouTube videos. elcanto finds where they agree, where they don\u2019t, and what it all means. Multiple videos. One synthesis.',
-  generator: 'v0.app',
+    'A knowledge synthesis studio. Bring multiple YouTube sources — elcanto finds what becomes visible only when they are seen together.',
+  icons: {
+    icon: '/icon.svg',
+  },
 }
 
 export const viewport: Viewport = {
@@ -36,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${spaceMono.variable} bg-background`}>
+    <html lang="en" className={`${newsreader.variable} ${spaceGrotesk.variable} ${spaceMono.variable} bg-background`}>
       <body className="antialiased font-serif">
         <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
