@@ -6,7 +6,6 @@ type Props = {
   selected: boolean
   selectionOrder?: number
   onToggle: () => void
-  onOpenYouTube?: () => void
 }
 
 function truncateTitle(title: string, max = 72): string {
@@ -14,96 +13,69 @@ function truncateTitle(title: string, max = 72): string {
   return `${title.slice(0, max - 1)}…`
 }
 
-export function VideoSourceCard({
-  item,
-  selected,
-  selectionOrder,
-  onToggle,
-  onOpenYouTube,
-}: Props) {
-  const isSample = Boolean(item.sample)
+export function VideoSourceCard({ item, selected, selectionOrder, onToggle }: Props) {
+  const thumbnail = item.thumbnail ?? resolveVideoThumbnail(item.videoId)
+  const duration = item.duration && item.duration !== '—' ? item.duration : null
 
   return (
-    <article
-      className={`group relative flex min-w-0 flex-col border bg-background transition-colors ${
-        selected
-          ? 'border-mint bg-mint/5 ring-1 ring-mint/40'
-          : 'border-line hover:border-ink/30'
-      }`}
-    >
-      {isSample && (
-        <span className="mono-label absolute left-2 top-2 z-10 border border-line bg-background px-2 py-0.5 text-[9px]">
-          EXAMPLE
-        </span>
-      )}
-
+    <article className="group relative min-w-0">
       <button
         type="button"
         onClick={onToggle}
-        disabled={isSample}
-        className="flex min-w-0 flex-1 flex-col text-left disabled:cursor-default"
+        className="flex w-full min-w-0 flex-col text-left"
         aria-pressed={selected}
       >
-        <div className="relative aspect-[16/10] w-full border-b border-line bg-paper-2">
-          {(item.thumbnail ?? resolveVideoThumbnail(item.videoId)) ? (
+        <div
+          className={`relative aspect-video w-full overflow-hidden rounded-lg bg-neutral-300/30 transition-[box-shadow,transform] duration-150 ${
+            selected
+              ? 'shadow-[0_0_0_2px_var(--coral),0_0_0_4px_var(--background)]'
+              : 'group-hover:shadow-md'
+          }`}
+        >
+          {thumbnail ? (
             <img
-              src={item.thumbnail ?? resolveVideoThumbnail(item.videoId)}
+              src={thumbnail}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
               loading="lazy"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <span className="mono text-[10px] text-ink-soft">—</span>
+            <div className="flex h-full w-full items-center justify-center bg-neutral-200/50 text-xs text-ink-soft">
+              —
             </div>
           )}
 
-          {selected && selectionOrder != null && (
-            <span className="mono absolute left-2 top-2 flex h-7 w-7 items-center justify-center border border-mint bg-background text-[11px] text-mint-ink">
-              {selectionOrder}
-            </span>
-          )}
-
-          {selected && (
+          {selected && selectionOrder != null ? (
             <span
-              className="mono absolute right-2 top-2 flex h-6 w-6 items-center justify-center border border-mint bg-mint/20 text-[10px] text-mint-ink"
+              className="absolute left-2.5 top-2.5 flex h-7 min-w-7 items-center justify-center rounded-full bg-coral px-1.5 text-[11px] font-semibold tabular-nums text-white shadow-sm"
               aria-hidden
             >
-              ✓
+              {String(selectionOrder).padStart(2, '0')}
             </span>
+          ) : (
+            <span
+              className="absolute left-2.5 top-2.5 h-5 w-5 rounded-full border-2 border-white/90 bg-black/25 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
+              aria-hidden
+            />
           )}
 
-          {item.duration && item.duration !== '—' && (
-            <span className="mono absolute bottom-2 right-2 bg-ink/90 px-1.5 py-0.5 text-[10px] text-background">
-              {item.duration}
+          {duration && (
+            <span className="absolute bottom-1.5 right-1.5 rounded bg-black/75 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-white">
+              {duration}
             </span>
           )}
         </div>
 
-        <div className="flex flex-1 flex-col p-2.5 md:p-3">
-          <h3 className="line-clamp-2 text-sm leading-snug tracking-tight text-ink">
+        <div className="mt-2.5 min-w-0 pr-1">
+          <h3 className="line-clamp-2 text-[13px] font-medium leading-snug text-ink sm:text-sm">
             {truncateTitle(item.title)}
           </h3>
-          <p className="mono mt-1.5 truncate text-[10px] text-ink-soft">
+          <p className="mt-1 truncate text-xs text-ink-soft">
             {item.channelTitle}
-            {item.duration && item.duration !== '—' ? ` · ${item.duration}` : ''}
+            {duration ? ` · ${duration}` : ''}
           </p>
         </div>
       </button>
-
-      {onOpenYouTube && !isSample && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onOpenYouTube()
-          }}
-          className="mono-label absolute right-2 top-2 border border-line bg-background px-2 py-0.5 text-[9px] opacity-0 transition-opacity group-hover:opacity-100 hover:bg-ink hover:text-background"
-          aria-label="Open on YouTube"
-        >
-          ↗
-        </button>
-      )}
     </article>
   )
 }

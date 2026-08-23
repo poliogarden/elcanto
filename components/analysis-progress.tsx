@@ -15,6 +15,7 @@ import {
 } from '@/lib/storage/synthesis-session'
 import { VoiceRelationshipCanvas } from '@/components/home/voice-relationship-canvas'
 import { useTranslation } from '@/lib/i18n/locale-context'
+import { resolveVideoThumbnail } from '@/lib/youtube/thumbnail'
 import type { SynthesisPerfSummary } from '@/lib/synthesis/synthesis-perf'
 import type { SynthesisJobPhase, SynthesisJobPublic } from '@/lib/synthesis/synthesis-job-types'
 import {
@@ -173,8 +174,8 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
         }
 
         const draft = loadDraft(synthesisId)
-        if (!draft || draft.voices.length < 2) {
-          setError(t('loading.needTwoVoices'))
+        if (!draft || draft.voices.length < 1) {
+          setError(t('loading.needOneVoice'))
           setCreatingJob(false)
           return
         }
@@ -286,6 +287,38 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
               statusLabel={t('loading.synthesizing')}
             />
           </>
+        )}
+
+        {total > 0 && doc && (
+          <div className="mx-auto mt-6 flex flex-wrap justify-center gap-2">
+            {doc.voices.map((entry) => {
+              const thumb = resolveVideoThumbnail(
+                entry.voice.youtubeId,
+                entry.voice.thumbnail,
+              )
+              const done = Boolean(entry.analysis) || entry.voice.status === 'done'
+              const failed = entry.voice.status === 'failed'
+              return (
+                <div
+                  key={entry.voice.id}
+                  className={`relative h-14 w-24 overflow-hidden rounded-lg ${
+                    failed ? 'opacity-40' : done ? 'ring-2 ring-coral' : 'opacity-70'
+                  }`}
+                >
+                  {thumb ? (
+                    <img src={thumb} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-paper-2 text-xs">
+                      {String(entry.voice.n).padStart(2, '0')}
+                    </div>
+                  )}
+                  <span className="absolute left-1 top-1 rounded bg-black/60 px-1 text-[9px] text-white">
+                    {String(entry.voice.n).padStart(2, '0')}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
         )}
 
         {total > 0 && (

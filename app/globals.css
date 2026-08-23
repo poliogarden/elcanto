@@ -7,7 +7,7 @@
 @theme inline {
   --font-serif: var(--font-newsreader), Georgia, 'Times New Roman', serif;
   --font-mono: var(--font-space-mono), 'Courier New', monospace;
-  --font-sans: var(--font-newsreader), Georgia, serif;
+  --font-sans: var(--font-space-grotesk), system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -19,6 +19,8 @@
   --color-mint: var(--mint);
   --color-mint-ink: var(--mint-ink);
   --color-clay: var(--clay);
+  --color-coral: var(--coral);
+  --color-coral-line: var(--coral-line);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -60,6 +62,10 @@
   --mint-ink: oklch(0.32 0.03 165);
   --clay: oklch(0.9 0.04 45);
 
+  /* Coral accent — editorial home UI */
+  --coral: #e45b43;
+  --coral-line: rgba(228, 91, 67, 0.45);
+
   --card: oklch(0.968 0.01 70);
   --card-foreground: oklch(0.19 0.008 40);
   --popover: oklch(0.968 0.01 70);
@@ -100,11 +106,17 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
+  .font-ui {
+    font-family: var(--font-sans);
+  }
   .compose-asterism-pulse {
     animation: asterism-emerge 2.4s ease-in-out infinite;
   }
   .synthesis-bar-glow {
     animation: synthesis-bar-shimmer 2.2s ease-in-out infinite;
+  }
+  .synthesis-line-dash {
+    animation: synthesis-line-dash 0.8s linear infinite;
   }
 }
 
@@ -129,5 +141,11 @@
   }
   100% {
     opacity: 0.35;
+  }
+}
+
+@keyframes synthesis-line-dash {
+  to {
+    stroke-dashoffset: -8;
   }
 }

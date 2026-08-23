@@ -10,6 +10,10 @@ import { logCacheBatch, logCacheEvent } from '@/lib/ai/cache-log'
 import type { SourceAnalysis } from '@/lib/types/source'
 import type { TranscriptSegment } from '@/lib/youtube/transcript'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import {
+  loadVideoAnalysisLocal,
+  saveVideoAnalysisLocal,
+} from '@/lib/repositories/video-analysis-store'
 
 const transcriptCache = new MemoryCache<TranscriptSegment[]>(1000 * 60 * 60 * 24)
 const analysisCache = new MemoryCache<SourceAnalysis>(1000 * 60 * 60 * 24)
@@ -113,6 +117,13 @@ export async function getCachedAnalysis(youtubeId: string): Promise<SourceAnalys
     return mem
   }
 
+  const local = await loadVideoAnalysisLocal(youtubeId)
+  if (local) {
+    analysisCache.set(videoCacheKey(youtubeId, 'analysis'), local)
+    logCacheBatch(youtubeId, { video_knowledge: 'HIT' })
+    return local
+  }
+
   const supabase = getSupabaseAdmin()
   if (!supabase) {
     logCacheBatch(youtubeId, { video_knowledge: 'MISS' })
@@ -192,6 +203,8 @@ export async function setCachedAnalysis(youtubeId: string, analysis: SourceAnaly
   }
 
   analysisCache.set(videoCacheKey(youtubeId, 'analysis'), analysis)
+
+  await saveVideoAnalysisLocal(youtubeId, analysis)
 
   const supabase = getSupabaseAdmin()
   if (!supabase) return

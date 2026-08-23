@@ -475,11 +475,14 @@ function buildRelationshipUserMessage(input: DiscoverRelationshipsInput): string
   ].join('\n\n')
 }
 
-function buildSynthesisUserMessage(input: RunSynthesisInput): string {
+function buildSynthesisUserMessage(
+  input: RunSynthesisInput,
+  options?: { compact?: boolean },
+): string {
   const mode = parseSynthesisMode(input.mode ?? DEFAULT_SYNTHESIS_MODE)
-  const fast = isSynthesisFastMode()
+  const fast = isSynthesisFastMode() || options?.compact
   const contexts = toSynthesisVideoContexts(input.sources, {
-    maxClaims: fast ? 5 : 6,
+    maxClaims: fast ? 4 : 6,
     maxEvidence: fast ? 1 : 2,
   })
   const parts = [
@@ -498,6 +501,12 @@ function buildSynthesisUserMessage(input: RunSynthesisInput): string {
 
   if (input.missingSourceIds?.length) {
     parts.push(`RETRY: Previous synthesis missed sources: ${input.missingSourceIds.join(', ')}.`)
+  }
+
+  if (options?.compact) {
+    parts.push(
+      'COMPACT MODE: Keep each field concise. Meet schema minimums only; avoid long prose.',
+    )
   }
 
   parts.push(
@@ -655,33 +664,54 @@ ${formatTranscript(input.transcript)}`
   },
 
   async runSynthesis(input: RunSynthesisInput): Promise<SynthesisResult> {
-    const user = buildSynthesisUserMessage(input)
     const system = withOutputLanguage(SYNTHESIS_SYSTEM_PROMPT, input.outputLanguage)
     const contexts = toSynthesisVideoContexts(input.sources, {
       maxClaims: isSynthesisFastMode() ? 5 : 6,
       maxEvidence: isSynthesisFastMode() ? 1 : 2,
     })
-    const parsed = await callStructured({
-      openai: getClient(),
-      role: 'synthesis',
-      operation: 'SYNTHESIS',
-      system,
-      user,
-      schema: SynthesisResultSchema,
-      schemaName: 'synthesis_result',
-      contextObjectSize: JSON.stringify({
-        contexts,
-        graph: compactRelationshipGraphForPrompt(input.graph),
-        setAnalysis: compactSetAnalysisForPrompt(input.setAnalysis ?? {
-          intersections: [],
-          differences: [],
-          contradictions: [],
-          noStrongIntersection: true,
-        }),
-      }).length,
-      maxOutputTokens: 3200,
-      retries: 1,
-    })
+    const contextPayload = JSON.stringify({
+      contexts,
+      graph: compactRelationshipGraphForPrompt(input.graph),
+      setAnalysis: compactSetAnalysisForPrompt(input.setAnalysis ?? {
+        intersections: [],
+        differences: [],
+        contradictions: [],
+        noStrongIntersection: true,
+      }),
+    }).length
+
+    let parsed: z.infer<typeof SynthesisResultSchema>
+    try {
+      parsed = await callStructured({
+        openai: getClient(),
+        role: 'synthesis',
+        operation: 'SYNTHESIS',
+        system,
+        user: buildSynthesisUserMessage(input),
+        schema: SynthesisResultSchema,
+        schemaName: 'synthesis_result',
+        contextObjectSize: contextPayload,
+        maxOutputTokens: 4096,
+        retries: 0,
+      })
+    } catch (firstError) {
+      console.warn(
+        '[SYNTHESIS] first attempt failed, retrying with compact context:',
+        firstError instanceof Error ? firstError.message : firstError,
+      )
+      parsed = await callStructured({
+        openai: getClient(),
+        role: 'synthesis',
+        operation: 'SYNTHESIS',
+        system,
+        user: buildSynthesisUserMessage(input, { compact: true }),
+        schema: SynthesisResultSchema,
+        schemaName: 'synthesis_result',
+        contextObjectSize: contextPayload,
+        maxOutputTokens: 4800,
+        retries: 0,
+      })
+    }
 
     const synthesis = normalizeSynthesisConclusionOutput(parsed.synthesis)
 

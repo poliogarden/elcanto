@@ -5,9 +5,9 @@ type Props = {
   className?: string
 }
 
-/** Constrains home content to editorial width on large screens */
+/** Constrains home content width on large screens */
 export function HomePageShell({ children, className = '' }: Props) {
   return (
-    <div className={`mx-auto w-full max-w-[1280px] px-5 md:px-6 ${className}`}>{children}</div>
+    <div className={`mx-auto w-full max-w-[1440px] px-4 sm:px-6 ${className}`}>{children}</div>
   )
 }

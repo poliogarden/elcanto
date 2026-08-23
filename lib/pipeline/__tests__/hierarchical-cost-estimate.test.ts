@@ -28,7 +28,9 @@ function estimateCallsForDuration(durationMinutes: number, charsPerMinute = 800)
 
   const sections = buildTranscriptSections(segments)
   const deepCalls = sections.length <= 3 ? sections.length : Math.min(5, sections.length)
-  const coverageCalls = sections.length <= 2 ? 0 : sections.length
+  const batchSize = 4
+  const coverageCalls =
+    sections.length <= 2 ? 0 : Math.ceil(sections.length / batchSize)
 
   return {
     sections: sections.length,
@@ -42,7 +44,7 @@ describe('hierarchical cost estimate', () => {
   it('covers full transcript for 50min with more calls than old 6-chunk sampling', () => {
     const est = estimateCallsForDuration(50)
     expect(est.sections).toBeGreaterThan(3)
-    expect(est.coverageCalls).toBe(est.sections)
+    expect(est.coverageCalls).toBe(Math.ceil(est.sections / 4))
     expect(est.totalVideoCalls).toBeGreaterThan(6)
   })
 

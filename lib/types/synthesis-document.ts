@@ -23,6 +23,8 @@ export type SynthesisDocument = {
   number: string
   createdAt: string
   topic?: string
+  /** User's ask prompt from the workspace tray */
+  userQuestion?: string
   status: SynthesisStatus
   voices: SynthesisVoiceEntry[]
   result?: SynthesisResult

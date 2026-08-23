@@ -5,6 +5,7 @@ type Props = {
   href?: string
   symbolSize?: number
   showTagline?: boolean
+  tagline?: string
   className?: string
 }
 
@@ -13,6 +14,7 @@ export function BrandLockup({
   href = '/',
   symbolSize = 36,
   showTagline = true,
+  tagline = 'Read three. Understand a fourth.',
   className = '',
 }: Props) {
   const wordmarkSize = Math.round(symbolSize * 0.92)
@@ -34,7 +36,7 @@ export function BrandLockup({
           className="mono-label mt-2 text-[10px] text-ink-soft md:text-[11px]"
           style={{ paddingLeft: taglinePad }}
         >
-          Read three. Understand a fourth.
+          {tagline}
         </span>
       )}
     </span>

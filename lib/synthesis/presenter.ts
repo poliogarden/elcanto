@@ -615,6 +615,7 @@ export function toSynthesisViewModel(doc: SynthesisDocument): SynthesisViewModel
     id: doc.id,
     number: doc.number,
     question: synth.topic,
+    userQuestion: doc.userQuestion,
     synthesisType: synth.synthesisType,
     synthesisTypeLabel: SYNTHESIS_TYPE_LABELS[synth.synthesisType],
     workspaceMode: workspaceMode(readyVoices.length),

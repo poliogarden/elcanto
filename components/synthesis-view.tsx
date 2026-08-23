@@ -79,11 +79,21 @@ export function SynthesisView({
       <section className="flex justify-end py-4">
         <ResultActions
           synthesisId={document.id}
+          view={view}
           saved={saved}
           saving={saving}
           onSave={() => void handleSave()}
         />
       </section>
+
+      {view.userQuestion && (
+        <section className="border-b border-line py-8 md:py-10">
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-soft">
+            {t('result.yourQuestion')}
+          </p>
+          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink">{view.userQuestion}</p>
+        </section>
+      )}
 
       <ResultHero
         view={view}

@@ -53,12 +53,19 @@ export async function callStructured<T>(input: {
         ...(input.maxOutputTokens != null ? { max_tokens: input.maxOutputTokens } : {}),
       })
 
-      const requestEnd = Date.now()
-      const parsed = completion.choices[0]?.message?.parsed
+      const choice = completion.choices[0]
+      const parsed = choice?.message?.parsed
       if (!parsed) {
+        const finishReason = choice?.finish_reason ?? 'unknown'
+        const refusal = choice?.message?.refusal ?? null
+        const rawContent = choice?.message?.content ?? null
+        console.warn(
+          `[LLM] empty parsed response operation=${input.operation} schema=${input.schemaName} attempt=${attempt} finish_reason=${finishReason} refusal=${refusal ? JSON.stringify(refusal).slice(0, 200) : 'none'} content_preview=${rawContent ? JSON.stringify(rawContent).slice(0, 300) : 'none'}`,
+        )
         throw new Error(`OpenAI returned empty parsed response for ${input.schemaName}.`)
       }
 
+      const requestEnd = Date.now()
       const usage = completion.usage
       const tokens = {
         inputTokens: usage?.prompt_tokens ?? null,

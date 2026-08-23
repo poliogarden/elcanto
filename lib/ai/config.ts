@@ -40,7 +40,7 @@ export const ANALYSIS_VERSION = '6'
 /** Bump when SourceAnalysis JSON shape changes. */
 export const ANALYSIS_SCHEMA_VERSION = '3'
 /** Bump when coverage pass prompt/schema changes. */
-export const COVERAGE_PROMPT_VERSION = '1'
+export const COVERAGE_PROMPT_VERSION = '2'
 
 export const AI_CONFIG = {
   defaultModel: DEFAULT_MODEL,
@@ -63,6 +63,8 @@ export const AI_CONFIG = {
   maxAnalyzeConcurrency: Number(process.env.SYNTHESIS_ANALYZE_CONCURRENCY ?? '4') || 4,
   /** Max deep sections per video when SYNTHESIS_FAST=1 */
   fastMaxDeepSections: 2,
+  /** Sections per coverage LLM call (batched pass) */
+  coverageBatchSize: Number(process.env.COVERAGE_BATCH_SIZE ?? '4') || 4,
 } as const
 
 export function isSynthesisFastMode(): boolean {
@@ -75,6 +77,12 @@ export function shouldRetrySynthesisCoverage(): boolean {
 
 export function maxDeepSectionsForAnalysis(): number {
   return isSynthesisFastMode() ? AI_CONFIG.fastMaxDeepSections : AI_CONFIG.maxDeepSections
+}
+
+export function coverageBatchSizeForAnalysis(): number {
+  const raw = AI_CONFIG.coverageBatchSize
+  if (!Number.isFinite(raw) || raw < 1) return 4
+  return Math.min(8, Math.floor(raw))
 }
 
 export function isAnalysisCacheCompatible(stored: {

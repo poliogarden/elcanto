@@ -63,8 +63,14 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
       async () => {
         let document = createSynthesisDocument(claimed.synthesisId, claimed.draft.voices)
         document.mode = resolveDraftSynthesisMode(claimed.draft)
-        const prompt = claimed.draft.customPrompt?.trim()
-        if (prompt) document.topic = prompt
+        const synthesisQuestion = resolveDraftQuestion(claimed.draft)
+        if (synthesisQuestion) {
+          document = {
+            ...document,
+            userQuestion: synthesisQuestion,
+            topic: synthesisQuestion,
+          }
+        }
         document.status = 'analyzing'
 
         await updateSynthesisJob(jobId, {
@@ -196,7 +202,6 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
         })
 
         const individualAnalysisMs = Date.now() - analyzeStartedAt
-        const synthesisQuestion = resolveDraftQuestion(claimed.draft)
         const outputLanguage = claimed.draft.outputLanguage
 
         const { result, perfSummary } = await synthesizeCollectionWithCost({
@@ -229,6 +234,7 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
           status: 'complete',
           result,
           topic: getSynthesisTopic(result),
+          userQuestion: document.userQuestion ?? synthesisQuestion,
         }
 
         await updateSynthesisJob(jobId, {

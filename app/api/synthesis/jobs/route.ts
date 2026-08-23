@@ -43,9 +43,9 @@ export async function POST(request: Request) {
     }
 
     const draft = normalizeSynthesisDraft(body.draft)
-    if (!draft || draft.voices.length < 2) {
+    if (!draft || draft.voices.length < 1) {
       return NextResponse.json(
-        { error: 'At least two voices are required in draft.' },
+        { error: 'At least one voice is required in draft.' },
         { status: 400 },
       )
     }

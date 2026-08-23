@@ -271,6 +271,7 @@ export type SynthesisViewModel = {
   id: string
   number: string
   question: string
+  userQuestion?: string
   synthesisType: SynthesisType
   synthesisTypeLabel: string
   workspaceMode: WorkspaceMode
