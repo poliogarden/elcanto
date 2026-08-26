@@ -413,6 +413,23 @@ export const ko: Messages = {
   explore: {
     debugInspect: 'DEBUG / INSPECT',
   },
+  reasoningGraph: {
+    title: '관계 지도',
+    subtitle: '영상 간 합의, 갈등, 공백을 탐색합니다.',
+    sparse: '검증된 교차 출처 관계가 없습니다',
+  },
+  explorer: {
+    title: '관계 탐색기',
+    subtitle: '영상 간 주장 연결 — 클릭하여 근거를 확인하세요.',
+    filterAll: '전체',
+    filterAgree: '합의',
+    filterDivide: '갈등',
+    filterGap: '공백',
+    reset: '초기화',
+    advancedHint: '진단, 거부된 후보, 전체 주장 목록을 감사용으로 확인합니다.',
+    claimsInPattern: '이 패턴의 주장',
+    emergentTitle: '함께 보일 때만 드러나는 것',
+  },
   i18n: {
     switchLanguage: '화면 언어 전환',
   },

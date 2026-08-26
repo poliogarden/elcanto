@@ -1,4 +1,5 @@
 import type { SynthesisResult } from '@/lib/types/analysis'
+import { getSynthesisTopic } from '@/lib/types/analysis'
 import { sourceFromVoice } from '@/lib/types/source'
 import type { Source, SourceAnalysis, SourceFailure } from '@/lib/types/source'
 import type { Voice } from '@/lib/types/voice'
@@ -28,6 +29,12 @@ export type SynthesisDocument = {
   status: SynthesisStatus
   voices: SynthesisVoiceEntry[]
   result?: SynthesisResult
+  /** Survival Test cross-video analysis (2–6 videos) — legacy */
+  survival?: import('@/lib/survival/types').SurvivalAnalysis
+  /** Multi-source reasoning engine output */
+  reasoning?: import('@/lib/reasoning/types').ReasoningAnalysis
+  /** Live survival pipeline phase during job processing */
+  survivalProgressPhase?: import('@/lib/survival/pipeline').SurvivalProgressPhase
   synthesisError?: string
   savedToArchive?: boolean
   userId?: string
@@ -35,6 +42,8 @@ export type SynthesisDocument = {
   previousFourthIdea?: SynthesisResult['fourthIdea']
   /** Synthesis mode — defaults to discover */
   mode?: import('@/lib/types/synthesis-mode').SynthesisMode
+  /** Browser cache tier — slim docs need server hydration for full board data */
+  storageTier?: import('@/lib/storage/synthesis-document-storage').SynthesisStorageTier
 }
 
 export type DraftVoiceInput = {
@@ -71,4 +80,22 @@ export function countReadyVoices(doc: SynthesisDocument): number {
 
 export function countFailedVoices(doc: SynthesisDocument): number {
   return doc.voices.filter((v) => v.error).length
+}
+
+export function isCompleteDocument(doc: SynthesisDocument): boolean {
+  return doc.status === 'complete' && Boolean(doc.result ?? doc.survival ?? doc.reasoning)
+}
+
+export function getDocumentTopic(doc: SynthesisDocument): string {
+  if (doc.reasoning?.mode === 'multi' && doc.reasoning.judgment?.statement) {
+    return doc.reasoning.judgment.statement
+  }
+  if (doc.reasoning?.mode === 'single') {
+    return doc.reasoning.keyInsight ?? doc.reasoning.summary
+  }
+  if (doc.survival?.synthesis.headline) return doc.survival.synthesis.headline
+  if (doc.topic) return doc.topic
+  if (doc.result) return getSynthesisTopic(doc.result)
+  if (doc.userQuestion) return doc.userQuestion
+  return doc.number
 }

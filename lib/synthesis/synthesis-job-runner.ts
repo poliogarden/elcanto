@@ -1,15 +1,15 @@
 import { AI_CONFIG } from '@/lib/ai/config'
 import { runWithAIContext } from '@/lib/ai/usage/context'
 import { analyzeOneSource } from '@/lib/pipeline/analyze-source'
-import { synthesizeCollectionWithCost } from '@/lib/pipeline/synthesize-collection'
+import { runReasoningPipeline } from '@/lib/reasoning/pipeline'
+import { runSingleSourceReasoning } from '@/lib/reasoning/single-source'
+import type { ReasoningProgressPhase } from '@/lib/reasoning/types'
 import type { SynthesisJobPhase } from '@/lib/synthesis/synthesis-job-types'
 import {
   loadSynthesisJob,
   tryClaimSynthesisJob,
   updateSynthesisJob,
 } from '@/lib/synthesis/synthesis-job-repository'
-import type { SynthesisProgressPhase } from '@/lib/synthesis/progress-events'
-import { getSynthesisTopic } from '@/lib/types/analysis'
 import {
   createSynthesisDocument,
   type SynthesisDocument,
@@ -25,24 +25,6 @@ import { mapWithConcurrency } from '@/lib/utils/concurrency'
 import { synthesisLog } from '@/lib/synthesis/logger'
 
 const inflightRunners = new Set<string>()
-
-function mapProgressPhaseToJobPhase(phase: SynthesisProgressPhase): SynthesisJobPhase {
-  switch (phase) {
-    case 'relationship':
-    case 'combined_analysis':
-    case 'set_analysis':
-      return 'connecting'
-    case 'emergent_insight':
-      return 'synthesizing'
-    case 'fourth_idea':
-      return 'exploring'
-    case 'insight_map':
-    case 'db_save':
-      return 'exploring'
-    default:
-      return 'synthesizing'
-  }
-}
 
 export async function runSynthesisJob(jobId: string): Promise<void> {
   if (inflightRunners.has(jobId)) return
@@ -204,55 +186,120 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
         const individualAnalysisMs = Date.now() - analyzeStartedAt
         const outputLanguage = claimed.draft.outputLanguage
 
-        const { result, perfSummary } = await synthesizeCollectionWithCost({
-          question: synthesisQuestion,
-          sources: analyses,
-          failedSources: failures,
-          requestId,
-          synthesisId: document.id,
-          mode: document.mode ?? 'discover',
-          outputLanguage,
-          deferKnowledgeExtension: true,
-          onProgress: (event) => {
-            if (event.type === 'phase' && event.status === 'start') {
-              const phase = mapProgressPhaseToJobPhase(event.phase)
-              void updateSynthesisJob(jobId, { phase })
-            }
-          },
-        })
+        const useReasoning = analyses.length >= 2
 
-        const enrichedPerf = perfSummary
-          ? {
-              ...perfSummary,
+        if (useReasoning) {
+          const voiceMeta = document.voices
+            .filter((v) => v.analysis)
+            .map((v) => ({ channel: v.voice.channel, thumbnail: v.voice.thumbnail }))
+
+          const reasoning = await runReasoningPipeline({
+            sources: analyses,
+            voices: voiceMeta,
+            userQuestion: synthesisQuestion,
+            outputLanguage: outputLanguage ?? undefined,
+            onProgress: (event) => {
+              if (event.type === 'phase') {
+                const phaseMap: Partial<Record<ReasoningProgressPhase, typeof document.survivalProgressPhase>> =
+                  {
+                    source_ingest: 'coherence',
+                    clustering: 'coherence',
+                    alignment: 'claims',
+                    relationships: 'relationships',
+                    verification: 'verification',
+                    patterns: 'synthesis',
+                    synthesis: 'synthesis',
+                    judgment: 'synthesis',
+                    emergent: 'synthesis',
+                    critic: 'synthesis',
+                  }
+                const jobPhase =
+                  event.phase === 'source_ingest' || event.phase === 'clustering'
+                    ? 'connecting'
+                    : event.phase === 'relationships' || event.phase === 'verification'
+                      ? 'connecting'
+                      : 'synthesizing'
+
+                if (event.status === 'start') {
+                  void updateSynthesisJob(jobId, {
+                    phase: jobPhase,
+                    document: {
+                      ...document,
+                      status: 'synthesizing',
+                      survivalProgressPhase: phaseMap[event.phase] ?? 'synthesis',
+                    },
+                  })
+                }
+              }
+            },
+          })
+
+          const finalDoc: SynthesisDocument = {
+            ...document,
+            status: 'complete',
+            reasoning,
+            topic: reasoning.judgment?.statement ?? reasoning.centralQuestion,
+            userQuestion: document.userQuestion ?? synthesisQuestion,
+          }
+
+          await updateSynthesisJob(jobId, {
+            status: 'completed',
+            phase: 'complete',
+            document: finalDoc,
+            perfSummary: {
+              phases: [],
+              totalMs: Date.now() - analyzeStartedAt,
+              stagesMs: 0,
+              llmCalls: 0,
+              inputTokens: 0,
+              outputTokens: 0,
+              estimatedCostUsd: null,
+              cachedSources: 0,
+              uncachedSources: analyses.length,
               individualAnalysisMs,
-              endToEndMs: individualAnalysisMs + perfSummary.totalMs,
-            }
-          : undefined
+              endToEndMs: Date.now() - analyzeStartedAt,
+            },
+            completedAt: new Date().toISOString(),
+            error: undefined,
+          })
 
-        const finalDoc: SynthesisDocument = {
-          ...document,
-          status: 'complete',
-          result,
-          topic: getSynthesisTopic(result),
-          userQuestion: document.userQuestion ?? synthesisQuestion,
+          synthesisLog('reasoning-job-complete', {
+            jobId,
+            synthesisId: claimed.synthesisId,
+            voices: voiceTotal,
+            analyzed: analyses.length,
+            relationships: reasoning.relationships.length,
+            patterns: reasoning.patterns.length,
+            insights: reasoning.insights.length,
+            excluded: reasoning.excludedSources.length,
+          })
+          return
         }
 
-        await updateSynthesisJob(jobId, {
-          status: 'completed',
-          phase: 'complete',
-          document: finalDoc,
-          result,
-          perfSummary: enrichedPerf,
-          completedAt: new Date().toISOString(),
-          error: undefined,
-        })
+        if (analyses.length === 1) {
+          const single = runSingleSourceReasoning({ source: analyses[0] })
+          const finalDoc: SynthesisDocument = {
+            ...document,
+            status: 'complete',
+            reasoning: single,
+            topic: single.keyInsight ?? single.summary,
+            userQuestion: document.userQuestion ?? synthesisQuestion,
+          }
 
-        synthesisLog('synthesis-job-complete', {
-          jobId,
-          synthesisId: claimed.synthesisId,
-          voices: voiceTotal,
-          analyzed: analyses.length,
-        })
+          await updateSynthesisJob(jobId, {
+            status: 'completed',
+            phase: 'complete',
+            document: finalDoc,
+            completedAt: new Date().toISOString(),
+            error: undefined,
+          })
+
+          synthesisLog('single-source-reasoning-complete', {
+            jobId,
+            synthesisId: claimed.synthesisId,
+          })
+          return
+        }
       },
     )
   } catch (error) {

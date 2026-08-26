@@ -19,6 +19,8 @@ type Props = {
   onRemove: (id: string) => void
   onClearAll: () => void
   onRun: () => void
+  /** In-flow layout above page footer instead of fixed overlay */
+  inline?: boolean
 }
 
 function Thumb({ voice }: { voice: Voice }) {
@@ -50,6 +52,7 @@ function ComposerPanel({
   onRun,
   expanded,
   onToggleExpand,
+  inline = false,
 }: Props & { expanded: boolean; onToggleExpand: () => void }) {
   const { t } = useTranslation()
   const isSingle = voices.length === 1
@@ -66,7 +69,13 @@ function ComposerPanel({
   const ctaLabel = isSingle ? t('workspace.askAction') : t('workspace.synthesizeAction')
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line/60 bg-background/95 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] backdrop-blur-xl">
+    <div
+      className={
+        inline
+          ? 'border-t border-line/60 bg-background'
+          : 'fixed inset-x-0 bottom-0 z-50 border-t border-line/60 bg-background/95 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] backdrop-blur-xl'
+      }
+    >
       <div className="mx-auto w-full max-w-[1440px] px-4 py-3 sm:px-6">
         {/* Mobile collapsed bar */}
         <button
@@ -154,6 +163,7 @@ function ComposerPanel({
 export function SelectionComposer(props: Props) {
   const [mounted, setMounted] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const inline = props.inline ?? false
 
   useEffect(() => {
     setMounted(true)
@@ -166,14 +176,17 @@ export function SelectionComposer(props: Props) {
   if (props.voices.length < 1) return null
   if (!mounted) return null
 
-  return createPortal(
+  const panel = (
     <ComposerPanel
       {...props}
       expanded={expanded}
       onToggleExpand={() => setExpanded((v) => !v)}
-    />,
-    document.body,
+    />
   )
+
+  if (inline) return panel
+
+  return createPortal(panel, document.body)
 }
 
 /** @deprecated */

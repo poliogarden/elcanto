@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   countFailedVoices,
   countReadyVoices,
+  isCompleteDocument,
   type SynthesisDocument,
 } from '@/lib/types/synthesis-document'
 import {
@@ -42,9 +43,13 @@ function uiPhaseFromJob(job: SynthesisJobPublic): 'analyzing' | 'synthesizing' |
   return 'synthesizing'
 }
 
-function synthesisStepFromJobPhase(phase: SynthesisJobPhase): number {
+function synthesisStepFromJob(
+  phase: SynthesisJobPhase,
+  survivalPhase?: SynthesisDocument['survivalProgressPhase'],
+): number {
   switch (phase) {
     case 'connecting':
+      if (survivalPhase === 'verification' || survivalPhase === 'synthesis') return 1
       return 0
     case 'synthesizing':
     case 'exploring':
@@ -56,7 +61,16 @@ function synthesisStepFromJobPhase(phase: SynthesisJobPhase): number {
   }
 }
 
-function backendPhaseFromJobPhase(phase: SynthesisJobPhase): SynthesisProgressPhase | null {
+function backendPhaseFromJob(
+  phase: SynthesisJobPhase,
+  survivalPhase?: SynthesisDocument['survivalProgressPhase'],
+): SynthesisProgressPhase | null {
+  if (survivalPhase === 'relationships' || survivalPhase === 'verification') {
+    return 'relationship'
+  }
+  if (survivalPhase === 'synthesis') {
+    return 'emergent_insight'
+  }
   switch (phase) {
     case 'connecting':
       return 'relationship'
@@ -87,7 +101,9 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
   const total = doc?.voices.length ?? job?.analyzeTotal ?? 0
   const ready = doc ? countReadyVoices(doc) : job?.analyzeCompleted ?? 0
   const failed = doc ? countFailedVoices(doc) : 0
-  const synthesisStep = job ? synthesisStepFromJobPhase(job.phase) : 0
+  const synthesisStep = job
+    ? synthesisStepFromJob(job.phase, job.document?.survivalProgressPhase)
+    : 0
   const canvasPhase = phase === 'complete' ? 'complete' : 'processing'
   const statusLabel = job ? jobPhaseLabel(job) : creatingJob ? 'QUEUED' : 'QUEUED'
 
@@ -223,7 +239,7 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
       return
     }
 
-    if (job.status !== 'completed' || !job.document?.result) return
+    if (job.status !== 'completed' || !job.document || !isCompleteDocument(job.document)) return
 
     completedHandled.current = true
     const finalDoc = job.document
@@ -244,7 +260,9 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
   }, [job, router, synthesisId, t])
 
   const analyzingIndex = job?.analyzeCompleted ?? 0
-  const backendPhase = job ? backendPhaseFromJobPhase(job.phase) : null
+  const backendPhase = job
+    ? backendPhaseFromJob(job.phase, job.document?.survivalProgressPhase)
+    : null
 
   return (
     <section className="mx-auto w-full max-w-[1280px] px-5 py-4 md:px-6 md:py-6">

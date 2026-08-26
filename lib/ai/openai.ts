@@ -53,6 +53,10 @@ function getClient(): OpenAI {
   return client
 }
 
+export function getOpenAIClient(): OpenAI {
+  return getClient()
+}
+
 const EvidenceSchema = z.object({
   id: z.string(),
   timestamp: z.number(),

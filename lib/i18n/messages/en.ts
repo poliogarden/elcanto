@@ -400,6 +400,23 @@ export const en = {
   explore: {
     debugInspect: 'DEBUG / INSPECT',
   },
+  reasoningGraph: {
+    title: 'REASONING MAP',
+    subtitle: 'Explore agreements, divisions, and gaps across sources.',
+    sparse: 'No verified cross-source relationships',
+  },
+  explorer: {
+    title: 'RELATIONSHIP EXPLORER',
+    subtitle: 'How claims connect across videos — click to explore evidence.',
+    filterAll: 'All',
+    filterAgree: 'Agree',
+    filterDivide: 'Divide',
+    filterGap: 'Gaps',
+    reset: 'Reset',
+    advancedHint: 'Diagnostics, rejected candidates, and full claim lists for audit.',
+    claimsInPattern: 'Claims in this pattern',
+    emergentTitle: 'What only appears together',
+  },
   i18n: {
     switchLanguage: 'Switch interface language',
   },

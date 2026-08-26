@@ -6,13 +6,27 @@ import { useEffect, useMemo, useState } from 'react'
 import { BrandFooter } from '@/components/brand/brand-footer'
 import { HomePageShell } from '@/components/home/home-page-shell'
 import { Masthead } from '@/components/masthead'
+import { SingleSourceBoard } from '@/components/reasoning/single-source-board'
+import { SurvivalBoard } from '@/components/survival/survival-board'
 import { SynthesisView } from '@/components/synthesis-view'
 import { SynthesisPerfDebug } from '@/components/synthesis/synthesis-perf-debug'
-import { useDeferredKnowledgeExtension } from '@/components/synthesis/use-deferred-knowledge-extension'
-import { loadSynthesisDocument } from '@/lib/storage/synthesis-session'
+import { getBoardSurvival } from '@/lib/reasoning/adapter-survival'
+import { isSynthesisDocumentHydrated } from '@/lib/storage/synthesis-document-storage'
+import { loadSynthesisDocument, saveSynthesisDocument } from '@/lib/storage/synthesis-session'
+import { fetchSynthesisJobBySynthesisId } from '@/lib/synthesis/synthesis-job-client'
 import { useTranslation } from '@/lib/i18n/locale-context'
 import type { SynthesisDocument } from '@/lib/types/synthesis-document'
 import { toSynthesisViewModel } from '@/lib/synthesis/presenter'
+
+function SynthesisPageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="flex min-h-screen flex-col bg-background font-ui">
+      <Masthead />
+      <div className="flex-1">{children}</div>
+      <BrandFooter />
+    </main>
+  )
+}
 
 export default function SynthesisPage() {
   const { t } = useTranslation()
@@ -20,16 +34,26 @@ export default function SynthesisPage() {
   const id = params.id as string
   const [doc, setDoc] = useState<SynthesisDocument | null>(null)
 
-  useDeferredKnowledgeExtension(doc, setDoc)
-
-  const view = useMemo(() => (doc ? toSynthesisViewModel(doc) : null), [doc])
+  const view = doc?.result ? toSynthesisViewModel(doc) : null
+  const boardSurvival = useMemo(() => (doc ? getBoardSurvival(doc) : null), [doc])
 
   useEffect(() => {
     async function load() {
       const local = loadSynthesisDocument(id)
-      if (local) {
+      if (local && isSynthesisDocumentHydrated(local)) {
         setDoc(local)
         return
+      }
+
+      try {
+        const job = await fetchSynthesisJobBySynthesisId(id)
+        if (job?.document) {
+          setDoc(job.document)
+          saveSynthesisDocument(job.document)
+          return
+        }
+      } catch {
+        // fall through
       }
 
       try {
@@ -38,12 +62,19 @@ export default function SynthesisPage() {
           const data = (await res.json()) as { document?: SynthesisDocument }
           if (data.document) {
             setDoc(data.document)
+            saveSynthesisDocument(data.document)
             return
           }
         }
       } catch {
         // fall through
       }
+
+      if (local) {
+        setDoc(local)
+        return
+      }
+
       setDoc(null)
     }
     void load()
@@ -51,41 +82,53 @@ export default function SynthesisPage() {
 
   if (!doc) {
     return (
-      <main className="min-h-screen bg-background">
-        <Masthead />
+      <SynthesisPageShell>
         <HomePageShell className="flex min-h-[40vh] flex-col items-center justify-center py-16 text-center">
-          <p className="mono-label text-xs text-ink-soft">{t('errors.synthesisNotFound')}</p>
-          <Link href="/" className="mono-label mt-4 inline-block text-xs text-ink hover:opacity-60">
+          <p className="text-sm text-ink-soft">{t('errors.synthesisNotFound')}</p>
+          <Link href="/" className="mt-4 text-sm font-medium text-ink hover:opacity-60">
             {t('errors.startNew')}
           </Link>
         </HomePageShell>
-      </main>
+      </SynthesisPageShell>
+    )
+  }
+
+  if (doc.reasoning?.mode === 'single') {
+    return (
+      <SynthesisPageShell>
+        <SingleSourceBoard reasoning={doc.reasoning} document={doc} />
+      </SynthesisPageShell>
+    )
+  }
+
+  if (boardSurvival) {
+    return (
+      <SynthesisPageShell>
+        <SurvivalBoard survival={boardSurvival} document={doc} />
+      </SynthesisPageShell>
     )
   }
 
   if (!view) {
     return (
-      <main className="min-h-screen bg-background">
-        <Masthead />
+      <SynthesisPageShell>
         <HomePageShell className="flex min-h-[40vh] flex-col items-center justify-center py-16 text-center">
-          <p className="mono-label text-xs text-ink-soft">{t('errors.stillProcessing')}</p>
+          <p className="text-sm text-ink-soft">{t('errors.stillProcessing')}</p>
           <Link
             href={`/synthesize/${id}`}
-            className="mono-label mt-4 inline-block text-xs text-ink hover:opacity-60"
+            className="mt-4 text-sm font-medium text-ink hover:opacity-60"
           >
             {t('errors.returnPipeline')}
           </Link>
         </HomePageShell>
-      </main>
+      </SynthesisPageShell>
     )
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      <Masthead />
+    <SynthesisPageShell>
       <SynthesisPerfDebug synthesisId={id} />
       <SynthesisView view={view} document={doc} />
-      <BrandFooter />
-    </main>
+    </SynthesisPageShell>
   )
 }
