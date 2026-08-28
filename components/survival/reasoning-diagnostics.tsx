@@ -120,6 +120,28 @@ export function ReasoningDiagnosticsPanel({ reasoning, analysis }: Props) {
         </div>
       )}
 
+      {d.comparableClaimFunnel && (
+        <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+          <p className="text-[10px] font-semibold text-ink-soft">CLAIM FUNNEL</p>
+          <div className="mt-2 grid gap-1 text-xs text-ink-soft sm:grid-cols-2">
+            <span>Extracted: {stats?.claimsExtracted ?? '—'}</span>
+            <span>Topic relevant: {stats?.topicRelevant ?? d.relevanceFunnel?.topicRelevant ?? '—'}</span>
+            <span>Primary: {stats?.claimsPrimaryTier ?? '—'}</span>
+            <span>Supporting: {stats?.claimsSupportingTier ?? '—'}</span>
+            <span>Peripheral: {stats?.claimsPeripheralTier ?? '—'}</span>
+            <span>Relevance usable: {stats?.funnelFinalUsable ?? '—'}</span>
+            <span>Comparable: {d.comparableClaimFunnel.comparable}</span>
+            <span>Generation eligible: {d.comparableClaimFunnel.generationEligible}</span>
+            <span>High confidence (strict): {d.comparableClaimFunnel.highConfidence}</span>
+            <span>Limited: {d.comparableClaimFunnel.limited}</span>
+            <span>Excluded: {d.comparableClaimFunnel.excluded}</span>
+            {d.comparableClaimFunnel.recoveryRecovered > 0 && (
+              <span>Recovery restored: {d.comparableClaimFunnel.recoveryRecovered}</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {d.candidateFunnel && (
         <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
           <p className="text-[10px] font-semibold text-ink-soft">PIPELINE FUNNEL</p>
@@ -184,8 +206,9 @@ export function ReasoningDiagnosticsPanel({ reasoning, analysis }: Props) {
                 <li key={row.sourceId} className="rounded border border-line/50 px-2 py-1">
                   <span className="font-mono text-ink">{row.sourceId}</span>
                   <p>
-                    extracted {row.extracted} · usable {row.relevanceUsable} · accepted{' '}
-                    {row.qualityAccepted} · generation {row.generationClaims}
+                    extracted {row.extracted} · usable {row.relevanceUsable} · comparable{' '}
+                    {row.comparable} · strict accepted {row.qualityAccepted} · generation{' '}
+                    {row.generationClaims}
                   </p>
                   <p>
                     pairs {row.candidatePairsAsMember} · verified {row.verifiedRelationships} ·
@@ -198,13 +221,189 @@ export function ReasoningDiagnosticsPanel({ reasoning, analysis }: Props) {
         </div>
       )}
 
+      {d.verificationDiagnosticsBundle && (
+        <>
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">VERIFICATION REJECTIONS</p>
+            <ul className="mt-2 space-y-1 text-xs text-ink-soft">
+              {Object.entries(d.verificationDiagnosticsBundle.rejectionDistribution)
+                .sort((a, b) => b[1] - a[1])
+                .map(([reason, count]) => (
+                  <li key={reason}>
+                    <span className="font-mono text-ink">{reason}</span> · {count}
+                  </li>
+                ))}
+              {Object.keys(d.verificationDiagnosticsBundle.rejectionDistribution).length === 0 && (
+                <li>No rejections recorded</li>
+              )}
+            </ul>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">CROSS-SOURCE MATRIX</p>
+            <ul className="mt-2 space-y-2 text-[10px] text-ink-soft">
+              {d.verificationDiagnosticsBundle.crossSourceMatrix.map((row) => (
+                <li key={`${row.sourceA}-${row.sourceB}`} className="rounded border border-line/50 px-2 py-1">
+                  <span className="font-mono text-ink">
+                    {row.labelA} ↔ {row.labelB}
+                  </span>
+                  <p>
+                    possible {row.possiblePairs} · candidates {row.generatedCandidates} · verified{' '}
+                    {row.verifiedRelationships}
+                    {row.topRejectionReason ? ` · top reject ${row.topRejectionReason}` : ''}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">CLAIM SPECIFICITY BY SOURCE</p>
+            <ul className="mt-2 space-y-2 text-[10px] text-ink-soft">
+              {d.verificationDiagnosticsBundle.claimSpecificityBySource.map((row) => (
+                <li key={row.sourceId} className="rounded border border-line/50 px-2 py-1">
+                  <span className="font-mono text-ink">V{row.voiceIndex}</span>
+                  <p>
+                    Specific {row.specific} · General {row.general} · Hype {row.hype} · Meta{' '}
+                    {row.meta} · Procedural {row.procedural} · Observational {row.observational}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">EVIDENCE COVERAGE</p>
+            {d.evidenceCoverage ? (
+              <>
+                <p className="mt-1 text-[10px] text-ink-soft">
+                  Extracted {d.evidenceCoverage.extracted} · Direct {d.evidenceCoverage.direct} ·
+                  Paraphrase {d.evidenceCoverage.paraphrase} · Context {d.evidenceCoverage.context}{' '}
+                  · No evidence {d.evidenceCoverage.noEvidence}
+                </p>
+                <p className="mt-1 text-[10px] text-ink-soft">
+                  Reasoning eligible {d.evidenceCoverage.reasoningEligible} · excluded{' '}
+                  {d.evidenceCoverage.reasoningExcluded} · generation with evidence{' '}
+                  {d.evidenceCoverage.generationWithEvidence}/{d.evidenceCoverage.generationTotal}
+                </p>
+                <ul className="mt-2 space-y-2 text-[10px] text-ink-soft">
+                  {d.evidenceCoverage.bySource.map((row) => (
+                    <li key={row.sourceId} className="rounded border border-line/50 px-2 py-1">
+                      <span className="font-mono text-ink">V{row.voiceIndex}</span>
+                      <p>
+                        Direct {row.direct} · Paraphrase {row.paraphrase} · Context {row.context}{' '}
+                        · None {row.noEvidence} · eligible {row.reasoningEligible}
+                      </p>
+                      <p>
+                        gen w/ evidence {row.generationWithEvidence} · gen no evidence{' '}
+                        {row.generationNoEvidence}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="mt-1 text-[10px] text-ink-soft">No evidence coverage data.</p>
+            )}
+          </div>
+
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">CLAIM EVIDENCE BY SOURCE</p>
+            <p className="mt-1 text-[10px] text-ink-soft">
+              Generation: {d.verificationDiagnosticsBundle.generationClaimEvidence.withDirectOrParaphrase}{' '}
+              with direct/paraphrase ·{' '}
+              {d.verificationDiagnosticsBundle.generationClaimEvidence.withoutEvidence} no evidence
+            </p>
+            <ul className="mt-2 space-y-2 text-[10px] text-ink-soft">
+              {d.verificationDiagnosticsBundle.claimEvidenceBySource.map((row) => (
+                <li key={row.sourceId} className="rounded border border-line/50 px-2 py-1">
+                  <span className="font-mono text-ink">V{row.voiceIndex}</span>
+                  <p>
+                    Direct {row.directEvidence} · Paraphrase {row.paraphraseSupported} · Context{' '}
+                    {row.contextSupported} · None {row.noEvidence}
+                  </p>
+                  <p>
+                    gen w/ evidence {row.generationDirectOrParaphrase} · gen no evidence{' '}
+                    {row.generationNoEvidence}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-line bg-background/60 p-3">
+            <p className="text-[10px] font-semibold text-ink-soft">TOP CROSS-SOURCE CANDIDATES</p>
+            <ul className="mt-2 max-h-96 space-y-3 overflow-y-auto text-[10px] text-ink-soft">
+              {d.verificationDiagnosticsBundle.topCandidates.map((row) => (
+                <li key={row.candidateId} className="rounded border border-line/50 px-2 py-2">
+                  <p className="font-mono text-ink">#{row.rank} · score {row.candidateScore.toFixed(3)}</p>
+                  <p className="mt-1 text-ink">
+                    V{row.voiceA}: {row.claimA}
+                  </p>
+                  <p className="mt-1 text-ink">
+                    V{row.voiceB}: {row.claimB}
+                  </p>
+                  <p className="mt-1">
+                    Candidate: {row.proposedType} ({row.predictedRelationship}) · origin {row.origin}
+                  </p>
+                  <p>
+                    Semantic {row.semanticSimilarity.toFixed(2)} · Topic {row.topicSimilarity.toFixed(2)}{' '}
+                    · Subject {row.subjectSimilarity.toFixed(2)} · Predicate{' '}
+                    {row.predicateSimilarity.toFixed(2)} · Polarity {row.polarityCompatibility}
+                  </p>
+                  <p>
+                    Evidence: {row.claimAEvidenceStatus}/{row.claimBEvidenceStatus} · Fidelity:{' '}
+                    {row.claimAFidelity ?? '—'}/{row.claimBFidelity ?? '—'}
+                  </p>
+                  <p className="mt-1 font-medium text-ink">
+                    Verification: {row.verificationResult}
+                    {row.verificationRejectionReason ? ` — ${row.verificationRejectionReason}` : ''}
+                  </p>
+                  <p>
+                    Score {row.finalVerificationScore.toFixed(2)} / threshold{' '}
+                    {row.requiredThreshold.toFixed(2)}
+                    {row.verificationStage ? ` · ${row.verificationStage}` : ''}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-[10px] font-semibold text-ink-soft">
+              CANDIDATE AUDIT ({d.verificationDiagnosticsBundle.candidateAudit.length} pairs)
+            </p>
+            <ul className="mt-2 max-h-[32rem] space-y-2 overflow-y-auto text-[10px] text-ink-soft">
+              {d.verificationDiagnosticsBundle.candidateAudit.map((row) => (
+                <li key={row.candidateId} className="rounded border border-line/50 px-2 py-1">
+                  <span className="font-mono text-ink">{row.candidateId}</span> · V{row.voiceA}↔V
+                  {row.voiceB} · {row.origin} · {row.proposedType} · score{' '}
+                  {row.candidateScore.toFixed(3)}
+                  <p className="mt-0.5 text-ink">{row.claimA}</p>
+                  <p className="text-ink">{row.claimB}</p>
+                  <p>
+                    ev {row.claimAEvidenceStatus}/{row.claimBEvidenceStatus} · fidelity{' '}
+                    {row.claimAFidelity ?? '—'}/{row.claimBFidelity ?? '—'} · semantic{' '}
+                    {row.semanticSimilarity.toFixed(2)} · verify {row.verificationResult}
+                    {row.verificationRejectionReason ? ` ${row.verificationRejectionReason}` : ''} ·
+                    align {row.finalVerificationScore.toFixed(2)}/{row.requiredThreshold.toFixed(2)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+
       {d.pipelineWarnings && d.pipelineWarnings.length > 0 && (
         <div className="mt-4 rounded-lg border border-coral/40 bg-coral/5 p-3">
           <p className="text-[10px] font-semibold text-coral">PIPELINE WARNINGS</p>
           <ul className="mt-2 space-y-1 text-xs text-ink">
             {d.pipelineWarnings.map((w, i) => (
               <li key={i}>
-                {w.code === 'CROSS_SOURCE_CANDIDATE_COLLAPSE' ? '⚠ ' : ''}
+                {(w.code === 'CROSS_SOURCE_CANDIDATE_COLLAPSE' ||
+                  w.code === 'CANDIDATE_VERIFICATION_COLLAPSE') &&
+                  '⚠ '}
                 {w.code}: {w.message}
               </li>
             ))}
@@ -238,13 +437,17 @@ export function ReasoningDiagnosticsPanel({ reasoning, analysis }: Props) {
           </p>
           <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto text-[10px] text-ink-soft">
             {d.claimTransitionDiagnostics
-              .filter((r) => r.usable || r.qualityAccepted || r.inGenerationSet)
+              .filter((r) => r.usable || r.comparable || r.inGenerationSet)
               .slice(0, 40)
               .map((row) => (
                 <li key={row.claimId} className="rounded border border-line/50 px-2 py-1">
                   <span className="font-mono text-ink">{row.sourceId}</span> · {row.tier} ·
-                  usable {row.usable ? '✓' : '×'} · accepted {row.qualityAccepted ? '✓' : '×'}
+                  usable {row.usable ? '✓' : '×'} · comparable {row.comparable ? '✓' : '×'}
+                  {row.comparisonEligibility ? ` · ${row.comparisonEligibility}` : ''}
+                  {row.evidenceStrength ? ` · ev ${row.evidenceStrength}` : ''}
+                  · strict {row.qualityAccepted ? '✓' : '×'}
                   {row.qualityRejectionReason ? ` · ${row.qualityRejectionReason}` : ''}
+                  {row.poolDropReason ? ` · pool ${row.poolDropReason}` : ''}
                   {row.fidelityStatus ? ` · fidelity ${row.fidelityStatus}` : ''}
                   {row.fidelityMutation?.length ? ` · ${row.fidelityMutation.join(',')}` : ''}
                   {row.inGenerationSet ? ' · IN GENERATION' : ''}

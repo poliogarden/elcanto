@@ -5,6 +5,8 @@ import type { StructuredClaim } from '@/lib/types/relationship'
 import { ANALYSIS_SCHEMA_VERSION, ANALYSIS_VERSION } from '@/lib/ai/config'
 import { mergeChunkAnalyses } from '@/lib/pipeline/merge-chunk-claims'
 
+const MAX_MERGED_CLAIMS = 36
+
 function normalizeStatement(text: string): string {
   return text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim()
 }
@@ -29,6 +31,43 @@ function dedupeClaims(claims: StructuredClaim[]): StructuredClaim[] {
     }
   }
   return kept
+}
+
+function sectionTranscript(s: SectionKnowledge): string {
+  return (s.text?.trim() ? s.text : s.summary).trim()
+}
+
+function enrichSectionsWithDeepClaims(
+  sections: SectionKnowledge[],
+  deepClaims: StructuredClaim[],
+): SectionKnowledge[] {
+  const bySection = new Map<string, SectionKnowledge['claims']>()
+  for (const section of sections) {
+    bySection.set(section.sectionId, [...section.claims])
+  }
+
+  for (const claim of deepClaims) {
+    const segId = claim.sourceSegmentId
+    if (!segId) continue
+    const list = bySection.get(segId)
+    if (!list) continue
+    const dup = list.some(
+      (c) => normalizeStatement(c.statement) === normalizeStatement(claim.statement),
+    )
+    if (dup) continue
+    list.push({
+      id: claim.id,
+      statement: claim.statement,
+      topic: claim.topic,
+      confidence: claim.confidence,
+    })
+    bySection.set(segId, list)
+  }
+
+  return sections.map((s) => ({
+    ...s,
+    claims: bySection.get(s.sectionId) ?? s.claims,
+  }))
 }
 
 function dedupeEvidence(items: Evidence[]): Evidence[] {
@@ -71,17 +110,9 @@ export function mergeHierarchicalAnalysis(input: {
   failedSectionIds: string[]
   transcriptDurationSeconds: number
 }): SourceAnalysis {
-  const { base, sections, deepPartials, coverageSectionCount, failedSectionIds } = input
+  const { base, sections: inputSections, deepPartials, coverageSectionCount, failedSectionIds } = input
 
-  const coverageClaims: StructuredClaim[] = sections.flatMap((s) =>
-    s.claims.map((c) => ({
-      id: c.id,
-      sourceId: base.sourceId,
-      statement: c.statement,
-      topic: c.topic,
-      confidence: c.confidence,
-    })),
-  )
+  const sections = inputSections
 
   const deepMerged =
     deepPartials.length > 0
@@ -90,11 +121,42 @@ export function mergeHierarchicalAnalysis(input: {
         : mergeChunkAnalyses(deepPartials, base)
       : null
 
-  const claims = dedupeClaims([...(deepMerged?.claims ?? []), ...coverageClaims]).slice(0, 24)
-  const evidence = dedupeEvidence(deepMerged?.evidence ?? []).slice(0, 48)
-  const entities = deepMerged?.entities ?? sections.flatMap((s) => s.entities).slice(0, 20)
+  const enrichedSections = enrichSectionsWithDeepClaims(
+    sections,
+    deepMerged?.claims ?? [],
+  )
 
-  const summaries = sections.map((s) => s.summary).filter(Boolean)
+  const coverageClaims: StructuredClaim[] = enrichedSections.flatMap((s) =>
+    s.claims.map((c) => ({
+      id: c.id,
+      sourceId: base.sourceId,
+      statement: c.statement,
+      topic: c.topic,
+      confidence: c.confidence,
+      evidenceSummary: sectionTranscript(s).slice(0, 280),
+      sourceSegmentId: s.sectionId,
+      evidenceSegmentIds: [s.sectionId],
+      segmentStartTime: s.startTime,
+      segmentEndTime: s.endTime,
+    })),
+  )
+
+  const claims = dedupeClaims([...(deepMerged?.claims ?? []), ...coverageClaims]).slice(
+    0,
+    MAX_MERGED_CLAIMS,
+  )
+  const sectionEvidence: Evidence[] = enrichedSections.map((s) => ({
+    id: `${base.sourceId}_seg_${s.sectionId}`,
+    timestamp: s.startTime,
+    text: sectionTranscript(s),
+    segmentId: s.sectionId,
+    endTime: s.endTime,
+  }))
+  const evidence = dedupeEvidence([...sectionEvidence, ...(deepMerged?.evidence ?? [])]).slice(0, 48)
+
+  const entities = deepMerged?.entities ?? enrichedSections.flatMap((s) => s.entities).slice(0, 20)
+
+  const summaries = enrichedSections.map((s) => s.summary).filter(Boolean)
   const summary =
     deepMerged?.summary ||
     summaries.sort((a, b) => b.length - a.length)[0] ||
@@ -102,7 +164,7 @@ export function mergeHierarchicalAnalysis(input: {
 
   const thesis =
     deepMerged?.thesis ||
-    sections
+    enrichedSections
       .filter((s) => s.importanceScore >= 0.5)
       .sort((a, b) => b.importanceScore - a.importanceScore)
       .map((s) => s.summary)
@@ -113,17 +175,20 @@ export function mergeHierarchicalAnalysis(input: {
   const topics = [
     ...new Set([
       ...(deepMerged?.topics ?? []),
-      ...sections.map((s) => s.topic).filter(Boolean),
+      ...enrichedSections.map((s) => s.topic).filter(Boolean),
       ...claims.map((c) => c.topic),
     ]),
   ].slice(0, 12)
 
-  const analyzedDuration = sections.reduce(
+  const analyzedDuration = enrichedSections.reduce(
     (acc, s) => acc + Math.max(0, s.endTime - s.startTime),
     0,
   )
-  const deepAnalyzed = sections.filter((s) => s.deepAnalyzed).length
-  const analyzedCharCount = sections.reduce((n, s) => n + s.summary.length + s.claims.length * 40, 0)
+  const deepAnalyzed = enrichedSections.filter((s) => s.deepAnalyzed).length
+  const analyzedCharCount = enrichedSections.reduce(
+    (n, s) => n + s.summary.length + s.claims.length * 40,
+    0,
+  )
 
   return {
     sourceId: base.sourceId,
@@ -148,14 +213,14 @@ export function mergeHierarchicalAnalysis(input: {
           : sections.length > 0
             ? 1
             : 0,
-      sectionCount: sections.length,
+      sectionCount: enrichedSections.length,
       coverageSectionCount,
       deepAnalyzedSectionCount: deepAnalyzed,
       failedSectionIds: failedSectionIds.length > 0 ? failedSectionIds : undefined,
       analyzedCharCount,
     },
     videoKnowledge: {
-      sections,
+      sections: enrichedSections,
       coverage: {
         transcriptDurationSeconds: input.transcriptDurationSeconds,
         analyzedDurationSeconds: Math.round(analyzedDuration),
@@ -163,7 +228,7 @@ export function mergeHierarchicalAnalysis(input: {
           input.transcriptDurationSeconds > 0
             ? Math.min(1, analyzedDuration / input.transcriptDurationSeconds)
             : 1,
-        sectionCount: sections.length,
+        sectionCount: enrichedSections.length,
         coverageSectionCount,
         deepAnalyzedSectionCount: deepAnalyzed,
         failedSectionIds: failedSectionIds.length > 0 ? failedSectionIds : undefined,

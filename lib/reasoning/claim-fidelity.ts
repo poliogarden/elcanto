@@ -152,6 +152,45 @@ function buildSpeakerObservationStatement(evidenceText: string): string {
   return `The speaker observes: ${trimmed.slice(0, 180)}…`
 }
 
+function buildEvidenceBoundedStatement(
+  claimText: string,
+  evidenceText: string,
+  mutations: ClaimMutationKind[],
+): string | undefined {
+  const boundedOnly = ['CORRELATION_TO_CAUSATION', 'EASE_TO_ADOPTION'] as const
+  if (
+    mutations.length === 0 ||
+    !mutations.every((m) => boundedOnly.includes(m as typeof boundedOnly[number]))
+  ) {
+    return undefined
+  }
+
+  let bounded = claimText.trim()
+
+  if (mutations.includes('CORRELATION_TO_CAUSATION')) {
+    bounded = bounded
+      .replace(/,?\s*which leads to\b[^.!?]*(?=[.!?]|$)/i, '')
+      .replace(/,?\s*leading to\b[^.!?]*(?=[.!?]|$)/i, '')
+      .replace(/\s+and\s+(?:thus|therefore)\b[^.!?]*(?=[.!?]|$)/i, '')
+      .trim()
+  }
+
+  if (mutations.includes('EASE_TO_ADOPTION')) {
+    bounded = bounded
+      .replace(/,?\s*which leads to faster adoption\b[^.!?]*(?=[.!?]|$)/i, '')
+      .replace(/,?\s*leading to (?:faster |broader )?adoption\b[^.!?]*(?=[.!?]|$)/i, '')
+      .trim()
+  }
+
+  if (bounded.length < 12) return undefined
+
+  if (bounded !== claimText.trim() && overlapRatio(bounded, evidenceText) >= 0.1) {
+    return bounded
+  }
+
+  return undefined
+}
+
 export function assessClaimFidelity(
   claim: ReasoningClaim,
   evidenceText: string,
@@ -190,16 +229,16 @@ export function assessClaimFidelity(
   if (overlap >= 0.45 && !hasSevere) strength = 'strong'
 
   if (hasSevere) {
-    const suggested =
+    const bounded =
       evidenceScope === 'speaker' || evidenceScope === 'personal'
         ? buildSpeakerObservationStatement(evidenceText)
-        : undefined
+        : buildEvidenceBoundedStatement(claim.statement, evidenceText, mutations)
     return {
       status: 'OVERSTATED',
       scope: claimScope,
       strength: 'weak',
       mutations,
-      suggestedStatement: suggested,
+      suggestedStatement: bounded,
       reason: `Claim exceeds evidence: ${mutations.join(', ')}`,
     }
   }

@@ -41,13 +41,20 @@ export type CandidateGenerationDiagnostic = {
   topicScore?: number
 }
 
-export type CandidatePipelineWarning = {
-  code: 'CROSS_SOURCE_CANDIDATE_COLLAPSE'
-  message: string
-  participatingSourceCount: number
-  possibleCrossSourcePairs: number
-  candidatePairs: number
-}
+export type CandidatePipelineWarning =
+  | {
+      code: 'CROSS_SOURCE_CANDIDATE_COLLAPSE'
+      message: string
+      participatingSourceCount: number
+      possibleCrossSourcePairs: number
+      candidatePairs: number
+    }
+  | {
+      code: 'CANDIDATE_VERIFICATION_COLLAPSE'
+      message: string
+      candidateCount: number
+      verifiedCount: number
+    }
 
 /** Count unordered cross-source claim pairs. */
 export function countPossibleCrossSourcePairs(claims: ReasoningClaim[]): number {

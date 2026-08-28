@@ -1,0 +1,7 @@
+{
+  "id": "mixed-irrelevant",
+  "question": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+  "benchmarkDataKey": "mixed-irrelevant",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

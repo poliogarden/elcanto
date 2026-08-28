@@ -43,11 +43,17 @@ export type RelevanceFunnel = {
 }
 
 export type RelevanceCollapseWarning = {
-  code: 'ABNORMAL_RELEVANCE_COLLAPSE'
+  code:
+    | 'ABNORMAL_RELEVANCE_COLLAPSE'
+    | 'RELEVANCE_COLLAPSE_RECOVERY'
+    | 'SOURCE_PARTICIPATION_COLLAPSE'
+    | 'EVIDENCE_INTEGRITY_VIOLATION'
   message: string
-  extractedClaims: number
-  relevantClaims: number
-  relevantSources: number
+  extractedClaims?: number
+  relevantClaims?: number
+  relevantSources?: number
+  claimId?: string
+  sourceId?: string
 }
 
 export type PipelineWarning =
@@ -83,7 +89,7 @@ const QUESTION_STOP = new Set([
 ])
 
 const MECHANISM_PATTERNS =
-  /\b(reduces|simplifies|enables|provides|standardizes|integrat|integration|api|tool|protocol|complexity|adoption|connect|interface|compared|versus|vs\.?|allows|creates|offers|deploy|workflow|developer)\b/i
+  /\b(reduces|simplifies|enables|provides|standardizes|integrat|integration|apis?|tool|protocol|complexity|adoption|connect|interface|compared|versus|vs\.?|allows|creates|offers|deploy|workflow|developer|effectively as)\b/i
 
 const PRIMARY_PATTERNS =
   /\b(is|are|means|defines|refers to|stands for|known as|purpose of|role of|what mcp|mcp is)\b/i

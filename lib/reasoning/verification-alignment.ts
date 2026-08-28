@@ -1,4 +1,8 @@
 import { extractSharedDimension } from '@/lib/reasoning/candidate-discovery'
+import {
+  assessDimensionCompatibility,
+  classifyPropositionDimension,
+} from '@/lib/reasoning/proposition-alignment'
 import { normalizeStatement } from '@/lib/reasoning/source-ingest'
 import type { ReasoningClaim, ReasoningRelationshipType } from '@/lib/reasoning/types'
 
@@ -52,7 +56,29 @@ function abstractionLevel(statement: string): 'high' | 'mid' | 'low' {
   return 'mid'
 }
 
+export function productivityDirection(statement: string): 'up' | 'down' | null {
+  if (!/\b(productivity|output|performance)\b/i.test(statement)) return null
+  if (/\b(increases?|raises?|boosts?|improves?|enhances?)\b/i.test(statement)) return 'up'
+  if (/\b(decreases?|lowers?|diminishes?)\b/i.test(statement)) return 'down'
+  return null
+}
+
+export function isOpposingProductivityPair(from: ReasoningClaim, to: ReasoningClaim): boolean {
+  const a = productivityDirection(from.statement)
+  const b = productivityDirection(to.statement)
+  return a !== null && b !== null && a !== b
+}
+
 function claimPolarity(statement: string): 'pos' | 'neg' | 'neu' {
+  const productivity = productivityDirection(statement)
+  if (productivity === 'up') return 'pos'
+  if (productivity === 'down') return 'neg'
+
+  const commuteBenefit =
+    /\b(reduces?|cuts?|eliminates?|avoids?|reclaiming|fewer|less)\b/i.test(statement) &&
+    /\b(commut|travel|trip|rush)\b/i.test(statement)
+  if (commuteBenefit) return 'pos'
+
   const pos = POSITIVE_MARKERS.test(statement)
   const neg = NEGATIVE_MARKERS.test(statement)
   if (pos && !neg) return 'pos'
@@ -293,29 +319,101 @@ export function evaluateVerificationAlignment(
   return { passed, requiredThreshold, failedConditions: failed, reason }
 }
 
-/** Type-aware pre-LLM gate — replaces blanket isDiscoveryCandidate filtering. */
+export type PreLlmComparabilityVerdict = 'CLEAR_INVALID' | 'PLAUSIBLY_COMPARABLE'
+
+export type PreLlmComparabilityResult = {
+  verdict: PreLlmComparabilityVerdict
+  reason: string
+  scores: VerificationAlignmentScores
+  rejectingGate?: string
+  rejectingFunction?: string
+}
+
+function isGenericTopicOverlapOnly(scores: VerificationAlignmentScores): boolean {
+  return (
+    scores.semanticSimilarity < 0.12 &&
+    scores.topicAlignment < 0.18 &&
+    scores.subjectEntityAlignment < 0.2
+  )
+}
+
+function isObviousDifferentDimension(from: ReasoningClaim, to: ReasoningClaim): boolean {
+  const dimA = classifyPropositionDimension(from.statement)
+  const dimB = classifyPropositionDimension(to.statement)
+  if (dimA === 'GENERAL' && dimB === 'GENERAL') return false
+  const compat = assessDimensionCompatibility(dimA, dimB, from.statement, to.statement)
+  if (compat !== 'DIFFERENT') return false
+  return dimA !== 'GENERAL' && dimB !== 'GENERAL'
+}
+
+export function assessPreLlmComparability(
+  from: ReasoningClaim,
+  to: ReasoningClaim,
+  relationshipType: ReasoningRelationshipType,
+): PreLlmComparabilityResult {
+  const scores = assessVerificationAlignment(from, to, relationshipType)
+
+  if (from.sourceId === to.sourceId) {
+    return {
+      verdict: 'CLEAR_INVALID',
+      reason: 'Same source — cross-source verification only.',
+      scores,
+      rejectingGate: 'SAME_SOURCE',
+      rejectingFunction: 'assessPreLlmComparability',
+    }
+  }
+
+  if (isGenericTopicOverlapOnly(scores)) {
+    return {
+      verdict: 'CLEAR_INVALID',
+      reason: 'Generic topic overlap without comparable proposition target.',
+      scores,
+      rejectingGate: 'GENERIC_TOPIC_ONLY',
+      rejectingFunction: 'assessPreLlmComparability',
+    }
+  }
+
+  if (isObviousDifferentDimension(from, to)) {
+    return {
+      verdict: 'CLEAR_INVALID',
+      reason: `Obvious different dimension: ${classifyPropositionDimension(from.statement)} vs ${classifyPropositionDimension(to.statement)}`,
+      scores,
+      rejectingGate: 'DIFFERENT_DIMENSION',
+      rejectingFunction: 'assessDimensionCompatibility',
+    }
+  }
+
+  if (scores.topicAlignment < 0.1 && scores.subjectEntityAlignment < 0.12) {
+    return {
+      verdict: 'CLEAR_INVALID',
+      reason: 'Subject mismatch — no shared proposition target.',
+      scores,
+      rejectingGate: 'SUBJECT_MISMATCH',
+      rejectingFunction: 'assessPreLlmComparability',
+    }
+  }
+
+  return {
+    verdict: 'PLAUSIBLY_COMPARABLE',
+    reason: 'Pair is plausibly comparable — defer to full verifier.',
+    scores,
+  }
+}
+
+/** Type-aware pre-LLM gate — rejects only clearly invalid pairs; plausible pairs reach full verifier. */
 export function passesVerificationPreGate(
   from: ReasoningClaim,
   to: ReasoningClaim,
   relationshipType: ReasoningRelationshipType,
 ): VerificationAlignmentScores {
-  if (from.sourceId === to.sourceId) {
-    return {
-      semanticSimilarity: 0,
-      topicAlignment: 0,
-      subjectEntityAlignment: 0,
-      predicateAlignment: 0,
-      polarity: 'UNKNOWN',
-      scopeCompatibility: 0,
-      evidenceCompatibility: 0,
-      finalAlignment: 0,
-      requiredThreshold: 1,
-      failedConditions: ['same_source'],
-      passed: false,
-      reason: 'Same source — cross-source verification only.',
-    }
+  const comparability = assessPreLlmComparability(from, to, relationshipType)
+  return {
+    ...comparability.scores,
+    passed: comparability.verdict === 'PLAUSIBLY_COMPARABLE',
+    reason: comparability.reason,
+    failedConditions:
+      comparability.verdict === 'CLEAR_INVALID' ? [comparability.rejectingGate ?? 'clear_invalid'] : [],
   }
-  return assessVerificationAlignment(from, to, relationshipType)
 }
 
 export function passesVerificationPostGate(

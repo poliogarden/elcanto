@@ -17,6 +17,11 @@ export type StructuredClaim = {
   reasoning?: string
   /** Transcript-based support summary */
   evidenceSummary?: string
+  /** Section or segment id from transcript analysis */
+  sourceSegmentId?: string
+  evidenceSegmentIds?: string[]
+  segmentStartTime?: number
+  segmentEndTime?: number | null
 }
 
 export type Entity = {

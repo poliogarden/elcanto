@@ -7,7 +7,7 @@ import {
 } from '@/lib/reasoning/candidate-funnel'
 import { discoverHeuristicCandidates } from '@/lib/reasoning/candidate-discovery'
 import { resolveClaimsThroughRelevanceFunnel } from '@/lib/reasoning/claim-relevance'
-import { applyClaimQualityGate } from '@/lib/reasoning/claim-quality'
+import { buildComparableClaimPool } from '@/lib/reasoning/comparable-claim-pool'
 import type { ReasoningClaim, ReasoningEvidence } from '@/lib/reasoning/types'
 
 const CENTRAL_QUESTION = 'What is MCP and how does it impact the AI industry?'
@@ -101,19 +101,21 @@ describe('MCP cross-source candidate regression', () => {
       centralQuestion: CENTRAL_QUESTION,
       sourceRelevance,
     })
-    const quality = applyClaimQualityGate({
-      claims: funnel.usableClaims,
+    const pool = buildComparableClaimPool({
+      usableClaims: funnel.usableClaims,
       evidence: evidenceRecords,
+      relevanceDiagnostics: funnel.diagnostics,
       centralQuestion: CENTRAL_QUESTION,
+      synthesisSourceIds: synthesisIds,
     })
     const enriched = enrichClaimsForCrossSourceCandidates({
-      acceptedClaims: quality.accepted,
+      acceptedClaims: pool.generationClaims,
       supplementalClaims: funnel.peripheralClaims,
       synthesisSourceIds: synthesisIds,
       minPerSource: 2,
-      maxTotal: 24,
+      maxTotal: 28,
     })
-    return { funnel, quality, enriched, synthesisIds }
+    return { funnel, pool, enriched, synthesisIds }
   }
 
   it('structural invariant: multiple sources yield possible cross-source pairs', () => {
@@ -155,12 +157,14 @@ describe('MCP cross-source candidate regression', () => {
       centralQuestion: CENTRAL_QUESTION,
       sourceRelevance,
     })
-    const quality = applyClaimQualityGate({
-      claims: funnel.usableClaims,
+    const quality = buildComparableClaimPool({
+      usableClaims: funnel.usableClaims,
       evidence: evidenceRecords,
+      relevanceDiagnostics: funnel.diagnostics,
       centralQuestion: CENTRAL_QUESTION,
+      synthesisSourceIds: synthesisIds,
     })
-    const onlySource1 = quality.accepted.filter((c) => c.sourceId === 'source_1')
+    const onlySource1 = quality.comparableClaims.filter((c) => c.sourceId === 'source_1')
     const enriched = enrichClaimsForCrossSourceCandidates({
       acceptedClaims: onlySource1,
       supplementalClaims: funnel.peripheralClaims,

@@ -18,6 +18,7 @@ export type SourceParticipationRow = {
   sourceId: string
   extracted: number
   relevanceUsable: number
+  comparable: number
   qualityAccepted: number
   generationClaims: number
   possibleCrossSourcePairs: number
@@ -80,6 +81,7 @@ function diagnoseCandidateZeroReason(
 export function buildSourceParticipationDiagnostics(input: {
   allClaims: ReasoningClaim[]
   relevanceUsableClaims: ReasoningClaim[]
+  comparableClaims: ReasoningClaim[]
   qualityAcceptedClaims: ReasoningClaim[]
   generationClaims: ReasoningClaim[]
   candidates: RelationshipCandidate[]
@@ -98,6 +100,7 @@ export function buildSourceParticipationDiagnostics(input: {
   const rows: SourceParticipationRow[] = sourceIds.map((sourceId) => {
     const extracted = input.allClaims.filter((c) => c.sourceId === sourceId).length
     const relevanceUsable = input.relevanceUsableClaims.filter((c) => c.sourceId === sourceId).length
+    const comparable = input.comparableClaims.filter((c) => c.sourceId === sourceId).length
     const qualityAccepted = input.qualityAcceptedClaims.filter((c) => c.sourceId === sourceId).length
     const generationClaims = generationBySource.get(sourceId)?.length ?? 0
     const genClaims = generationBySource.get(sourceId) ?? []
@@ -145,6 +148,7 @@ export function buildSourceParticipationDiagnostics(input: {
       sourceId,
       extracted,
       relevanceUsable,
+      comparable,
       qualityAccepted,
       generationClaims,
       possibleCrossSourcePairs,

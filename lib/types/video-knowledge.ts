@@ -16,6 +16,8 @@ export type SectionKnowledge = {
   endTime: number
   topic: string
   summary: string
+  /** Original transcript text for the section (when available from section builder) */
+  text?: string
   claims: Array<{
     id: string
     statement: string

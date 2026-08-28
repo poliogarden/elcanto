@@ -1,0 +1,8 @@
+{
+  "id": "mcp-3video-baseline",
+  "question": "What is MCP and how does it impact the AI industry?",
+  "synthesisJobId": "14d8aa0a-e29e-4bd3-991d-ac9fc7660a3e",
+  "outputLanguage": "en",
+  "refreshClaimExtraction": true,
+  "refreshClaimExtractionSourceIds": ["source_1", "source_2"]
+}

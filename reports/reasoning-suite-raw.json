@@ -1,0 +1,489 @@
+{
+  "generatedAt": "2026-08-28T06:22:10.453Z",
+  "commit": "85693ad0ab725dd263ecb003efe0f4f48f4299f5",
+  "engineVersion": "reasoning-v2.1",
+  "pipelineMode": "LIVE",
+  "results": [
+    {
+      "fixtureId": "mcp-3video-baseline",
+      "label": "MCP Baseline",
+      "result": "PASS",
+      "infrastructureResult": "PASS",
+      "failureReasons": [],
+      "blockers": [],
+      "v2Backlog": [],
+      "pipelineDiagnosis": [],
+      "metrics": {
+        "totalClaims": 31,
+        "totalExtractedClaims": 31,
+        "evidenceSupportedClaims": 31,
+        "relevanceUsable": 43,
+        "generationEligible": 29,
+        "candidates": 35,
+        "verified": 1,
+        "agreement": 1,
+        "divide": 0,
+        "complementary": 0,
+        "falseAgreement": 0,
+        "falseDivide": 0,
+        "falseComplementary": 0,
+        "missedExpectedRelationships": 0,
+        "evidenceIntegrityPass": true,
+        "aggregationInvariantFailures": [],
+        "supportedPropositions": 3,
+        "unsupportedPropositions": 0,
+        "judgmentConfidence": "low",
+        "finalJudgment": "While both claims highlight the importance of MCP in the technology landscape, one focuses on recent attention while the other discusses its historical significance.",
+        "judgmentLineageStatus": "PASS",
+        "reasoningQuality": "PASS",
+        "precision": 1,
+        "recall": 1,
+        "agreementPrecision": 1,
+        "dividePrecision": 1,
+        "complementaryPrecision": 1,
+        "falseRelationshipsInJudgment": 0,
+        "participatingSourceIds": [
+          "source_1",
+          "source_2",
+          "source_3"
+        ],
+        "excludedSourceIds": []
+      },
+      "mcpRegression": {
+        "result": "PASS",
+        "failureReasons": []
+      }
+    },
+    {
+      "fixtureId": "clear-agreement",
+      "label": "Clear Agreement",
+      "result": "PASS",
+      "infrastructureResult": "PASS",
+      "failureReasons": [],
+      "blockers": [],
+      "v2Backlog": [],
+      "pipelineDiagnosis": [],
+      "metrics": {
+        "totalClaims": 2,
+        "totalExtractedClaims": 2,
+        "evidenceSupportedClaims": 2,
+        "relevanceUsable": 2,
+        "generationEligible": 2,
+        "candidates": 1,
+        "verified": 1,
+        "agreement": 1,
+        "divide": 0,
+        "complementary": 0,
+        "falseAgreement": 0,
+        "falseDivide": 0,
+        "falseComplementary": 0,
+        "missedExpectedRelationships": 0,
+        "evidenceIntegrityPass": true,
+        "aggregationInvariantFailures": [],
+        "supportedPropositions": 4,
+        "unsupportedPropositions": 0,
+        "judgmentConfidence": "moderate",
+        "finalJudgment": "Remote work significantly reduces daily commuting time for employees, based on robust evidence from two sources.",
+        "judgmentLineageStatus": "PASS",
+        "reasoningQuality": "PASS",
+        "precision": 1,
+        "recall": 1,
+        "agreementPrecision": 1,
+        "dividePrecision": 1,
+        "complementaryPrecision": 1,
+        "falseRelationshipsInJudgment": 0,
+        "participatingSourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "excludedSourceIds": [
+          {
+            "sourceId": "source_3",
+            "reason": "NOT_IN_GENERATION"
+          }
+        ]
+      }
+    },
+    {
+      "fixtureId": "clear-divide",
+      "label": "Clear Divide",
+      "result": "PASS",
+      "infrastructureResult": "PASS",
+      "failureReasons": [],
+      "blockers": [],
+      "v2Backlog": [],
+      "pipelineDiagnosis": [],
+      "metrics": {
+        "totalClaims": 2,
+        "totalExtractedClaims": 2,
+        "evidenceSupportedClaims": 2,
+        "relevanceUsable": 2,
+        "generationEligible": 2,
+        "candidates": 1,
+        "verified": 1,
+        "agreement": 0,
+        "divide": 1,
+        "complementary": 0,
+        "falseAgreement": 0,
+        "falseDivide": 0,
+        "falseComplementary": 0,
+        "missedExpectedRelationships": 0,
+        "evidenceIntegrityPass": true,
+        "aggregationInvariantFailures": [],
+        "supportedPropositions": 4,
+        "unsupportedPropositions": 0,
+        "judgmentConfidence": "moderate",
+        "finalJudgment": "The evidence strongly supports divergent impacts of remote work on employee productivity, though it does not provide a definitive answer; more research is needed to clarify these conflicting perspectives.",
+        "judgmentLineageStatus": "PASS",
+        "reasoningQuality": "DEGRADED",
+        "precision": 1,
+        "recall": 1,
+        "agreementPrecision": 1,
+        "dividePrecision": 1,
+        "complementaryPrecision": 1,
+        "falseRelationshipsInJudgment": 0,
+        "participatingSourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "excludedSourceIds": [
+          {
+            "sourceId": "source_3",
+            "reason": "NOT_IN_GENERATION"
+          }
+        ]
+      }
+    },
+    {
+      "fixtureId": "same-topic-different-claims",
+      "label": "Same Topic Different Claims",
+      "result": "PASS",
+      "infrastructureResult": "PASS",
+      "failureReasons": [],
+      "blockers": [],
+      "v2Backlog": [
+        "MISSING_FINAL_JUDGMENT (allowed for this fixture)"
+      ],
+      "pipelineDiagnosis": [
+        "No verified relationships; sample rejection: COMPLEMENTARY source_1↔source_2 → DIFFERENT_DIMENSION."
+      ],
+      "metrics": {
+        "totalClaims": 3,
+        "totalExtractedClaims": 3,
+        "evidenceSupportedClaims": 3,
+        "relevanceUsable": 3,
+        "generationEligible": 3,
+        "candidates": 3,
+        "verified": 0,
+        "agreement": 0,
+        "divide": 0,
+        "complementary": 0,
+        "falseAgreement": 0,
+        "falseDivide": 0,
+        "falseComplementary": 0,
+        "missedExpectedRelationships": 0,
+        "evidenceIntegrityPass": true,
+        "aggregationInvariantFailures": [],
+        "supportedPropositions": 0,
+        "unsupportedPropositions": 0,
+        "judgmentConfidence": "N/A",
+        "judgmentLineageStatus": "NONE",
+        "reasoningQuality": "DEGRADED",
+        "precision": 1,
+        "recall": 1,
+        "agreementPrecision": 1,
+        "dividePrecision": 1,
+        "complementaryPrecision": 1,
+        "falseRelationshipsInJudgment": 0,
+        "participatingSourceIds": [
+          "source_1",
+          "source_2",
+          "source_3"
+        ],
+        "excludedSourceIds": []
+      }
+    },
+    {
+      "fixtureId": "mixed-irrelevant",
+      "label": "Mixed Irrelevant",
+      "result": "FAIL",
+      "infrastructureResult": "PASS",
+      "failureReasons": [
+        "MISSED_GOLD_RELATIONSHIP (missed=1, recall=0)"
+      ],
+      "blockers": [
+        "MISSED_GOLD_RELATIONSHIP"
+      ],
+      "v2Backlog": [
+        "MISSING_FINAL_JUDGMENT (secondary: recall failure left verified=0)",
+        "Gold pair source_1↔source_2: candidate reached POST_LLM → REJECT (RELATIONSHIP_PROPOSITION_HALLUCINATION). Composite alignment score below required threshold."
+      ],
+      "pipelineDiagnosis": [
+        "Gold pair source_1↔source_2: candidate reached POST_LLM → REJECT (RELATIONSHIP_PROPOSITION_HALLUCINATION). Composite alignment score below required threshold."
+      ],
+      "metrics": {
+        "totalClaims": 2,
+        "totalExtractedClaims": 2,
+        "evidenceSupportedClaims": 2,
+        "relevanceUsable": 2,
+        "generationEligible": 2,
+        "candidates": 1,
+        "verified": 0,
+        "agreement": 0,
+        "divide": 0,
+        "complementary": 0,
+        "falseAgreement": 0,
+        "falseDivide": 0,
+        "falseComplementary": 0,
+        "missedExpectedRelationships": 1,
+        "evidenceIntegrityPass": true,
+        "aggregationInvariantFailures": [],
+        "supportedPropositions": 0,
+        "unsupportedPropositions": 0,
+        "judgmentConfidence": "N/A",
+        "judgmentLineageStatus": "NONE",
+        "reasoningQuality": "DEGRADED",
+        "precision": 0,
+        "recall": 0,
+        "agreementPrecision": 1,
+        "dividePrecision": 1,
+        "complementaryPrecision": 1,
+        "falseRelationshipsInJudgment": 0,
+        "participatingSourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "excludedSourceIds": [
+          {
+            "sourceId": "source_3",
+            "reason": "NOT_IN_GENERATION"
+          },
+          {
+            "sourceId": "source_4",
+            "reason": "NOT_IN_GENERATION"
+          },
+          {
+            "sourceId": "source_5",
+            "reason": "NOT_IN_GENERATION"
+          }
+        ]
+      }
+    }
+  ],
+  "unitRegression": [
+    {
+      "name": "MCP comparable pool",
+      "result": "PASS"
+    },
+    {
+      "name": "MCP candidate generation",
+      "result": "PASS"
+    },
+    {
+      "name": "MCP evidence grounding",
+      "result": "PASS"
+    },
+    {
+      "name": "Duplicate agreement",
+      "result": "PASS"
+    },
+    {
+      "name": "Genuine divide",
+      "result": "PASS"
+    },
+    {
+      "name": "Different dimension",
+      "result": "PASS"
+    },
+    {
+      "name": "Unsupported judgment",
+      "result": "PASS"
+    }
+  ],
+  "v1ExitStatus": "NOT READY",
+  "aggregatePrecision": 0.8,
+  "aggregateRecall": 0.8,
+  "suiteBlockers": [
+    "mixed-irrelevant: MISSED_GOLD_RELATIONSHIP"
+  ],
+  "suiteV2Backlog": [
+    "same-topic-different-claims: MISSING_FINAL_JUDGMENT (allowed for this fixture)",
+    "mixed-irrelevant: MISSING_FINAL_JUDGMENT (secondary: recall failure left verified=0)",
+    "mixed-irrelevant: Gold pair source_1↔source_2: candidate reached POST_LLM → REJECT (RELATIONSHIP_PROPOSITION_HALLUCINATION). Composite alignment score below required threshold."
+  ],
+  "overallFalseAgreement": 0,
+  "overallFalseDivide": 0,
+  "overallFalseComplementary": 0,
+  "overallMissedGold": 1,
+  "judgmentSupported": 11,
+  "judgmentUnsupported": 0,
+  "falseRelationshipsInJudgment": 0,
+  "mcpRegressionResult": "PASS",
+  "largestFailure": "Mixed Irrelevant: MISSED_GOLD_RELATIONSHIP",
+  "reproducibility": {
+    "standaloneBefore": {
+      "label": "standalone-before",
+      "generatedAt": "2026-08-28T06:18:27.084Z",
+      "pipelineMode": "LIVE",
+      "engineVersion": "reasoning-v2.1",
+      "claims": 30,
+      "generationEligible": 30,
+      "candidates": 35,
+      "verified": 1,
+      "agreement": 1,
+      "divide": 0,
+      "complementary": 0,
+      "finalJudgment": "MCP is positioned as an important breakthrough in AI interoperability, but its full impact and market implications are not clearly established from the current evidence.",
+      "judgmentConfidence": "low",
+      "evidenceIntegrityPass": true,
+      "relevanceUsable": 40,
+      "model": "gpt-4o-mini (default)",
+      "temperature": "default",
+      "seed": "none"
+    },
+    "suiteMcp": {
+      "label": "suite-mcp",
+      "generatedAt": "2026-08-28T06:21:07.815Z",
+      "pipelineMode": "LIVE",
+      "engineVersion": "reasoning-v2.1",
+      "claims": 31,
+      "generationEligible": 29,
+      "candidates": 35,
+      "verified": 1,
+      "agreement": 1,
+      "divide": 0,
+      "complementary": 0,
+      "finalJudgment": "While both claims highlight the importance of MCP in the technology landscape, one focuses on recent attention while the other discusses its historical significance.",
+      "judgmentConfidence": "low",
+      "evidenceIntegrityPass": true,
+      "relevanceUsable": 43,
+      "model": "gpt-4o-mini (default)",
+      "temperature": "default",
+      "seed": "none"
+    },
+    "standaloneAfter": {
+      "label": "standalone-after",
+      "generatedAt": "2026-08-28T06:23:23.292Z",
+      "pipelineMode": "LIVE",
+      "engineVersion": "reasoning-v2.1",
+      "claims": 20,
+      "generationEligible": 20,
+      "candidates": 35,
+      "verified": 0,
+      "agreement": 0,
+      "divide": 0,
+      "complementary": 0,
+      "judgmentConfidence": "N/A",
+      "evidenceIntegrityPass": true,
+      "relevanceUsable": 24,
+      "model": "gpt-4o-mini (default)",
+      "temperature": "default",
+      "seed": "none"
+    },
+    "standaloneBeforeVsSuiteDiffs": [
+      "claims: 30 → 31",
+      "generationEligible: 30 → 29",
+      "relevanceUsable: 40 → 43",
+      "finalJudgment changed"
+    ],
+    "standaloneBeforeVsAfterDiffs": [
+      "claims: 30 → 20",
+      "generationEligible: 30 → 20",
+      "verified: 1 → 0",
+      "agreement: 1 → 0",
+      "judgmentConfidence: low → N/A",
+      "relevanceUsable: 40 → 24",
+      "finalJudgment changed"
+    ],
+    "suiteVsStandaloneAfterDiffs": [
+      "claims: 31 → 20",
+      "generationEligible: 29 → 20",
+      "verified: 1 → 0",
+      "agreement: 1 → 0",
+      "judgmentConfidence: low → N/A",
+      "relevanceUsable: 43 → 24",
+      "finalJudgment changed"
+    ]
+  },
+  "goldRecallTraces": [
+    {
+      "fixtureId": "clear-agreement",
+      "sourceA": "source_1",
+      "sourceB": "source_2",
+      "claimA": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+      "claimB": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+      "normalizedSubjectA": "remote work",
+      "normalizedSubjectB": "working from home",
+      "normalizedPredicateA": "reduces the amount of time employees spend comm",
+      "normalizedPredicateB": "cuts much of the daily travel that employees",
+      "propositionTargetA": "commuting to a central workplace each d",
+      "propositionTargetB": "travel that employees otherwise make",
+      "dimensionA": "EFFECT",
+      "dimensionB": "EFFECT",
+      "polarityA": "POSITIVE_REDUCTION",
+      "polarityB": "POSITIVE_REDUCTION",
+      "sharedProposition": "remote work reduces employee commuting or daily workplace travel",
+      "entailedByA": true,
+      "entailedByB": true,
+      "addedInference": false,
+      "dimensionCompatibility": "EXACT",
+      "preLlmVerdict": "PLAUSIBLY_COMPARABLE",
+      "proposedType": "AGREEMENT"
+    },
+    {
+      "fixtureId": "clear-divide",
+      "sourceA": "source_1",
+      "sourceB": "source_2",
+      "claimA": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
+      "claimB": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
+      "normalizedSubjectA": "remote work",
+      "normalizedSubjectB": "remote work",
+      "normalizedPredicateA": "increases employee productivity by limiting offic",
+      "normalizedPredicateB": "decreases employee productivity because home envi",
+      "propositionTargetA": "productivity by limiting office distractio",
+      "propositionTargetB": "productivity because home environments int",
+      "dimensionA": "EFFECT",
+      "dimensionB": "EFFECT",
+      "polarityA": "POSITIVE",
+      "polarityB": "NEGATIVE",
+      "sharedProposition": "The topic remote work employee",
+      "entailedByA": false,
+      "entailedByB": false,
+      "addedInference": false,
+      "dimensionCompatibility": "EXACT",
+      "preLlmVerdict": "PLAUSIBLY_COMPARABLE",
+      "proposedType": "CONTRADICTION"
+    },
+    {
+      "fixtureId": "mixed-irrelevant",
+      "sourceA": "source_1",
+      "sourceB": "source_2",
+      "claimA": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+      "claimB": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+      "normalizedSubjectA": "building codes attic insulation",
+      "normalizedSubjectB": "attic insulation",
+      "normalizedPredicateA": "recommend attic insulation with an R-value of at",
+      "normalizedPredicateB": "target R-49 to R-60 insulation levels to minim",
+      "propositionTargetA": "insulation with an R-value of at least R",
+      "propositionTargetB": "R-49 to R-60 insulation levels to",
+      "dimensionA": "EFFECT",
+      "dimensionB": "EFFECT",
+      "polarityA": "NEUTRAL",
+      "polarityB": "NEUTRAL",
+      "sharedProposition": "cold-climate attic retrofits target high R-value insulation",
+      "entailedByA": false,
+      "entailedByB": false,
+      "addedInference": true,
+      "dimensionCompatibility": "EXACT",
+      "preLlmVerdict": "PLAUSIBLY_COMPARABLE",
+      "proposedType": "AGREEMENT"
+    }
+  ],
+  "precisionRegressionGuard": {
+    "sameTopicPass": true,
+    "falseAgreement": 0,
+    "falseDivide": 0,
+    "falseComplementary": 0,
+    "result": "PASS"
+  }
+}

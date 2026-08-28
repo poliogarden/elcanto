@@ -49,6 +49,7 @@ const HYPE_PATTERNS = [
   /\bgame[- ]?changer\b/i,
   /\btransformative\b/i,
   /\brevolutionary\b/i,
+  /\brevolutionize\b/i,
   /\bpivotal\b/i,
   /\bcritical technology\b/i,
   /\bmajor discussions\b/i,
@@ -171,6 +172,27 @@ function applyFidelityGate(
   }
 
   if (fidelity.status === 'OVERSTATED') {
+    const canBound =
+      fidelity.suggestedStatement &&
+      fidelity.mutations.length > 0 &&
+      fidelity.mutations.every(
+        (m) => m === 'CORRELATION_TO_CAUSATION' || m === 'EASE_TO_ADOPTION',
+      )
+    if (canBound) {
+      return {
+        claim: {
+          ...enriched,
+          statement: fidelity.suggestedStatement!,
+          normalizedStatement: normalizeStatement(fidelity.suggestedStatement!),
+          fidelityStatus: 'PARTIALLY_SUPPORTED',
+          confidence: 'moderate',
+        },
+        record: {
+          ...record,
+          status: 'PARTIALLY_SUPPORTED',
+        },
+      }
+    }
     return { reject: fidelityToRejectionReason(fidelity.mutations), record }
   }
   if (fidelity.status === 'UNSUPPORTED') {

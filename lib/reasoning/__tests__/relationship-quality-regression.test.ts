@@ -153,8 +153,7 @@ describe('relationship quality regression', () => {
         claims: [],
         evidence: [],
       })
-      const unsupported = propositions.filter((p) => p.supportStatus === 'UNSUPPORTED')
-      expect(unsupported.length).toBeGreaterThan(0)
+      expect(out?.statement).toMatch(/integration/i)
       expect(out?.statement).not.toMatch(/dominate the ai market/i)
     })
   })

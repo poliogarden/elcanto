@@ -80,18 +80,25 @@ export function reasoningToSurvival(
 
   const evidenceById = new Map(aligned.evidence.map((e) => [e.id, e]))
 
-  const claims: SurvivalClaim[] = analysis.displayedClaims.map((c) =>
-    claimToSurvival(
-      c,
+  const claims: SurvivalClaim[] = analysis.displayedClaims.map((c) => {
+    const span = c.evidenceSpans?.[0]
+    const fromIds =
       c.evidenceIds
         .map((eid) => evidenceById.get(eid)?.text)
         .filter(Boolean)
-        .join(' · ') || 'No direct source evidence',
+        .join(' · ') || ''
+    const evidenceText =
+      span?.originalText ??
+      (fromIds || c.evidenceText || 'No direct source evidence')
+    const timestamp =
+      span?.startTime ??
+      c.timestampStart ??
       c.evidenceIds
         .map((eid) => evidenceById.get(eid)?.timestampStart)
-        .find((t) => t != null) ?? null,
-    ),
-  )
+        .find((t) => t != null) ??
+      null
+    return claimToSurvival(c, evidenceText, timestamp)
+  })
 
   const verifiedRelationships: SurvivalRelationship[] = analysis.verifiedRelationships.map(
     relToSurvival,
@@ -224,6 +231,7 @@ export function reasoningToSurvival(
             ? 'moderate'
             : 'weak',
       judgmentBasis: judgment?.whatIsSupported,
+      sourceCoverageNote: judgment?.sourceCoverageNote ?? judgment?.coverageSummary,
     },
     emergentInsights: aligned.insights.map((insight) => ({
       id: insight.id,

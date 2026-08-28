@@ -43,6 +43,7 @@ export type RejectionReason =
   | 'ALIGNMENT_FAILED'
   | 'WEAK_CONFIDENCE'
   | 'KEYWORD_ONLY'
+  | 'RELATIONSHIP_PROPOSITION_HALLUCINATION'
 
 export type ClaimRole =
   | 'CORE_ARGUMENT'
@@ -82,6 +83,7 @@ export type ReasoningEvidence = {
   timestampEnd: number | null
   text: string
   confidence: number
+  segmentId?: string
 }
 
 export type ReasoningClaim = {
@@ -107,6 +109,12 @@ export type ReasoningClaim = {
   fidelityMutations?: import('@/lib/reasoning/claim-fidelity').ClaimMutationKind[]
   claimScope?: import('@/lib/reasoning/claim-fidelity').ClaimScope
   strength?: 'strong' | 'moderate' | 'weak'
+  evidenceStrength?: 'STRONG' | 'MODERATE' | 'WEAK' | 'NONE'
+  comparisonEligibility?: 'ELIGIBLE' | 'LIMITED' | 'EXCLUDED'
+  claimQualityClass?: 'FACTUAL' | 'INTERPRETIVE' | 'PREDICTIVE' | 'HYPE' | 'META' | 'RHETORICAL'
+  evidenceSpans?: import('@/lib/reasoning/claim-evidence').ClaimEvidenceSpan[]
+  evidenceStatus?: import('@/lib/reasoning/claim-evidence').ClaimEvidenceStatus
+  reasoningEligible?: boolean
 }
 
 export type ReasoningConcept = {
@@ -242,6 +250,11 @@ export type ReasoningJudgment = {
     sourceIds: string[]
   }>
   limitations?: string[]
+  sourceCoverageNote?: string
+  evidenceStrengthLabel?: string
+  supportingSourceCount?: number
+  totalAnalyzedSourceCount?: number
+  coverageSummary?: string
 }
 
 export type EvidencePathStep = {
@@ -336,6 +349,13 @@ export type PipelineStats = {
   claimsSupportingTier?: number
   claimsPeripheralTier?: number
   funnelFinalUsable?: number
+  topicRelevant?: number
+  comparableClaims?: number
+  generationEligible?: number
+  highConfidenceClaims?: number
+  comparableLimited?: number
+  comparableExcluded?: number
+  comparableRecoveryRecovered?: number
   normalizedPropositions?: number
   verifiedAgreements?: number
   verifiedComplementary?: number
@@ -373,7 +393,10 @@ export type ReasoningDiagnostics = {
   candidateGenerationDiagnostics?: import('@/lib/reasoning/candidate-funnel').CandidateGenerationDiagnostic[]
   sourceParticipation?: import('@/lib/reasoning/source-participation').SourceParticipationDiagnostics
   claimTransitionDiagnostics?: import('@/lib/reasoning/claim-transition').ClaimTransitionRow[]
+  comparableClaimFunnel?: import('@/lib/reasoning/comparable-claim-pool').ComparablePoolStats
   relationshipVerificationDiagnostics?: RelationshipVerificationDiagnostic[]
+  verificationDiagnosticsBundle?: import('@/lib/reasoning/verification-diagnostics').VerificationDiagnosticsBundle
+  evidenceCoverage?: import('@/lib/reasoning/evidence-coverage').EvidenceCoverageStats
 }
 
 export type ReasoningLandscape = {

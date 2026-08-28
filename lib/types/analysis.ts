@@ -29,6 +29,8 @@ export type Evidence = {
   id: string
   timestamp: number
   text: string
+  segmentId?: string
+  endTime?: number | null
 }
 
 export type VideoAnalysis = {

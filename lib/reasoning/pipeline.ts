@@ -2,6 +2,11 @@ import {
   applyClaimQualityGate,
   buildLockedOffTopicSourceIds,
 } from '@/lib/reasoning/claim-quality'
+import { buildComparableClaimPool } from '@/lib/reasoning/comparable-claim-pool'
+import {
+  buildEvidenceCoverageDiagnostics,
+  findEvidenceIntegrityViolations,
+} from '@/lib/reasoning/evidence-coverage'
 import {
   attachAnalysisSchemaVersion,
   computeSurvivalDiagnostics,
@@ -13,11 +18,15 @@ import {
 } from '@/lib/reasoning/evidence-integrity'
 import { deriveLandscapeFromEvidence } from '@/lib/reasoning/landscape-from-evidence'
 import { computeJudgmentConfidence } from '@/lib/reasoning/judgment-confidence'
+import { computeJudgmentEvidenceProfile } from '@/lib/reasoning/judgment-evidence-profile'
+import { validateAndCalibrateJudgment } from '@/lib/reasoning/judgment-validator'
 import {
   alignJudgmentPropositions,
   buildSourceCountSummary,
 } from '@/lib/reasoning/judgment-lineage'
 import { applyJudgmentGate, assessJudgmentGate } from '@/lib/reasoning/judgment-gate'
+import { filterPropositionAlignedRelationships } from '@/lib/reasoning/proposition-alignment'
+import { filterComplementaryAlignedRelationships } from '@/lib/reasoning/complementary-alignment'
 import {
   buildSynthesisAndJudgment,
   clusterSources,
@@ -36,6 +45,10 @@ import {
   enrichClaimsForCrossSourceCandidates,
   evaluateCandidateCollapseWarning,
 } from '@/lib/reasoning/candidate-funnel'
+import {
+  buildVerificationDiagnosticsBundle,
+  evaluateCandidateVerificationCollapseWarning,
+} from '@/lib/reasoning/verification-diagnostics'
 import { buildClaimTransitionDiagnostics } from '@/lib/reasoning/claim-transition'
 import { buildSourceParticipationDiagnostics } from '@/lib/reasoning/source-participation'
 import {
@@ -266,16 +279,48 @@ export async function runReasoningPipeline(input: {
   const usableClaimIds = new Set(claims.map((c) => c.id))
   const preQualityUsableClaims = [...claims]
 
+  const comparablePool = buildComparableClaimPool({
+    usableClaims: preQualityUsableClaims,
+    evidence: ingested.evidence,
+    relevanceDiagnostics: claimRelevanceDiagnostics,
+    excludedSourceIds: new Set(excludedSources.map((e) => e.sourceId)),
+    centralQuestion: clustered.centralQuestion,
+    synthesisSourceIds,
+  })
+
   const claimQuality = applyClaimQualityGate({
-    claims,
+    claims: preQualityUsableClaims,
     evidence: ingested.evidence,
     excludedSourceIds: new Set(excludedSources.map((e) => e.sourceId)),
     centralQuestion: clustered.centralQuestion,
   })
-  claims = claimQuality.accepted
+
+  const comparableClaims = comparablePool.comparableClaims
+  let generationClaims = comparablePool.generationClaims
+  claims = comparableClaims
+
+  const evidenceIntegrityViolations = findEvidenceIntegrityViolations(generationClaims)
+  if (evidenceIntegrityViolations.length > 0) {
+    for (const v of evidenceIntegrityViolations) {
+      pipelineWarnings.push({
+        code: 'EVIDENCE_INTEGRITY_VIOLATION',
+        message: `EVIDENCE_INTEGRITY_VIOLATION: claim ${v.claimId} source ${v.sourceId} status ${v.evidenceStatus}`,
+        claimId: v.claimId,
+        sourceId: v.sourceId,
+      })
+    }
+    generationClaims = generationClaims.filter(
+      (c) => c.evidenceStatus !== 'NO_EVIDENCE' && c.reasoningEligible !== false,
+    )
+  }
+
+  const evidenceCoverage = buildEvidenceCoverageDiagnostics({
+    allClaims,
+    generationClaims,
+  })
 
   const fidelityByClaimId = new Map(
-    claimQuality.fidelityRecords.map((r) => [
+    comparablePool.fidelityRecords.map((r) => [
       r.claimId,
       {
         status: r.status,
@@ -287,22 +332,27 @@ export async function runReasoningPipeline(input: {
     ]),
   )
 
-  const postQualityWarnings = [...pipelineWarnings]
-  const qualityCollapseRatio =
-    allClaims.length > 0 ? claims.length / allClaims.length : 0
+  const postQualityWarnings = [...pipelineWarnings, ...comparablePool.warnings.map((w) => ({
+    code: w.code,
+    message: w.message,
+    extractedClaims: allClaims.length,
+    relevantClaims: generationClaims.length,
+    relevantSources: synthesisSourceIds.size,
+  }))]
+  const generationRatio =
+    funnelFinalUsable > 0 ? generationClaims.length / funnelFinalUsable : 0
   if (
-    (allClaims.length >= 20 &&
-      qualityCollapseRatio < 0.05 &&
-      synthesisSourceIds.size >= 2) ||
+    (funnelFinalUsable >= 10 && generationRatio < 0.2 && synthesisSourceIds.size >= 2) ||
     (funnelFinalUsable >= 10 &&
-      claims.length <= 1 &&
-      synthesisSourceIds.size >= 2)
+      generationClaims.length <= 1 &&
+      synthesisSourceIds.size >= 2 &&
+      comparablePool.stats.recoveryRecovered === 0)
   ) {
     postQualityWarnings.push({
       code: 'ABNORMAL_RELEVANCE_COLLAPSE',
-      message: `Relevance collapse: ${allClaims.length} extracted → ${funnelFinalUsable} funnel-usable → ${claims.length} quality-accepted (${synthesisSourceIds.size} synthesis sources).`,
+      message: `Comparable collapse: ${allClaims.length} extracted → ${funnelFinalUsable} relevance-usable → ${comparableClaims.length} comparable → ${generationClaims.length} generation-eligible (${synthesisSourceIds.size} synthesis sources). Strict quality-accepted: ${claimQuality.accepted.length}.`,
       extractedClaims: allClaims.length,
-      relevantClaims: claims.length,
+      relevantClaims: generationClaims.length,
       relevantSources: synthesisSourceIds.size,
     })
   }
@@ -311,11 +361,18 @@ export async function runReasoningPipeline(input: {
   const pipelineStats: PipelineStats = {
     sourcesCount: sources.length,
     claimsExtracted: allClaims.length,
-    relevantClaims: claims.length,
+    relevantClaims: comparableClaims.length,
     acceptedClaims: claimQuality.accepted.length,
     rejectedClaims: claimQuality.stats.rejected,
-    duplicateClaimsMerged: claimQuality.stats.duplicatesMerged,
+    duplicateClaimsMerged: comparablePool.stats.duplicatesMerged,
     funnelFinalUsable,
+    topicRelevant: relevanceFunnel.funnel.topicRelevant,
+    comparableClaims: comparablePool.stats.comparable,
+    generationEligible: comparablePool.stats.generationEligible,
+    highConfidenceClaims: comparablePool.stats.highConfidence,
+    comparableLimited: comparablePool.stats.limited,
+    comparableExcluded: comparablePool.stats.excluded,
+    comparableRecoveryRecovered: comparablePool.stats.recoveryRecovered,
     claimsPrimaryTier: relevanceFunnel.funnel.primaryTier,
     claimsSupportingTier: relevanceFunnel.funnel.supportingTier,
     claimsPeripheralTier: relevanceFunnel.funnel.peripheralTier,
@@ -367,20 +424,22 @@ export async function runReasoningPipeline(input: {
 
   onProgress?.({ type: 'phase', phase: 'relationships', status: 'start' })
   const claimsForCandidates = enrichClaimsForCrossSourceCandidates({
-    acceptedClaims: claims,
+    acceptedClaims: generationClaims,
     supplementalClaims: peripheralClaims,
     synthesisSourceIds,
     minPerSource: 2,
-    maxTotal: 24,
+    maxTotal: 28,
   })
   const claimTransitionDiagnostics = buildClaimTransitionDiagnostics({
     allClaims,
     usableClaimIds,
     relevanceDiagnostics: claimRelevanceDiagnostics,
+    comparableIds: new Set(comparableClaims.map((c) => c.id)),
+    generationEligibleIds: new Set(generationClaims.map((c) => c.id)),
+    generationClaimIds: new Set(claimsForCandidates.claims.map((c) => c.id)),
     qualityAcceptedIds: new Set(claimQuality.accepted.map((c) => c.id)),
     qualityRejected: claimQuality.rejected,
-    generationClaimIds: new Set(claimsForCandidates.claims.map((c) => c.id)),
-    fidelityByClaimId,
+    comparableRecords: comparablePool.records,
   })
   const {
     candidates,
@@ -430,6 +489,12 @@ export async function runReasoningPipeline(input: {
   rejected = partialStrict.rejected
   pipelineStats.partialAgreementRejected = partialStrict.partialRejected
 
+  const claimById = new Map(claims.map((c) => [c.id, c]))
+  const judgmentEligibleVerified = filterComplementaryAlignedRelationships(
+    filterPropositionAlignedRelationships(verified, claimById),
+    claimById,
+  )
+
   pipelineStats.verifiedRelationships = verified.length
   pipelineStats.rejectedRelationships = rejected.length
   pipelineStats.verifiedAgreements = verified.filter(
@@ -451,9 +516,27 @@ export async function runReasoningPipeline(input: {
     message: `Verified ${verified.length}, rejected ${rejected.length}`,
   })
 
+  const verificationDiagnosticsBundle = buildVerificationDiagnosticsBundle({
+    candidates,
+    verified,
+    rejected,
+    verificationDiagnostics,
+    generationClaims: claimsForCandidates.claims,
+    allClaims,
+    evidence: ingested.evidence,
+    relevantSourceIds: [...synthesisSourceIds],
+  })
+  const verificationCollapseWarning = evaluateCandidateVerificationCollapseWarning({
+    candidateCount: candidates.length,
+    verifiedCount: verified.length,
+  })
+  if (verificationCollapseWarning) {
+    pipelineWarnings = [...pipelineWarnings, verificationCollapseWarning]
+  }
+
   onProgress?.({ type: 'log', message: 'Semantic deduplication and clustering…' })
   const compressed = compressVerifiedRelationships({
-    verified,
+    verified: judgmentEligibleVerified,
     claims,
     evidence: ingested.evidence,
     centralQuestion: clustered.centralQuestion,
@@ -472,6 +555,7 @@ export async function runReasoningPipeline(input: {
   const sourceParticipation = buildSourceParticipationDiagnostics({
     allClaims,
     relevanceUsableClaims: relevanceFunnel.usableClaims,
+    comparableClaims,
     qualityAcceptedClaims: claimQuality.accepted,
     generationClaims: claimsForCandidates.claims,
     candidates,
@@ -507,6 +591,16 @@ export async function runReasoningPipeline(input: {
   })
 
   onProgress?.({ type: 'phase', phase: 'synthesis', status: 'start' })
+
+  const judgmentEvidenceProfile = computeJudgmentEvidenceProfile({
+    totalSourceCount: synthesisSourceIds.size,
+    significantClusters,
+    verifiedRelationships: judgmentEligibleVerified,
+    claims,
+    evidence: ingested.evidence,
+    knowledgeGaps: [],
+  })
+
   let { synthesis, judgment, landscape, knowledgeGaps } = await buildSynthesisAndJudgment({
     centralQuestion: clustered.centralQuestion,
     claims,
@@ -514,9 +608,16 @@ export async function runReasoningPipeline(input: {
     patterns,
     excludedCount: excludedSources.length,
     outputLanguage,
+    evidenceProfile: judgmentEvidenceProfile,
+    significantClusters,
   })
   onProgress?.({ type: 'phase', phase: 'synthesis', status: 'complete' })
   onProgress?.({ type: 'phase', phase: 'judgment', status: 'complete' })
+
+  if (judgment) {
+    const calibrated = validateAndCalibrateJudgment(judgment, judgmentEvidenceProfile)
+    judgment = calibrated.judgment
+  }
 
   landscape = deriveLandscapeFromEvidence({
     significantClusters,
@@ -532,7 +633,7 @@ export async function runReasoningPipeline(input: {
     knowledgeGaps,
     claims,
     evidence: ingested.evidence,
-    verifiedRelationships: verified,
+    verifiedRelationships: judgmentEligibleVerified,
   })
   judgment = propositionAligned.judgment
   pipelineStats.unsupportedJudgmentPropositionsRemoved = propositionAligned.propositions.filter(
@@ -547,7 +648,7 @@ export async function runReasoningPipeline(input: {
     significantClusters,
     patterns,
     knowledgeGaps,
-    verifiedRelationships: verified,
+    verifiedRelationships: judgmentEligibleVerified,
   })
   judgment = grounded.judgment
   pipelineStats.unsupportedJudgmentPropositionsRemoved +=
@@ -622,19 +723,31 @@ export async function runReasoningPipeline(input: {
   finalJudgment = finalPropositionAligned.judgment
 
   if (finalJudgment) {
+    const profileWithGaps = computeJudgmentEvidenceProfile({
+      totalSourceCount: synthesisSourceIds.size,
+      significantClusters,
+      verifiedRelationships: verified,
+      claims,
+      evidence: ingested.evidence,
+      knowledgeGaps,
+    })
     const confidenceResult = computeJudgmentConfidence({
       judgment: finalJudgment,
       significantClusters,
       relevantSourceCount: synthesisSourceIds.size,
-      verifiedPairCount: verified.length,
+      verifiedPairCount: judgmentEligibleVerified.length,
+      verifiedRelationships: judgmentEligibleVerified,
       propositions: finalPropositionAligned.propositions,
       knowledgeGaps,
       centralQuestion: clustered.centralQuestion,
+      evidenceProfile: profileWithGaps,
     })
     finalJudgment = {
       ...finalJudgment,
       confidence: confidenceResult.confidence,
     }
+    const calibrated = validateAndCalibrateJudgment(finalJudgment, profileWithGaps)
+    finalJudgment = calibrated.judgment
     pipelineStats.judgmentConfidenceScore = confidenceResult.factors?.finalScore
   }
 
@@ -734,6 +847,9 @@ export async function runReasoningPipeline(input: {
   result.diagnostics.candidateGenerationDiagnostics = generationDiagnostics?.slice(0, 50)
   result.diagnostics.sourceParticipation = sourceParticipation
   result.diagnostics.claimTransitionDiagnostics = claimTransitionDiagnostics.slice(0, 120)
-  result.diagnostics.relationshipVerificationDiagnostics = verificationDiagnostics.slice(0, 50)
+  result.diagnostics.comparableClaimFunnel = comparablePool.stats
+  result.diagnostics.relationshipVerificationDiagnostics = verificationDiagnostics
+  result.diagnostics.verificationDiagnosticsBundle = verificationDiagnosticsBundle
+  result.diagnostics.evidenceCoverage = evidenceCoverage
   return attachAnalysisSchemaVersion(result)
 }

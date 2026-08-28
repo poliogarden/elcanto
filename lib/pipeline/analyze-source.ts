@@ -128,6 +128,7 @@ async function analyzeHierarchical(
 
   const markedSections = coverageSections.map((s) => ({
     ...s,
+    text: sectionById.get(s.sectionId)?.text ?? s.text,
     deepAnalyzed: deepIdSet.has(s.sectionId),
   }))
 

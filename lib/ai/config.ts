@@ -40,7 +40,7 @@ export const ANALYSIS_VERSION = '6'
 /** Bump when SourceAnalysis JSON shape changes. */
 export const ANALYSIS_SCHEMA_VERSION = '3'
 /** Bump when coverage pass prompt/schema changes. */
-export const COVERAGE_PROMPT_VERSION = '2'
+export const COVERAGE_PROMPT_VERSION = '3'
 
 export const AI_CONFIG = {
   defaultModel: DEFAULT_MODEL,

@@ -9,7 +9,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval:reasoning": "node scripts/eval-reasoning.mjs",
+    "eval:reasoning:suite": "node scripts/eval-reasoning-suite.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1111.0",

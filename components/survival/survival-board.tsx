@@ -146,6 +146,12 @@ export function SurvivalBoard({ survival, document }: Props) {
           <p className="mt-3 text-xs text-ink-soft">
             <ConfidenceDot level={survival.synthesis.confidence} />{' '}
             {survival.synthesis.confidence} confidence
+            {survival.synthesis.sourceCoverageNote && (
+              <>
+                <br />
+                <span className="text-ink-soft/80">{survival.synthesis.sourceCoverageNote}</span>
+              </>
+            )}
           </p>
           {explorerGraph && (
             <JudgmentProvenance

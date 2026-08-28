@@ -1,6 +1,7 @@
 import type {
   ReasoningJudgment,
   ReasoningKnowledgeGap,
+  ReasoningRelationship,
   RelationshipCluster,
 } from '@/lib/reasoning/types'
 import type { JudgmentPropositionLineage } from '@/lib/reasoning/judgment-lineage'
@@ -22,14 +23,21 @@ export function computeJudgmentConfidence(input: {
   significantClusters: RelationshipCluster[]
   relevantSourceCount: number
   verifiedPairCount: number
+  verifiedRelationships?: ReasoningRelationship[]
   propositions: JudgmentPropositionLineage[]
   knowledgeGaps: ReasoningKnowledgeGap[]
   centralQuestion: string
+  evidenceProfile?: import('@/lib/reasoning/judgment-evidence-profile').JudgmentEvidenceProfile
 }): {
   confidence: ReasoningJudgment['confidence']
   factors: JudgmentConfidenceFactors | null
 } {
   if (!input.judgment) return { confidence: 'low', factors: null }
+
+  const finalProposition = input.propositions[0]
+  if (finalProposition?.supportStatus === 'UNSUPPORTED') {
+    return { confidence: 'low', factors: null }
+  }
 
   const participatingSources = new Set(
     input.significantClusters.flatMap((c) => c.supportingSourceIds),
@@ -79,21 +87,69 @@ export function computeJudgmentConfidence(input: {
 
   const gapPenalty = Math.min(0.2, input.knowledgeGaps.length * 0.04)
 
+  const verifiedRelationships = input.verifiedRelationships ?? []
+  const relationshipConfidenceScore =
+    verifiedRelationships.length > 0
+      ? verifiedRelationships.reduce(
+          (sum, r) =>
+            sum +
+            (r.confidence === 'strong' ? 1 : r.confidence === 'moderate' ? 0.55 : 0.25),
+          0,
+        ) / verifiedRelationships.length
+      : 0
+
+  const relationshipCoverage =
+    input.relevantSourceCount > 0
+      ? Math.min(1, input.verifiedPairCount / input.relevantSourceCount)
+      : 0
+
   const finalScore =
-    sourceCoverage * 0.28 +
-    clusterStrength * 0.28 +
-    evidenceDiversity * 0.12 +
-    claimSpecificity * 0.18 +
+    sourceCoverage * 0.24 +
+    clusterStrength * 0.22 +
+    evidenceDiversity * 0.1 +
+    claimSpecificity * 0.14 +
+    relationshipConfidenceScore * 0.14 +
+    relationshipCoverage * 0.1 +
     tensionCoverage -
     unsupportedPenalty -
     pairInflationPenalty -
     gapPenalty
 
   let confidence: ReasoningJudgment['confidence'] = 'low'
-  if (finalScore >= 0.62 && sourceCoverage >= 0.66 && unsupportedCount === 0) {
+  if (
+    finalScore >= 0.62 &&
+    sourceCoverage >= 0.66 &&
+    unsupportedCount === 0 &&
+    relationshipConfidenceScore >= 0.55 &&
+    relationshipCoverage >= 0.5
+  ) {
     confidence = 'high'
   } else if (finalScore >= 0.38) {
     confidence = 'moderate'
+  }
+
+  const supportCeiling =
+    Math.min(sourceCoverage, relationshipCoverage, relationshipConfidenceScore + 0.05, clusterStrength)
+  if (confidence === 'high' && supportCeiling < 0.62) confidence = 'moderate'
+  if (confidence === 'moderate' && supportCeiling < 0.35) confidence = 'low'
+  if (unsupportedCount > 0) confidence = 'low'
+  if (finalProposition?.supportStatus === 'PARTIALLY_SUPPORTED' && confidence === 'high') {
+    confidence = 'moderate'
+  }
+
+  if (input.evidenceProfile) {
+    const ceiling = input.evidenceProfile.confidenceCeiling
+    if (ceiling === 'LOW' || ceiling === 'WEAK') confidence = 'low'
+    else if (ceiling === 'MODERATE' && confidence === 'high') confidence = 'moderate'
+    else if (ceiling === 'HIGH') {
+      // keep computed confidence
+    }
+    if (
+      input.evidenceProfile.participatingSources < input.evidenceProfile.totalSources &&
+      confidence === 'high'
+    ) {
+      confidence = 'moderate'
+    }
   }
 
   return {

@@ -28,6 +28,8 @@ import {
   RelationshipVerificationSchema,
   SynthesisJudgmentSchema,
 } from '@/lib/reasoning/schemas'
+import type { JudgmentEvidenceProfile } from '@/lib/reasoning/judgment-evidence-profile'
+import { formatJudgmentEvidenceProfileForPrompt } from '@/lib/reasoning/judgment-evidence-profile'
 import type {
   DiscoveryLevel,
   ReasoningClaim,
@@ -41,15 +43,80 @@ import type {
   ReasoningSynthesisBlock,
   RejectionReason,
   RelationshipCandidate,
+  RelationshipCluster,
   RelationshipVerificationDiagnostic,
   SourceRelevance,
 } from '@/lib/reasoning/types'
 import {
+  assessDimensionCompatibility,
+  assessMinimumSharedProposition,
+  assessRelationshipPropositionFidelity,
+  classifyPropositionDimension,
+} from '@/lib/reasoning/proposition-alignment'
+import {
+  assessComplementarySharedExplanation,
+  COMPLEMENTARY_VERIFICATION_TYPES,
+} from '@/lib/reasoning/complementary-alignment'
+import {
   AGREEMENT_RELATIONSHIP_TYPES,
   passesVerificationPostGate,
   passesVerificationPreGate,
+  type VerificationAlignmentScores,
 } from '@/lib/reasoning/verification-alignment'
 import type { SourceAnalysis } from '@/lib/types/source'
+
+function shouldTreatOpposingAlignmentAsDivide(
+  from: ReasoningClaim,
+  to: ReasoningClaim,
+  scores: VerificationAlignmentScores,
+): boolean {
+  if (scores.polarity !== 'OPPOSE') return false
+  const dimA = classifyPropositionDimension(from.statement)
+  const dimB = classifyPropositionDimension(to.statement)
+  return assessDimensionCompatibility(dimA, dimB, from.statement, to.statement) !== 'DIFFERENT'
+}
+
+function rejectFalseAgreementCollapse(
+  v: { fromClaimId: string; toClaimId: string; type: string; explanation: string; confidence: 'strong' | 'moderate' | 'weak'; discoveryLevel?: DiscoveryLevel; dimension?: string; reasoningBridge?: string },
+  candidate: RelationshipCandidate | undefined,
+  from: ReasoningClaim,
+  to: ReasoningClaim,
+  confidence: 'strong' | 'moderate' | 'weak',
+  discoveryLevel: DiscoveryLevel,
+  scores: VerificationAlignmentScores,
+  verificationDiagnostics: RelationshipVerificationDiagnostic[],
+  rejected: ReasoningRelationship[],
+): void {
+  verificationDiagnostics.push({
+    fromClaimId: v.fromClaimId,
+    toClaimId: v.toClaimId,
+    fromSourceId: from.sourceId,
+    toSourceId: to.sourceId,
+    fromClaimText: from.statement.slice(0, 240),
+    toClaimText: to.statement.slice(0, 240),
+    proposedType: v.type,
+    stage: 'POST_LLM',
+    rejectionReason: 'ALIGNMENT_FAILED',
+    rejectionDetail: 'Opposing polarity on the same proposition cannot be classified as agreement.',
+    scores,
+  })
+  rejected.push(
+    buildRejected(
+      candidate ?? {
+        fromClaimId: v.fromClaimId,
+        toClaimId: v.toClaimId,
+        type: v.type,
+        rationale: v.explanation,
+        confidence,
+        discoveryLevel,
+      },
+      from,
+      to,
+      'ALIGNMENT_FAILED',
+      'Opposing polarity on the same proposition cannot be classified as agreement.',
+    ),
+  )
+}
 
 function formatClaims(claims: ReasoningClaim[]): string {
   return claims
@@ -346,6 +413,7 @@ export async function verifyRelationships(input: {
       proposedType: c.type,
       stage: 'PRE_LLM',
       rejectionReason: scores.passed ? undefined : 'ALIGNMENT_FAILED',
+      rejectionDetail: scores.passed ? undefined : scores.reason,
       scores,
     })
 
@@ -495,7 +563,114 @@ Include discoveryLevel and reasoningBridge when inference distance is high.`,
     }
 
     const strictAlignment = passesVerificationPostGate(from, to, v.type)
+    let propositionGatePass = false
+    let verifiedType: ReasoningRelationship['type'] = v.type
+
     if (
+      AGREEMENT_RELATIONSHIP_TYPES.has(v.type) &&
+      shouldTreatOpposingAlignmentAsDivide(from, to, strictAlignment)
+    ) {
+      const divideAlignment = passesVerificationPostGate(from, to, 'CONTRADICTION')
+      if (divideAlignment.passed) {
+        verifiedType = 'CONTRADICTION'
+        propositionGatePass = true
+      } else {
+        rejectFalseAgreementCollapse(
+          v,
+          candidate,
+          from,
+          to,
+          confidence,
+          discoveryLevel,
+          divideAlignment,
+          verificationDiagnostics,
+          rejected,
+        )
+        continue
+      }
+    } else if (AGREEMENT_RELATIONSHIP_TYPES.has(v.type)) {
+      const propositionGate = assessMinimumSharedProposition(from, to, v.explanation)
+      if (propositionGate.passed) {
+        propositionGatePass = true
+        if (v.type !== 'AGREEMENT') {
+          verifiedType = 'AGREEMENT'
+        }
+      } else if (v.type === 'AGREEMENT') {
+        const rejectionReason: RejectionReason =
+          propositionGate.rejectionReason === 'RELATIONSHIP_PROPOSITION_HALLUCINATION'
+            ? 'RELATIONSHIP_PROPOSITION_HALLUCINATION'
+            : propositionGate.rejectionReason === 'DIFFERENT_DIMENSION'
+              ? 'DIFFERENT_DIMENSION'
+              : 'ALIGNMENT_FAILED'
+        verificationDiagnostics.push({
+          fromClaimId: v.fromClaimId,
+          toClaimId: v.toClaimId,
+          fromSourceId: from.sourceId,
+          toSourceId: to.sourceId,
+          fromClaimText: from.statement.slice(0, 240),
+          toClaimText: to.statement.slice(0, 240),
+          proposedType: v.type,
+          stage: 'POST_LLM',
+          rejectionReason,
+          rejectionDetail: propositionGate.rejectionDetail,
+          scores: strictAlignment,
+        })
+        rejected.push(
+          buildRejected(
+            candidate ?? {
+              fromClaimId: v.fromClaimId,
+              toClaimId: v.toClaimId,
+              type: v.type,
+              rationale: v.explanation,
+              confidence,
+              discoveryLevel,
+            },
+            from,
+            to,
+            rejectionReason,
+            propositionGate.rejectionDetail ?? 'Minimum shared proposition test failed.',
+          ),
+        )
+        continue
+      } else {
+        const fidelity = assessRelationshipPropositionFidelity(from, to, v.explanation)
+        if (!fidelity.pass) {
+          verificationDiagnostics.push({
+            fromClaimId: v.fromClaimId,
+            toClaimId: v.toClaimId,
+            fromSourceId: from.sourceId,
+            toSourceId: to.sourceId,
+            fromClaimText: from.statement.slice(0, 240),
+            toClaimText: to.statement.slice(0, 240),
+            proposedType: v.type,
+            stage: 'POST_LLM',
+            rejectionReason: 'RELATIONSHIP_PROPOSITION_HALLUCINATION',
+            rejectionDetail: fidelity.reason,
+            scores: strictAlignment,
+          })
+          rejected.push(
+            buildRejected(
+              candidate ?? {
+                fromClaimId: v.fromClaimId,
+                toClaimId: v.toClaimId,
+                type: v.type,
+                rationale: v.explanation,
+                confidence,
+                discoveryLevel,
+              },
+              from,
+              to,
+              'RELATIONSHIP_PROPOSITION_HALLUCINATION',
+              fidelity.reason ?? 'Relationship proposition hallucination.',
+            ),
+          )
+          continue
+        }
+      }
+    }
+
+    if (
+      !propositionGatePass &&
       !strictAlignment.passed &&
       (AGREEMENT_RELATIONSHIP_TYPES.has(v.type) || v.discoveryLevel === 'DIRECT_MATCH')
     ) {
@@ -530,9 +705,49 @@ Include discoveryLevel and reasoningBridge when inference distance is high.`,
       continue
     }
 
+    if (COMPLEMENTARY_VERIFICATION_TYPES.has(verifiedType)) {
+      const complementaryGate = assessComplementarySharedExplanation(from, to, v.explanation)
+      if (!complementaryGate.passed) {
+        const rejectionReason: RejectionReason =
+          complementaryGate.rejectionReason === 'DIFFERENT_DIMENSION'
+            ? 'DIFFERENT_DIMENSION'
+            : 'ALIGNMENT_FAILED'
+        verificationDiagnostics.push({
+          fromClaimId: v.fromClaimId,
+          toClaimId: v.toClaimId,
+          fromSourceId: from.sourceId,
+          toSourceId: to.sourceId,
+          fromClaimText: from.statement.slice(0, 240),
+          toClaimText: to.statement.slice(0, 240),
+          proposedType: v.type,
+          stage: 'POST_LLM',
+          rejectionReason,
+          rejectionDetail: complementaryGate.rejectionDetail,
+          scores: strictAlignment,
+        })
+        rejected.push(
+          buildRejected(
+            candidate ?? {
+              fromClaimId: v.fromClaimId,
+              toClaimId: v.toClaimId,
+              type: v.type,
+              rationale: v.explanation,
+              confidence,
+              discoveryLevel,
+            },
+            from,
+            to,
+            rejectionReason,
+            complementaryGate.rejectionDetail ?? 'Complementary shared explanation test failed.',
+          ),
+        )
+        continue
+      }
+    }
+
     verified.push({
       id: `rel_${i + 1}`,
-      type: v.type,
+      type: verifiedType,
       fromClaimId: v.fromClaimId,
       toClaimId: v.toClaimId,
       fromSourceId: from.sourceId,
@@ -596,6 +811,53 @@ Include discoveryLevel and reasoningBridge when inference distance is high.`,
       if (seen.has(key)) continue
 
       const postScores = passesVerificationPostGate(from, to, candidate.type)
+
+      if (
+        AGREEMENT_RELATIONSHIP_TYPES.has(candidate.type) &&
+        shouldTreatOpposingAlignmentAsDivide(from, to, postScores)
+      ) {
+        const divideScores = passesVerificationPostGate(from, to, 'CONTRADICTION')
+        if (!divideScores.passed) {
+          verificationDiagnostics.push({
+            fromClaimId: candidate.fromClaimId,
+            toClaimId: candidate.toClaimId,
+            fromSourceId: from.sourceId,
+            toSourceId: to.sourceId,
+            fromClaimText: from.statement.slice(0, 240),
+            toClaimText: to.statement.slice(0, 240),
+            proposedType: candidate.type,
+            stage: 'POST_HEURISTIC',
+            rejectionReason: 'ALIGNMENT_FAILED',
+            rejectionDetail: 'Opposing polarity on the same proposition cannot be classified as agreement.',
+            scores: divideScores,
+          })
+          continue
+        }
+        const signals = computeConfidenceSignals(candidate, from, to)
+        const confidence = combineConfidence(signals)
+        if (confidence === 'weak' || !meetsEvidenceRequirement(candidate.discoveryLevel, signals)) {
+          continue
+        }
+        seen.add(key)
+        dedupedVerified.push({
+          id: `rel_heur_${dedupedVerified.length + 1}`,
+          type: 'CONTRADICTION',
+          fromClaimId: candidate.fromClaimId,
+          toClaimId: candidate.toClaimId,
+          fromSourceId: from.sourceId,
+          toSourceId: to.sourceId,
+          fromVideoId: from.videoId,
+          toVideoId: to.videoId,
+          explanation: candidate.rationale,
+          confidence,
+          verificationStatus: 'SUPPORTED',
+          discoveryLevel: candidate.discoveryLevel,
+          dimension: candidate.dimension,
+        })
+        if (dedupedVerified.length >= 5) break
+        continue
+      }
+
       if (!postScores.passed) {
         verificationDiagnostics.push({
           fromClaimId: candidate.fromClaimId,
@@ -610,6 +872,62 @@ Include discoveryLevel and reasoningBridge when inference distance is high.`,
           scores: postScores,
         })
         continue
+      }
+
+      if (AGREEMENT_RELATIONSHIP_TYPES.has(candidate.type)) {
+        const propositionGate = assessMinimumSharedProposition(
+          from,
+          to,
+          candidate.rationale,
+        )
+        if (!propositionGate.passed) {
+          verificationDiagnostics.push({
+            fromClaimId: candidate.fromClaimId,
+            toClaimId: candidate.toClaimId,
+            fromSourceId: from.sourceId,
+            toSourceId: to.sourceId,
+            fromClaimText: from.statement.slice(0, 240),
+            toClaimText: to.statement.slice(0, 240),
+            proposedType: candidate.type,
+            stage: 'POST_HEURISTIC',
+            rejectionReason:
+              propositionGate.rejectionReason === 'RELATIONSHIP_PROPOSITION_HALLUCINATION'
+                ? 'RELATIONSHIP_PROPOSITION_HALLUCINATION'
+                : propositionGate.rejectionReason === 'DIFFERENT_DIMENSION'
+                  ? 'DIFFERENT_DIMENSION'
+                  : 'ALIGNMENT_FAILED',
+            rejectionDetail: propositionGate.rejectionDetail,
+            scores: postScores,
+          })
+          continue
+        }
+      }
+
+      if (COMPLEMENTARY_VERIFICATION_TYPES.has(candidate.type)) {
+        const complementaryGate = assessComplementarySharedExplanation(
+          from,
+          to,
+          candidate.rationale,
+        )
+        if (!complementaryGate.passed) {
+          verificationDiagnostics.push({
+            fromClaimId: candidate.fromClaimId,
+            toClaimId: candidate.toClaimId,
+            fromSourceId: from.sourceId,
+            toSourceId: to.sourceId,
+            fromClaimText: from.statement.slice(0, 240),
+            toClaimText: to.statement.slice(0, 240),
+            proposedType: candidate.type,
+            stage: 'POST_HEURISTIC',
+            rejectionReason:
+              complementaryGate.rejectionReason === 'DIFFERENT_DIMENSION'
+                ? 'DIFFERENT_DIMENSION'
+                : 'ALIGNMENT_FAILED',
+            rejectionDetail: complementaryGate.rejectionDetail,
+            scores: postScores,
+          })
+          continue
+        }
       }
 
       const signals = computeConfidenceSignals(candidate, from, to)
@@ -725,6 +1043,9 @@ export async function buildSynthesisAndJudgment(input: {
   patterns: ReasoningPattern[]
   excludedCount: number
   outputLanguage?: 'ko' | 'en'
+  evidenceProfile?: JudgmentEvidenceProfile
+  significantClusters?: RelationshipCluster[]
+  knowledgeGaps?: ReasoningKnowledgeGap[]
 }): Promise<{
   synthesis: ReasoningSynthesisBlock | null
   judgment: ReasoningJudgment | null
@@ -758,6 +1079,22 @@ export async function buildSynthesisAndJudgment(input: {
   }
 
   const openai = getOpenAIClient()
+
+  const evidenceBlock = input.evidenceProfile
+    ? `\n\nJUDGMENT EVIDENCE PROFILE (binding — do not exceed):\n${formatJudgmentEvidenceProfileForPrompt(input.evidenceProfile)}`
+    : ''
+
+  const gapsBlock =
+    input.knowledgeGaps && input.knowledgeGaps.length > 0
+      ? `\n\nKNOWLEDGE GAPS:\n${input.knowledgeGaps
+          .map((g) => `- ${g.question}: ${g.whyItMatters}`)
+          .join('\n')}`
+      : ''
+
+  const contradicting = input.relationships.filter(
+    (r) => r.type === 'CONTRADICTION' || r.type === 'TENSION' || r.type === 'TRADE_OFF',
+  )
+
   const parsed = await callStructured({
     openai,
     role: 'synthesis',
@@ -765,11 +1102,18 @@ export async function buildSynthesisAndJudgment(input: {
     system: withLang(
       `Synthesize verified relationships and patterns into meaning — NOT summary merge.
 
-JUDGMENT must be an executive CONCLUSION:
+JUDGMENT must be an executive CONCLUSION calibrated to supplied evidence:
 - BAD: "MCP's Rapid Rise Redefines AI Landscape"
-- GOOD: "MCP appears valuable for reducing integration friction, but evidence does not justify treating it as a universal API replacement."
+- BAD: "MCP is fundamentally transforming AI" (when evidence is weak or partial-source)
+- GOOD: "Two of the three analyzed sources converge on MCP's value for tool integration, but evidence is insufficient to establish broader impact."
+- GOOD: "Sources characterize MCP as important for integration, without establishing market-scale effects."
 
 Rules:
+- You must NOT make a claim stronger than the supplied evidence profile and confidence ceiling.
+- Do NOT generalize support from participating sources to all analyzed sources.
+- Preserve attribution for interpretive, predictive, or promotional source claims ("sources describe…", "sources characterize…").
+- If evidence is weak or partial, explicitly communicate uncertainty.
+- Use verified propositions as the factual backbone; do not invent stronger claims.
 - synthesis.statement = what relationships collectively MEAN (abstraction above individual claims)
 - judgment must state what to believe, what is uncertain, and why
 - knowledgeGaps must link to what would CHANGE the judgment
@@ -780,6 +1124,19 @@ Rules:
     ),
     user: `Central question: ${input.centralQuestion}
 Excluded off-topic sources: ${input.excludedCount}
+${evidenceBlock}
+${gapsBlock}
+
+VERIFIED PROPOSITIONS (from clusters):
+${input.evidenceProfile?.verifiedPropositions.map((p) => p.text).join('\n') || '(see profile)'}
+
+SUPPORTING SOURCES: ${input.evidenceProfile?.supportingSourceIds.join(', ') || '(unknown)'}
+SOURCE COVERAGE: ${input.evidenceProfile?.sourceCoverage ?? 'unknown'}
+EVIDENCE STRENGTH: ${input.evidenceProfile?.evidenceStrength ?? 'unknown'}
+CONFIDENCE CEILING: ${input.evidenceProfile?.confidenceCeiling ?? 'WEAK'}
+
+CONTRADICTING RELATIONSHIPS (${contradicting.length}):
+${formatRelationships(contradicting)}
 
 Patterns: ${JSON.stringify(input.patterns, null, 2)}
 

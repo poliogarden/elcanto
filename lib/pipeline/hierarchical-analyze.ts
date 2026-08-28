@@ -39,35 +39,55 @@ const BatchSectionCoverageSchema = z.object({
   sections: z.array(SectionCoverageSchema),
 })
 
-const COVERAGE_SYSTEM = `You perform a FAST COVERAGE PASS on one section of a YouTube video transcript.
+const COVERAGE_SYSTEM = `You perform a HIGH-RECALL COVERAGE PASS on one section of a YouTube video transcript.
 
-This is NOT the final deep analysis. Your job is to map what exists in this time range.
+This is NOT a summary task. Downstream relevance and verification filters exist — your job is to preserve atomic, evidence-grounded propositions from this time range.
 
-Extract:
+GOAL: extract as many faithful atomic claims as the transcript supports. Prefer recall over aggressive pruning.
+
+For each section extract:
 - topic (short label)
-- summary (2-4 sentences)
-- claims (atomic statements with ids like "{sourceId}_sec{N}_claim_{K}")
+- summary (2-4 sentences — orientation only; NOT a substitute for claims)
+- claims: atomic propositions grounded in the transcript
 - entities mentioned
-- importanceScore: how central this section is to the video's argument (0-1)
-- noveltyScore: how novel/surprising vs generic (0-1)
-- argumentDensity: how argument-heavy vs filler (0-1)
-- evidenceDensity: how much concrete evidence/examples (0-1)
+- importanceScore, noveltyScore, argumentDensity, evidenceDensity (0-1)
+
+CLAIM RULES:
+- Use ids: "{sourceId}_sec{N}_claim_{K}" (N = section number from sectionId)
+- One proposition per claim — do NOT merge multiple ideas into one broad claim
+- If the transcript contains multiple comparisons, mechanisms, or causes, output multiple claims
+- Preserve comparative structure: keep A vs B, more/less, faster/slower, easier/harder, requires/avoids, compared with, unlike, instead of
+- Preserve explicit causal structure when the speaker states it: because, leads to, enabled, spread because (do NOT invent causation not in transcript)
+- Include definition, mechanism, comparison, cause/effect, advantage, limitation, adoption reason, technical capability, workflow change, market implication when present
+- Do NOT generalize "MCP requires less expertise than API" into "MCP is useful"
+- Do NOT convert section summaries into factual claims without transcript support
+- Do NOT invent hype, market dominance, or adoption facts absent from transcript
+
+If the section has meaningful comparative/mechanistic/causal content, claims[] should NOT be empty.
+If the section is filler/intro with no proposition, claims[] may be empty.
 
 Do NOT invent content not present in the transcript.
 Return valid JSON.`
 
-const BATCH_COVERAGE_SYSTEM = `You perform a FAST COVERAGE PASS on multiple sections of a YouTube video transcript.
+const BATCH_COVERAGE_SYSTEM = `You perform a HIGH-RECALL COVERAGE PASS on multiple sections of a YouTube video transcript.
 
-This is NOT the final deep analysis. Analyze each section independently.
+This is NOT a summary task. Analyze each section independently.
 
-For every section in the input, return one matching entry in the sections array with the same sectionId, startTime, and endTime.
+For every section in the input, return one matching entry in sections[] with the same sectionId, startTime, and endTime.
 
 Per section extract:
-- topic (short label)
-- summary (2-4 sentences)
-- claims (atomic statements with ids like "{sourceId}_sec{N}_claim_{K}")
-- entities mentioned
+- topic, summary (orientation only)
+- claims: atomic evidence-grounded propositions (ids like "{sourceId}_sec{N}_claim_{K}")
+- entities
 - importanceScore, noveltyScore, argumentDensity, evidenceDensity (0-1)
+
+CLAIM RULES (apply to every section):
+- One proposition per claim; never merge multiple ideas into one broad summary claim
+- Preserve comparisons (A vs B, more/less, faster, easier, compared with, unlike, instead of)
+- Preserve explicit causal statements from the speaker (because, leads to — only when stated)
+- Extract definition, mechanism, comparison, cause, effect, advantage, limitation, observation, adoption reason, technical capability, workflow change, market implication when present
+- High recall: if meaningful propositions exist, claims[] must not be empty
+- Do NOT hallucinate; do NOT turn summaries into unsupported facts
 
 Do NOT invent content not present in the transcript.
 Return valid JSON with all sections.`
@@ -187,7 +207,7 @@ async function runBatchSectionCoverage(input: {
     schema: BatchSectionCoverageSchema,
     schemaName: 'section_coverage_batch',
     youtubeVideoId: input.source.videoId,
-    maxOutputTokens: 1200 * input.batch.length,
+    maxOutputTokens: 1800 * input.batch.length,
   })
 
   const byId = new Map(parsed.sections.map((section) => [section.sectionId, section]))

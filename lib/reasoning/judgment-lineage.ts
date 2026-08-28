@@ -22,6 +22,60 @@ export type JudgmentPropositionLineage = {
   evidenceIds: string[]
 }
 
+export function hasPropositionLineage(p: JudgmentPropositionLineage): boolean {
+  return p.relationshipIds.length > 0 || p.claimIds.length > 0
+}
+
+export function isDefensibleJudgmentProposition(p: JudgmentPropositionLineage): boolean {
+  return (
+    (p.supportStatus === 'SUPPORTED' || p.supportStatus === 'PARTIALLY_SUPPORTED') &&
+    hasPropositionLineage(p)
+  )
+}
+
+function softenJudgmentHallucinationPhrases(text: string): string {
+  return text
+    .replace(/\bhot topic\b/gi, 'significant attention')
+    .replace(/\bredefines the landscape\b/gi, 'shapes development')
+    .replace(/\brevolutioniz(es|ing|ed)?\b/gi, 'changes')
+    .replace(/^the speaker observes:\s*/i, '')
+    .trim()
+}
+
+function deriveRelationshipBackedStatement(
+  clusters: RelationshipCluster[],
+  verifiedRelationships: ReasoningRelationship[],
+): string | null {
+  for (const cluster of clusters) {
+    for (const rid of cluster.memberRelationshipIds) {
+      const rel = verifiedRelationships.find((r) => r.id === rid)
+      if (rel?.explanation?.trim()) {
+        return softenJudgmentHallucinationPhrases(rel.explanation)
+      }
+    }
+  }
+  for (const rel of verifiedRelationships) {
+    if (rel.explanation?.trim()) {
+      return softenJudgmentHallucinationPhrases(rel.explanation)
+    }
+  }
+  return null
+}
+
+function deriveClusterBackedStatement(clusters: RelationshipCluster[]): string | null {
+  if (clusters.length === 0) return null
+  const softened = softenJudgmentHallucinationPhrases(clusters[0].canonicalClaim)
+  return softened || null
+}
+
+function statementNeedsRepair(
+  prop: JudgmentPropositionLineage | undefined,
+): boolean {
+  if (!prop) return true
+  if (prop.supportStatus === 'UNSUPPORTED') return true
+  return !isDefensibleJudgmentProposition(prop)
+}
+
 export type SourceCountSummary = {
   submittedSourceCount: number
   analyzedSourceCount: number
@@ -91,18 +145,94 @@ function clustersForText(
   return clusters.filter((c) => overlapRatio(text, c.canonicalClaim) >= minOverlap)
 }
 
-function lineageFromClusters(
-  clusters: RelationshipCluster[],
+function lineageFromVerifiedRelationship(
+  rel: ReasoningRelationship,
   claims: ReasoningClaim[],
   evidence: ReasoningEvidence[],
 ): Pick<
   JudgmentPropositionLineage,
   'clusterIds' | 'relationshipIds' | 'claimIds' | 'sourceIds' | 'evidenceIds'
 > {
+  const claimIds = [rel.fromClaimId, rel.toClaimId].filter(Boolean)
+  const sourceIds = [rel.fromSourceId, rel.toSourceId].filter(Boolean)
+  const evidenceIds = claimIds.flatMap(
+    (cid) => claims.find((c) => c.id === cid)?.evidenceIds ?? [],
+  )
+  return {
+    clusterIds: [],
+    relationshipIds: [rel.id],
+    claimIds,
+    sourceIds,
+    evidenceIds: evidenceIds.filter((eid) => evidence.some((e) => e.id === eid)),
+  }
+}
+
+function assessVerifiedRelationshipBacking(
+  text: string,
+  input: {
+    claims: ReasoningClaim[]
+    evidence: ReasoningEvidence[]
+    verifiedRelationships: ReasoningRelationship[]
+  },
+): JudgmentPropositionLineage | null {
+  const trimmed = text.trim()
+  if (!trimmed) return null
+
+  for (const rel of input.verifiedRelationships) {
+    const explanation = rel.explanation?.trim()
+    if (!explanation) continue
+    const explanationOverlap = overlapRatio(trimmed, explanation)
+    const claimA = input.claims.find((c) => c.id === rel.fromClaimId)
+    const claimB = input.claims.find((c) => c.id === rel.toClaimId)
+    const claimOverlap = Math.max(
+      claimA ? overlapRatio(trimmed, claimA.statement) : 0,
+      claimB ? overlapRatio(trimmed, claimB.statement) : 0,
+    )
+    if (explanationOverlap < 0.3 && claimOverlap < 0.22) continue
+
+    const lineage = lineageFromVerifiedRelationship(rel, input.claims, input.evidence)
+    const linkedClaims = lineage.claimIds
+      .map((id) => input.claims.find((c) => c.id === id))
+      .filter(Boolean) as ReasoningClaim[]
+    const hypeHeavy =
+      linkedClaims.length > 0 &&
+      linkedClaims.every(
+        (c) =>
+          c.claimQualityClass === 'HYPE' ||
+          /\b(revolution|transform|game[- ]?changer|hot topic)\b/i.test(c.statement),
+      )
+
+    return {
+      proposition: trimmed,
+      supportStatus: hypeHeavy ? 'PARTIALLY_SUPPORTED' : 'SUPPORTED',
+      ...lineage,
+    }
+  }
+
+  return null
+}
+
+function lineageFromClusters(
+  clusters: RelationshipCluster[],
+  claims: ReasoningClaim[],
+  evidence: ReasoningEvidence[],
+  verifiedRelationships: ReasoningRelationship[],
+): Pick<
+  JudgmentPropositionLineage,
+  'clusterIds' | 'relationshipIds' | 'claimIds' | 'sourceIds' | 'evidenceIds'
+> {
   const clusterIds = clusters.map((c) => c.id)
   const relationshipIds = [...new Set(clusters.flatMap((c) => c.memberRelationshipIds))]
-  const claimIds = [...new Set(clusters.flatMap((c) => c.supportingClaimIds))]
-  const sourceIds = [...new Set(clusters.flatMap((c) => c.supportingSourceIds))]
+  let claimIds = [...new Set(clusters.flatMap((c) => c.supportingClaimIds))]
+  let sourceIds = [...new Set(clusters.flatMap((c) => c.supportingSourceIds))]
+
+  for (const rid of relationshipIds) {
+    const rel = verifiedRelationships.find((r) => r.id === rid)
+    if (!rel) continue
+    claimIds = [...new Set([...claimIds, rel.fromClaimId, rel.toClaimId])]
+    sourceIds = [...new Set([...sourceIds, rel.fromSourceId, rel.toSourceId])]
+  }
+
   const evidenceIds = claimIds.flatMap(
     (cid) => claims.find((c) => c.id === cid)?.evidenceIds ?? [],
   )
@@ -201,10 +331,36 @@ function assessProposition(
   )
 
   if (matchedClusters.length > 0) {
-    const lineage = lineageFromClusters(matchedClusters, input.claims, input.evidence)
+    const lineage = lineageFromClusters(
+      matchedClusters,
+      input.claims,
+      input.evidence,
+      input.verifiedRelationships,
+    )
+    const clusterClaims = lineage.claimIds
+      .map((id) => input.claims.find((c) => c.id === id))
+      .filter(Boolean) as ReasoningClaim[]
+    const allNoEvidence =
+      clusterClaims.length > 0 &&
+      clusterClaims.every(
+        (c) =>
+          c.evidenceIds.length === 0 ||
+          c.evidenceStrength === 'NONE' ||
+          c.evidenceStrength === 'WEAK',
+      )
+    const hypeHeavy =
+      clusterClaims.length > 0 && clusterClaims.every(
+        (c) =>
+          c.claimQualityClass === 'HYPE' ||
+          c.claimType === 'predictive' ||
+          /\b(revolution|transform|game[- ]?changer)\b/i.test(c.statement),
+      )
+    let supportStatus: PropositionSupportStatus = 'SUPPORTED'
+    if (allNoEvidence) supportStatus = 'PARTIALLY_SUPPORTED'
+    if (hypeHeavy) supportStatus = 'PARTIALLY_SUPPORTED'
     return {
       proposition: trimmed,
-      supportStatus: 'SUPPORTED',
+      supportStatus,
       ...lineage,
     }
   }
@@ -253,13 +409,18 @@ function assessProposition(
     }
   }
 
-  const hasAnyEvidence =
-    input.significantClusters.length > 0 ||
-    evidenceBackedPatterns.length > 0 ||
-    input.insights.length > 0
+  const relationshipBacked = assessVerifiedRelationshipBacking(trimmed, {
+    claims: input.claims,
+    evidence: input.evidence,
+    verifiedRelationships: input.verifiedRelationships,
+  })
+  if (relationshipBacked) {
+    return relationshipBacked
+  }
+
   return {
     proposition: trimmed,
-    supportStatus: hasAnyEvidence ? 'PARTIALLY_SUPPORTED' : 'UNSUPPORTED',
+    supportStatus: 'UNSUPPORTED',
     clusterIds: [],
     relationshipIds: [],
     claimIds: [],
@@ -306,17 +467,28 @@ export function alignJudgmentPropositions(input: {
   const statementProp = propositions[0]
   let statement = input.judgment.statement
 
-  if (statementProp?.supportStatus === 'UNSUPPORTED') {
-    if (
-      input.synthesis?.statement &&
-      assessProposition(input.synthesis.statement, assessInput).supportStatus !== 'UNSUPPORTED'
-    ) {
-      statement = input.synthesis.statement
-    } else if (input.significantClusters.length > 0) {
-      statement = input.significantClusters[0].canonicalClaim
-    } else {
+  if (statementNeedsRepair(statementProp)) {
+    const candidates = [
+      input.synthesis?.statement,
+      deriveRelationshipBackedStatement(
+        input.significantClusters,
+        assessInput.verifiedRelationships,
+      ),
+      deriveClusterBackedStatement(input.significantClusters),
+    ].filter(Boolean) as string[]
+
+    let repaired: string | null = null
+    for (const candidate of candidates) {
+      const assessed = assessProposition(candidate, assessInput)
+      if (isDefensibleJudgmentProposition(assessed)) {
+        repaired = candidate
+        break
+      }
+    }
+    if (!repaired) {
       return { judgment: null, propositions }
     }
+    statement = repaired
   } else if (statementProp?.supportStatus === 'PARTIALLY_SUPPORTED') {
     statement = statement.replace(/\b(will|must|definitely|clearly proves)\b/gi, 'may')
   }
@@ -333,11 +505,19 @@ export function alignJudgmentPropositions(input: {
   const whatIsUncertain =
     propositions[3]?.supportStatus === 'UNSUPPORTED' ? '' : input.judgment.whatIsUncertain
 
+  const finalFields = [statement, whatIsSupported, keyReason, whatIsUncertain].filter(Boolean)
+  const finalPropositions = finalFields.map((text) => assessProposition(text, assessInput))
+
+  const finalStatementProp = finalPropositions[0]
+  if (!finalStatementProp || !isDefensibleJudgmentProposition(finalStatementProp)) {
+    return { judgment: null, propositions: finalPropositions }
+  }
+
   const filteredMissing = input.judgment.missingEvidence.filter(
     (m) => assessProposition(m, assessInput).supportStatus !== 'UNSUPPORTED',
   )
 
-  const supportedPropositions = propositions.filter((p) => p.supportStatus === 'SUPPORTED')
+  const supportedPropositions = finalPropositions.filter((p) => p.supportStatus === 'SUPPORTED')
   const reasoningSteps = supportedPropositions.map((p) => ({
     statement: p.proposition,
     clusterIds: p.clusterIds,
@@ -347,7 +527,7 @@ export function alignJudgmentPropositions(input: {
 
   const limitations = [
     ...input.knowledgeGaps.map((g) => g.question),
-    ...propositions
+    ...finalPropositions
       .filter((p) => p.supportStatus === 'UNSUPPORTED')
       .map((p) => `Unsupported: ${p.proposition.slice(0, 120)}`),
   ].slice(0, 6)
@@ -363,7 +543,7 @@ export function alignJudgmentPropositions(input: {
       reasoningSteps,
       limitations,
     },
-    propositions,
+    propositions: finalPropositions,
   }
 }
 

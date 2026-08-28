@@ -1,0 +1,1165 @@
+{
+  "meta": {
+    "generatedAt": "2026-08-28T06:22:10.215Z",
+    "engineVersion": "reasoning-v2.1",
+    "schemaVersion": 3,
+    "fixtureId": "mixed-irrelevant",
+    "question": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+    "inputSourceCount": 5,
+    "commit": "85693ad0ab725dd263ecb003efe0f4f48f4299f5",
+    "pipelineMode": "LIVE",
+    "e2eQualityValid": false
+  },
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_attic_01",
+      "voiceIndex": 1,
+      "title": "Cold Climate Retrofit Guide"
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_attic_02",
+      "voiceIndex": 2,
+      "title": "Northern Attic Upgrades"
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_attic_03",
+      "voiceIndex": 3,
+      "title": "Car Sound Dampening Tips"
+    },
+    {
+      "sourceId": "source_4",
+      "videoId": "bench_attic_04",
+      "voiceIndex": 4,
+      "title": "Attic Holiday Storage Ideas"
+    },
+    {
+      "sourceId": "source_5",
+      "videoId": "bench_attic_05",
+      "voiceIndex": 5,
+      "title": "Mountain Valley Weather"
+    }
+  ],
+  "reasoning": {
+    "mode": "multi",
+    "version": "reasoning-v2.1",
+    "schemaVersion": 3,
+    "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+    "clusters": [
+      {
+        "id": "primary_cluster",
+        "label": "Primary Sources on Attic Insulation R-Values",
+        "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "relevance": "primary"
+      }
+    ],
+    "sourceRelevance": [
+      {
+        "sourceId": "source_1",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "Directly addresses recommended R-values for cold-climate attic retrofits.",
+        "relevantClaimIds": [
+          "source_1_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_2",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "Provides specific R-value range (R-49 to R-60) for northern attic retrofits, relevant to the question.",
+        "relevantClaimIds": [
+          "source_2_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_3",
+        "classification": "off_topic",
+        "score": 0.1,
+        "reason": "Focuses on automotive insulation and noise control, not pertinent to attic insulation R-values.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
+      },
+      {
+        "sourceId": "source_4",
+        "classification": "off_topic",
+        "score": 0.1,
+        "reason": "Discusses attic storage solutions, not related to insulation or R-values.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
+      },
+      {
+        "sourceId": "source_5",
+        "classification": "off_topic",
+        "score": 0.1,
+        "reason": "Covers weather forecasts instead of insulation specifications, irrelevant to the insulation R-value recommendation.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
+      }
+    ],
+    "excludedSources": [
+      {
+        "sourceId": "source_3",
+        "videoId": "bench_attic_03",
+        "voiceIndex": 3,
+        "title": "Car Sound Dampening Tips",
+        "reason": "Focuses on automotive insulation and noise control, not pertinent to attic insulation R-values."
+      },
+      {
+        "sourceId": "source_4",
+        "videoId": "bench_attic_04",
+        "voiceIndex": 4,
+        "title": "Attic Holiday Storage Ideas",
+        "reason": "Discusses attic storage solutions, not related to insulation or R-values."
+      },
+      {
+        "sourceId": "source_5",
+        "videoId": "bench_attic_05",
+        "voiceIndex": 5,
+        "title": "Mountain Valley Weather",
+        "reason": "Covers weather forecasts instead of insulation specifications, irrelevant to the insulation R-value recommendation."
+      }
+    ],
+    "claims": [
+      {
+        "id": "source_1_section_1_claim_1",
+        "sourceId": "source_1",
+        "videoId": "bench_attic_01",
+        "voiceIndex": 1,
+        "statement": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+        "normalizedStatement": "building codes in cold climates recommend attic insulation with an r-value of at least r-49 for retrofit projects.",
+        "evidenceIds": [
+          "source_1_seg_section_1"
+        ],
+        "claimType": "descriptive",
+        "confidence": "strong",
+        "conceptIds": [
+          "concept_1",
+          "concept_2",
+          "concept_3"
+        ],
+        "evidenceSpans": [
+          {
+            "segmentId": "section_1",
+            "startTime": 40,
+            "endTime": 420,
+            "originalText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+            "evidenceType": "DIRECT_EVIDENCE",
+            "supportScore": 1
+          }
+        ],
+        "evidenceStatus": "DIRECT_EVIDENCE",
+        "reasoningEligible": true,
+        "evidenceText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+        "timestampStart": 40,
+        "timestampEnd": 420,
+        "role": "SUPPORTING_ARGUMENT",
+        "relevanceScore": 0.5311538461538462,
+        "originalText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+        "fidelityStatus": "SUPPORTED",
+        "fidelityMutations": [],
+        "claimScope": "general",
+        "strength": "strong",
+        "evidenceStrength": "STRONG",
+        "comparisonEligibility": "ELIGIBLE",
+        "claimQualityClass": "FACTUAL"
+      },
+      {
+        "id": "source_2_section_1_claim_1",
+        "sourceId": "source_2",
+        "videoId": "bench_attic_02",
+        "voiceIndex": 2,
+        "statement": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+        "normalizedStatement": "attic retrofits in northern regions typically target r-49 to r-60 insulation levels to minimize heat loss.",
+        "evidenceIds": [
+          "source_2_seg_section_1"
+        ],
+        "claimType": "descriptive",
+        "confidence": "strong",
+        "conceptIds": [
+          "concept_4",
+          "concept_5",
+          "concept_2"
+        ],
+        "evidenceSpans": [
+          {
+            "segmentId": "section_1",
+            "startTime": 35,
+            "endTime": 390,
+            "originalText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+            "evidenceType": "DIRECT_EVIDENCE",
+            "supportScore": 1
+          }
+        ],
+        "evidenceStatus": "DIRECT_EVIDENCE",
+        "reasoningEligible": true,
+        "evidenceText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+        "timestampStart": 35,
+        "timestampEnd": 390,
+        "role": "SUPPORTING_ARGUMENT",
+        "relevanceScore": 0.5031818181818182,
+        "originalText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+        "fidelityStatus": "SUPPORTED",
+        "fidelityMutations": [],
+        "claimScope": "general",
+        "strength": "strong",
+        "evidenceStrength": "STRONG",
+        "comparisonEligibility": "ELIGIBLE",
+        "claimQualityClass": "FACTUAL"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "source_1_seg_section_1",
+        "sourceId": "source_1",
+        "videoId": "bench_attic_01",
+        "timestampStart": 40,
+        "timestampEnd": 420,
+        "text": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_2_seg_section_1",
+        "sourceId": "source_2",
+        "videoId": "bench_attic_02",
+        "timestampStart": 35,
+        "timestampEnd": 390,
+        "text": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_3_seg_section_1",
+        "sourceId": "source_3",
+        "videoId": "bench_attic_03",
+        "timestampStart": 20,
+        "timestampEnd": 280,
+        "text": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen vibration from tires and engines.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_4_seg_section_1",
+        "sourceId": "source_4",
+        "videoId": "bench_attic_04",
+        "timestampStart": 25,
+        "timestampEnd": 260,
+        "text": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to keep floor decking clear.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_5_seg_section_1",
+        "sourceId": "source_5",
+        "videoId": "bench_attic_05",
+        "timestampStart": 10,
+        "timestampEnd": 240,
+        "text": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while afternoon sun warms exposed slopes.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      }
+    ],
+    "concepts": [
+      {
+        "id": "concept_1",
+        "label": "attic insulation",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_2",
+        "label": "R-value",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_3",
+        "label": "cold climate retrofit",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_4",
+        "label": "attic retrofit",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_5",
+        "label": "insulation",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_6",
+        "label": "automotive",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_7",
+        "label": "sound insulation",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_8",
+        "label": "cabin noise",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_9",
+        "label": "attic storage",
+        "sourceIds": [
+          "source_4"
+        ]
+      },
+      {
+        "id": "concept_10",
+        "label": "home organization",
+        "sourceIds": [
+          "source_4"
+        ]
+      },
+      {
+        "id": "concept_11",
+        "label": "seasonal decor",
+        "sourceIds": [
+          "source_4"
+        ]
+      },
+      {
+        "id": "concept_12",
+        "label": "weather forecast",
+        "sourceIds": [
+          "source_5"
+        ]
+      },
+      {
+        "id": "concept_13",
+        "label": "cold climate",
+        "sourceIds": [
+          "source_5"
+        ]
+      },
+      {
+        "id": "concept_14",
+        "label": "mountain valleys",
+        "sourceIds": [
+          "source_5"
+        ]
+      }
+    ],
+    "stances": [],
+    "assumptions": [],
+    "relationships": [],
+    "rejectedRelationships": [
+      {
+        "id": "rej_source_1_section_1_claim_1_source_2_section_1_claim_1",
+        "type": "AGREEMENT",
+        "fromClaimId": "source_1_section_1_claim_1",
+        "toClaimId": "source_2_section_1_claim_1",
+        "fromSourceId": "source_1",
+        "toSourceId": "source_2",
+        "fromVideoId": "bench_attic_01",
+        "toVideoId": "bench_attic_02",
+        "explanation": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+        "confidence": "weak",
+        "verificationStatus": "REJECTED",
+        "rejectionReason": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+        "discoveryLevel": "DIRECT_MATCH"
+      }
+    ],
+    "relationshipClusters": [],
+    "significantRelationships": [],
+    "patterns": [],
+    "synthesis": null,
+    "judgment": null,
+    "insights": [],
+    "rejectedEmergentCandidates": [],
+    "knowledgeGaps": [],
+    "landscape": {
+      "agree": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "divide": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "unclear": {
+        "countLabel": "0",
+        "cards": []
+      }
+    },
+    "diagnostics": {
+      "survivalTest": {
+        "q1_crossSourceValue": false,
+        "q2_newRelationships": false,
+        "q3_beyondSummary": false,
+        "q4_trueEmergent": false,
+        "q5_tenSecondClarity": false,
+        "q6_noForcedLinks": true,
+        "q7_structurallyDifferent": false,
+        "notes": [
+          "No verified cross-source relationships.",
+          "No emergent insights passed verification.",
+          "3 source(s) excluded from synthesis."
+        ]
+      },
+      "rejectedRelationshipCount": 1,
+      "rejectedInsightCount": 0,
+      "clusterCount": 1,
+      "primaryClusterSourceCount": 2,
+      "passesRun": [
+        "source_ingest",
+        "claim_normalization",
+        "clustering",
+        "source_relevance_enhance",
+        "claim_relevance",
+        "direct_match_discovery",
+        "semantic_discovery",
+        "inference_discovery",
+        "verification",
+        "partial_agreement_strict",
+        "semantic_deduplication",
+        "relationship_clustering",
+        "significance_ranking",
+        "evidence_integrity",
+        "patterns",
+        "synthesis",
+        "judgment",
+        "emergent",
+        "critic"
+      ],
+      "pipelineStats": {
+        "sourcesCount": 5,
+        "inputSources": 5,
+        "relevantSources": 2,
+        "excludedSources": 3,
+        "synthesizedSources": 2,
+        "claimsExtracted": 5,
+        "relevantClaims": 2,
+        "acceptedClaims": 2,
+        "rejectedClaims": 0,
+        "duplicateClaimsMerged": 0,
+        "candidatePairs": 1,
+        "directCandidates": 1,
+        "semanticCandidates": 0,
+        "inferenceCandidates": 0,
+        "verifiedRelationships": 0,
+        "rejectedRelationships": 1,
+        "emergentCandidates": 0,
+        "verifiedEmergentInsights": 0,
+        "discoveryPassesCompleted": [
+          "direct_match",
+          "semantic_relationship",
+          "topic_bridge",
+          "cross_source_inference",
+          "llm_enrichment"
+        ],
+        "deduplicatedRelationships": 0,
+        "relationshipClusters": 0,
+        "significantRelationships": 0,
+        "genericRelationshipsSuppressed": 0,
+        "duplicateRelationshipsMerged": 0,
+        "weakRelationshipsSuppressed": 0,
+        "partialAgreementRejected": 0,
+        "judgmentPropositions": 0,
+        "unsupportedJudgmentPropositionsRemoved": 4,
+        "sourceRelevancePrimary": 2,
+        "sourceRelevanceSecondary": 0,
+        "sourceRelevancePeripheral": 0,
+        "sourceRelevanceOffTopic": 3,
+        "claimsPrimaryTier": 1,
+        "claimsSupportingTier": 1,
+        "claimsPeripheralTier": 0,
+        "funnelFinalUsable": 2,
+        "verifiedAgreements": 0,
+        "verifiedComplementary": 0,
+        "verifiedContradictions": 0,
+        "crossSourceVerifiedRelationships": 0
+      },
+      "judgmentPropositionLineage": [],
+      "sourceCountSummary": {
+        "submittedSourceCount": 5,
+        "analyzedSourceCount": 5,
+        "relevantSourceCount": 2,
+        "excludedSourceCount": 3
+      },
+      "relevanceFunnel": {
+        "usableClaims": [
+          {
+            "id": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "videoId": "bench_attic_01",
+            "voiceIndex": 1,
+            "statement": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+            "normalizedStatement": "building codes in cold climates recommend attic insulation with an r-value of at least r-49 for retrofit projects.",
+            "evidenceIds": [
+              "source_1_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_2",
+              "concept_3"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 40,
+                "endTime": 420,
+                "originalText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+            "timestampStart": 40,
+            "timestampEnd": 420,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.5311538461538462
+          },
+          {
+            "id": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "videoId": "bench_attic_02",
+            "voiceIndex": 2,
+            "statement": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+            "normalizedStatement": "attic retrofits in northern regions typically target r-49 to r-60 insulation levels to minimize heat loss.",
+            "evidenceIds": [
+              "source_2_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_4",
+              "concept_5",
+              "concept_2"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 35,
+                "endTime": 390,
+                "originalText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+            "timestampStart": 35,
+            "timestampEnd": 390,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.5031818181818182
+          }
+        ],
+        "peripheralClaims": [],
+        "funnel": {
+          "extracted": 5,
+          "fromSynthesisSources": 2,
+          "topicRelevant": 2,
+          "questionAligned": 2,
+          "primaryTier": 1,
+          "supportingTier": 1,
+          "peripheralTier": 0,
+          "offTopicTier": 0,
+          "finalUsable": 2
+        },
+        "diagnostics": [
+          {
+            "claimId": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "claimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+            "relevanceScore": 0.5311538461538462,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.38461538461538464,
+            "sourcePriorScore": 0.9,
+            "tier": "PRIMARY",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "claimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+            "relevanceScore": 0.5031818181818182,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.2727272727272727,
+            "sourcePriorScore": 0.9,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          }
+        ],
+        "warnings": []
+      },
+      "claimRelevanceDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "relevanceScore": 0.5311538461538462,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.38461538461538464,
+          "sourcePriorScore": 0.9,
+          "tier": "PRIMARY",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "relevanceScore": 0.5031818181818182,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.2727272727272727,
+          "sourcePriorScore": 0.9,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        }
+      ],
+      "pipelineWarnings": [],
+      "relationshipVerificationDiagnostics": [
+        {
+          "fromClaimId": "source_1_section_1_claim_1",
+          "toClaimId": "source_2_section_1_claim_1",
+          "fromSourceId": "source_1",
+          "toSourceId": "source_2",
+          "fromClaimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "toClaimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "proposedType": "AGREEMENT",
+          "stage": "PRE_LLM",
+          "scores": {
+            "semanticSimilarity": 0.18181818181818182,
+            "topicAlignment": 0.55,
+            "subjectEntityAlignment": 0.7,
+            "predicateAlignment": 0.5,
+            "polarity": "UNKNOWN",
+            "scopeCompatibility": 0.9,
+            "evidenceCompatibility": 0.75,
+            "finalAlignment": 0.556,
+            "requiredThreshold": 0.48,
+            "failedConditions": [],
+            "passed": true,
+            "reason": "Pair is plausibly comparable — defer to full verifier."
+          }
+        },
+        {
+          "fromClaimId": "source_1_section_1_claim_1",
+          "toClaimId": "source_2_section_1_claim_1",
+          "fromSourceId": "source_1",
+          "toSourceId": "source_2",
+          "fromClaimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "toClaimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "proposedType": "AGREEMENT",
+          "stage": "POST_LLM",
+          "rejectionReason": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+          "rejectionDetail": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+          "scores": {
+            "semanticSimilarity": 0.18181818181818182,
+            "topicAlignment": 0.55,
+            "subjectEntityAlignment": 0.7,
+            "predicateAlignment": 0.5,
+            "polarity": "UNKNOWN",
+            "scopeCompatibility": 0.9,
+            "evidenceCompatibility": 0.75,
+            "finalAlignment": 0.556,
+            "requiredThreshold": 0.62,
+            "failedConditions": [
+              "final_alignment"
+            ],
+            "passed": false,
+            "reason": "Composite alignment score below required threshold."
+          }
+        },
+        {
+          "fromClaimId": "source_1_section_1_claim_1",
+          "toClaimId": "source_2_section_1_claim_1",
+          "fromSourceId": "source_1",
+          "toSourceId": "source_2",
+          "fromClaimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "toClaimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "proposedType": "AGREEMENT",
+          "stage": "POST_HEURISTIC",
+          "rejectionReason": "ALIGNMENT_FAILED",
+          "scores": {
+            "semanticSimilarity": 0.18181818181818182,
+            "topicAlignment": 0.55,
+            "subjectEntityAlignment": 0.7,
+            "predicateAlignment": 0.5,
+            "polarity": "UNKNOWN",
+            "scopeCompatibility": 0.9,
+            "evidenceCompatibility": 0.75,
+            "finalAlignment": 0.556,
+            "requiredThreshold": 0.62,
+            "failedConditions": [
+              "final_alignment"
+            ],
+            "passed": false,
+            "reason": "Composite alignment score below required threshold."
+          }
+        }
+      ],
+      "candidateFunnel": {
+        "claimsAfterRelevance": 2,
+        "claimsAfterNormalization": 2,
+        "claimsForCandidateGeneration": 2,
+        "participatingSourceCount": 2,
+        "claimsPerSource": {
+          "source_1": 1,
+          "source_2": 1
+        },
+        "possibleCrossSourcePairs": 1,
+        "pairsAfterSourceFilter": 1,
+        "heuristicDirect": 1,
+        "heuristicSemantic": 1,
+        "heuristicInference": 0,
+        "heuristicBridge": 1,
+        "heuristicTotal": 1,
+        "llmCandidatesAdded": 0,
+        "sameSourceCandidatesDropped": 0,
+        "candidatePairs": 1
+      },
+      "candidateGenerationDiagnostics": [],
+      "sourceParticipation": {
+        "rows": [
+          {
+            "sourceId": "source_1",
+            "extracted": 1,
+            "relevanceUsable": 1,
+            "comparable": 1,
+            "qualityAccepted": 1,
+            "generationClaims": 1,
+            "possibleCrossSourcePairs": 1,
+            "candidatePairsAsMember": 1,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          },
+          {
+            "sourceId": "source_2",
+            "extracted": 1,
+            "relevanceUsable": 1,
+            "comparable": 1,
+            "qualityAccepted": 1,
+            "generationClaims": 1,
+            "possibleCrossSourcePairs": 1,
+            "candidatePairsAsMember": 1,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          },
+          {
+            "sourceId": "source_3",
+            "extracted": 1,
+            "relevanceUsable": 0,
+            "comparable": 0,
+            "qualityAccepted": 0,
+            "generationClaims": 0,
+            "possibleCrossSourcePairs": 0,
+            "candidatePairsAsMember": 0,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          },
+          {
+            "sourceId": "source_4",
+            "extracted": 1,
+            "relevanceUsable": 0,
+            "comparable": 0,
+            "qualityAccepted": 0,
+            "generationClaims": 0,
+            "possibleCrossSourcePairs": 0,
+            "candidatePairsAsMember": 0,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          },
+          {
+            "sourceId": "source_5",
+            "extracted": 1,
+            "relevanceUsable": 0,
+            "comparable": 0,
+            "qualityAccepted": 0,
+            "generationClaims": 0,
+            "possibleCrossSourcePairs": 0,
+            "candidatePairsAsMember": 0,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          }
+        ],
+        "relevantSourceCount": 2,
+        "generationParticipatingCount": 2,
+        "verifiedParticipatingCount": 0
+      },
+      "claimTransitionDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "relevanceScore": 0.5311538461538462,
+          "tier": "PRIMARY",
+          "relevanceDecision": "KEEP",
+          "usable": true,
+          "comparable": true,
+          "comparisonEligibility": "ELIGIBLE",
+          "evidenceStrength": "STRONG",
+          "claimQualityClass": "FACTUAL",
+          "qualityAccepted": true,
+          "fidelityStatus": "SUPPORTED",
+          "fidelityMutation": [],
+          "evidenceText": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is bl",
+          "generationEligible": true,
+          "inGenerationSet": true
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "relevanceScore": 0.5031818181818182,
+          "tier": "SUPPORTING",
+          "relevanceDecision": "KEEP",
+          "usable": true,
+          "comparable": true,
+          "comparisonEligibility": "ELIGIBLE",
+          "evidenceStrength": "STRONG",
+          "claimQualityClass": "FACTUAL",
+          "qualityAccepted": true,
+          "fidelityStatus": "SUPPORTED",
+          "fidelityMutation": [],
+          "evidenceText": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+          "generationEligible": true,
+          "inGenerationSet": true
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "claimText": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin.",
+          "relevanceScore": 0,
+          "tier": "UNKNOWN",
+          "relevanceDecision": "DROP",
+          "usable": false,
+          "comparable": false,
+          "qualityAccepted": false,
+          "evidenceText": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen v",
+          "generationEligible": false,
+          "inGenerationSet": false
+        },
+        {
+          "claimId": "source_4_section_1_claim_1",
+          "sourceId": "source_4",
+          "claimText": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths.",
+          "relevanceScore": 0,
+          "tier": "UNKNOWN",
+          "relevanceDecision": "DROP",
+          "usable": false,
+          "comparable": false,
+          "qualityAccepted": false,
+          "evidenceText": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to ",
+          "generationEligible": false,
+          "inGenerationSet": false
+        },
+        {
+          "claimId": "source_5_section_1_claim_1",
+          "sourceId": "source_5",
+          "claimText": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys.",
+          "relevanceScore": 0,
+          "tier": "UNKNOWN",
+          "relevanceDecision": "DROP",
+          "usable": false,
+          "comparable": false,
+          "qualityAccepted": false,
+          "evidenceText": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while aftern",
+          "generationEligible": false,
+          "inGenerationSet": false
+        }
+      ],
+      "comparableClaimFunnel": {
+        "usableInput": 2,
+        "comparable": 2,
+        "generationEligible": 2,
+        "highConfidence": 2,
+        "excluded": 0,
+        "limited": 0,
+        "noEvidenceEligible": 0,
+        "hypeLimited": 0,
+        "recoveryRecovered": 0,
+        "duplicatesMerged": 0
+      },
+      "verificationDiagnosticsBundle": {
+        "candidateAudit": [
+          {
+            "candidateId": "cand_1",
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "voiceA": 1,
+            "voiceB": 2,
+            "claimA": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+            "claimB": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+            "claimAId": "source_1_section_1_claim_1",
+            "claimBId": "source_2_section_1_claim_1",
+            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
+            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
+            "origin": "direct",
+            "discoveryLevel": "DIRECT_MATCH",
+            "proposedType": "AGREEMENT",
+            "predictedRelationship": "agreement",
+            "semanticSimilarity": 0.18181818181818182,
+            "topicSimilarity": 0.55,
+            "subjectSimilarity": 0.7,
+            "predicateSimilarity": 0.5,
+            "polarityCompatibility": "UNKNOWN",
+            "candidateScore": 0.501090909090909,
+            "verificationResult": "REJECT",
+            "verificationRejectionReason": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+            "verificationStage": "POST_LLM",
+            "finalVerificationScore": 0.556,
+            "requiredThreshold": 0.62,
+            "verificationDetail": "Composite alignment score below required threshold."
+          }
+        ],
+        "topCandidates": [
+          {
+            "candidateId": "cand_1",
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "voiceA": 1,
+            "voiceB": 2,
+            "claimA": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+            "claimB": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+            "claimAId": "source_1_section_1_claim_1",
+            "claimBId": "source_2_section_1_claim_1",
+            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
+            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
+            "origin": "direct",
+            "discoveryLevel": "DIRECT_MATCH",
+            "proposedType": "AGREEMENT",
+            "predictedRelationship": "agreement",
+            "semanticSimilarity": 0.18181818181818182,
+            "topicSimilarity": 0.55,
+            "subjectSimilarity": 0.7,
+            "predicateSimilarity": 0.5,
+            "polarityCompatibility": "UNKNOWN",
+            "candidateScore": 0.501090909090909,
+            "verificationResult": "REJECT",
+            "verificationRejectionReason": "RELATIONSHIP_PROPOSITION_HALLUCINATION",
+            "verificationStage": "POST_LLM",
+            "finalVerificationScore": 0.556,
+            "requiredThreshold": 0.62,
+            "verificationDetail": "Composite alignment score below required threshold.",
+            "rank": 1
+          }
+        ],
+        "rejectionDistribution": {
+          "RELATIONSHIP_PROPOSITION_HALLUCINATION": 1
+        },
+        "crossSourceMatrix": [
+          {
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "labelA": "V1",
+            "labelB": "V2",
+            "possiblePairs": 1,
+            "generatedCandidates": 1,
+            "verifiedRelationships": 0,
+            "topRejectionReason": "RELATIONSHIP_PROPOSITION_HALLUCINATION"
+          }
+        ],
+        "claimSpecificityBySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "specific": 1,
+            "general": 0,
+            "hype": 0,
+            "meta": 0,
+            "procedural": 0,
+            "observational": 0,
+            "total": 1
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "specific": 1,
+            "general": 0,
+            "hype": 0,
+            "meta": 0,
+            "procedural": 0,
+            "observational": 0,
+            "total": 1
+          }
+        ],
+        "claimEvidenceBySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "directEvidence": 1,
+            "paraphraseSupported": 0,
+            "contextSupported": 0,
+            "noEvidence": 0,
+            "total": 1,
+            "generationDirectOrParaphrase": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "directEvidence": 1,
+            "paraphraseSupported": 0,
+            "contextSupported": 0,
+            "noEvidence": 0,
+            "total": 1,
+            "generationDirectOrParaphrase": 1,
+            "generationNoEvidence": 0
+          }
+        ],
+        "generationClaimEvidence": {
+          "total": 2,
+          "withDirectOrParaphrase": 2,
+          "withoutEvidence": 0
+        }
+      },
+      "evidenceCoverage": {
+        "extracted": 5,
+        "direct": 5,
+        "paraphrase": 0,
+        "context": 0,
+        "noEvidence": 0,
+        "reasoningEligible": 5,
+        "reasoningExcluded": 0,
+        "generationTotal": 2,
+        "generationWithEvidence": 2,
+        "generationNoEvidence": 0,
+        "bySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_3",
+            "voiceIndex": 3,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 0,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_4",
+            "voiceIndex": 4,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 0,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_5",
+            "voiceIndex": 5,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 0,
+            "generationNoEvidence": 0
+          }
+        ]
+      }
+    },
+    "createdAt": "2026-08-28T06:22:10.215Z"
+  },
+  "unitRegression": [],
+  "e2eEvaluation": {
+    "fixtureId": "mixed-irrelevant",
+    "result": "DEGRADED",
+    "infrastructureResult": "PASS",
+    "reasoningQualityResult": "DEGRADED",
+    "reason": "verifiedRelationships=0 (need > 0); relationshipClusters=0 (need > 0); agreement+divide+complementary=0 (need > 0)",
+    "failureReasons": [
+      "verifiedRelationships=0 (need > 0)",
+      "relationshipClusters=0 (need > 0)",
+      "agreement+divide+complementary=0 (need > 0)"
+    ],
+    "qualityCriteria": {
+      "relevantSources": 2,
+      "candidatePairs": 1,
+      "verifiedRelationships": 0,
+      "relationshipClusters": 0,
+      "agreementDivideComplementary": 0,
+      "verificationCollapse": false,
+      "unsupportedJudgmentPropositions": 0,
+      "unsupportedFinalJudgment": false,
+      "missingFinalJudgment": false,
+      "falseAuditedAgreement": 0,
+      "falseAuditedComplementary": 0,
+      "evidenceIntegrityViolation": false
+    }
+  }
+}

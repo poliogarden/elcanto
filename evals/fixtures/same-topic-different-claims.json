@@ -1,0 +1,7 @@
+{
+  "id": "same-topic-different-claims",
+  "question": "What is CRISPR gene editing and how is it discussed across these sources?",
+  "benchmarkDataKey": "same-topic-different-claims",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

@@ -87,6 +87,7 @@ export type SurvivalSynthesis = {
   explanation: string
   confidence: ConfidenceLevel
   judgmentBasis?: string
+  sourceCoverageNote?: string
 }
 
 export type EmergentInsight = {
