@@ -1,0 +1,116 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "How does wildfire smoke affect human health?",
+  "finalAnswer": "Wildfire smoke adversely affects human health by releasing fine particulate matter that penetrates deep into the lungs, leading to respiratory inflammation, increased asthma exacerbations, and correlating with higher rates of cardiovascular emergency admissions, particularly shortly after exposure events.",
+  "agreementCount": 0,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "nonComparableCount": 0,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1469,
+    "crossSourceMs": 2931,
+    "validationMs": 0,
+    "totalMs": 4400
+  },
+  "costSummary": {
+    "llmCalls": 3,
+    "inputTokens": 1477,
+    "outputTokens": 485,
+    "totalEstimatedCostUsd": 0.000512
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "How does wildfire smoke affect human health?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Wildfire smoke contains fine particulate matter.",
+          "These particles penetrate deep into lung tissue.",
+          "Exposure leads to respiratory inflammation.",
+          "There is an increase in asthma exacerbation rates in affected areas."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+            "startTime": 30,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.95
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions.",
+          "This correlation occurs within 48 hours of exposure peaks.",
+          "The increase in admissions is independent of pre-existing respiratory diagnoses."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_2:source_2_seg_section_1",
+            "text": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+            "startTime": 45,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "agreements": [],
+    "disagreements": [],
+    "complementaryViews": [],
+    "nonComparableSources": [],
+    "uncertainties": [
+      "Long-term health impacts of repeated exposure to wildfire smoke are not fully understood."
+    ],
+    "finalAnswer": "Wildfire smoke adversely affects human health by releasing fine particulate matter that penetrates deep into the lungs, leading to respiratory inflammation, increased asthma exacerbations, and correlating with higher rates of cardiovascular emergency admissions, particularly shortly after exposure events.",
+    "confidence": 0.9,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+        "startTime": 30,
+        "endTime": 380
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+        "startTime": 45,
+        "endTime": 400
+      }
+    ],
+    "validation": {
+      "agreementSupported": 0,
+      "agreementUnsupported": 1,
+      "disagreementSupported": 0,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 0,
+      "complementaryUnsupported": 1,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [],
+      "filteredDisagreements": [],
+      "filteredComplementary": []
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1469,
+      "crossSourceMs": 2931,
+      "validationMs": 0,
+      "totalMs": 4400
+    }
+  }
+}

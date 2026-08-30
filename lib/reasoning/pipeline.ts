@@ -40,7 +40,26 @@ import {
   buildExcludedSources,
   resolveSynthesisSourceIds,
 } from '@/lib/reasoning/relevance'
-import { resolveClaimsThroughRelevanceFunnel } from '@/lib/reasoning/claim-relevance'
+import { resolveClaimLevelRelevanceFunnel, canProceedToRelationshipDiscovery } from '@/lib/reasoning/v2/relationship-eligibility'
+import { recoverClaimsFromStructuredSources } from '@/lib/reasoning/v2/extraction-recovery'
+import { REASONING_V2_ENGINE_VERSION } from '@/lib/reasoning/v2/engine-config'
+import {
+  classifyClaimQuestionAlignment,
+  buildClaimAlignmentDistribution,
+  alignmentEligibleForCrossSource,
+  type ClaimAlignmentRecord,
+} from '@/lib/reasoning/v2/claim-question-alignment'
+import { extractQuestionIntent } from '@/lib/reasoning/v2/question-intent'
+import { isCrossSourceRelationshipEligibleClaim } from '@/lib/reasoning/v2/claim-shape-guards'
+import {
+  evaluateSourceAnswerability,
+  evaluateCrossSourceAnswerability,
+} from '@/lib/reasoning/v2/source-answerability'
+import {
+  classifyNoRelationshipReason,
+  buildNoRelationshipProductMessage,
+  applyNoRelationshipJudgmentPatch,
+} from '@/lib/reasoning/v2/no-relationship-product'
 import {
   enrichClaimsForCrossSourceCandidates,
   evaluateCandidateCollapseWarning,
@@ -76,7 +95,7 @@ import type {
 } from '@/lib/reasoning/types'
 import type { SourceAnalysis } from '@/lib/types/source'
 
-const ENGINE_VERSION = 'reasoning-v2.1'
+const ENGINE_VERSION = REASONING_V2_ENGINE_VERSION
 
 function buildInsufficientResult(input: {
   clustered: Awaited<ReturnType<typeof clusterSources>>
@@ -202,7 +221,15 @@ export async function runReasoningPipeline(input: {
 
   onProgress?.({ type: 'phase', phase: 'source_ingest', status: 'start' })
   const ingested = ingestSourceUnderstanding(sources)
-  const allClaims = filterHighSignalClaims(ingested.claims)
+  const filteredClaims = filterHighSignalClaims(ingested.claims)
+  const extractionRecovery = recoverClaimsFromStructuredSources(sources, filteredClaims)
+  const allClaims = extractionRecovery.claims
+  if (extractionRecovery.diagnostics.length > 0) {
+    onProgress?.({
+      type: 'log',
+      message: extractionRecovery.diagnostics.map((d) => d.message).join('; '),
+    })
+  }
   onProgress?.({ type: 'phase', phase: 'source_ingest', status: 'complete' })
   onProgress?.({
     type: 'log',
@@ -227,13 +254,13 @@ export async function runReasoningPipeline(input: {
     offTopicClusters: clustered.clusters.filter((c) => c.relevance === 'off_topic'),
   })
 
-  let relevanceFunnel = resolveClaimsThroughRelevanceFunnel({
+  let relevanceFunnel = resolveClaimLevelRelevanceFunnel({
     allClaims,
-    synthesisSourceIds,
     centralQuestion: clustered.centralQuestion,
     sourceRelevance: clustered.sourceRelevance,
     lockedOffTopicIds: new Set(),
   })
+  let relationshipEligibleSourceIds = relevanceFunnel.relationshipEligibleSourceIds
   let claims = relevanceFunnel.usableClaims
   let peripheralClaims = relevanceFunnel.peripheralClaims
   let claimRelevanceDiagnostics = relevanceFunnel.diagnostics
@@ -263,21 +290,65 @@ export async function runReasoningPipeline(input: {
     legacyExcluded: clustered.excluded,
     offTopicClusters,
   })
-  relevanceFunnel = resolveClaimsThroughRelevanceFunnel({
+  relevanceFunnel = resolveClaimLevelRelevanceFunnel({
     allClaims,
-    synthesisSourceIds,
     centralQuestion: clustered.centralQuestion,
     sourceRelevance: enhancedRelevance,
     lockedOffTopicIds,
   })
+  relationshipEligibleSourceIds = relevanceFunnel.relationshipEligibleSourceIds
   claims = relevanceFunnel.usableClaims
   peripheralClaims = relevanceFunnel.peripheralClaims
   claimRelevanceDiagnostics = relevanceFunnel.diagnostics
   pipelineWarnings = relevanceFunnel.warnings
 
+  const questionIntent = extractQuestionIntent(clustered.centralQuestion)
+  const claimAlignments: ClaimAlignmentRecord[] = allClaims.map((claim) => {
+    const rel = enhancedRelevance.find((r) => r.sourceId === claim.sourceId)
+    const sourceTier =
+      rel && 'tier' in rel && rel.tier
+        ? rel.tier
+        : rel?.classification === 'off_topic'
+          ? 'OFF_TOPIC'
+          : rel?.classification === 'direct'
+            ? 'PRIMARY'
+            : 'SECONDARY'
+    return classifyClaimQuestionAlignment({
+      claim,
+      intent: questionIntent,
+      sourceTier,
+      lockedOffTopic: lockedOffTopicIds.has(claim.sourceId),
+      diagnostic: claimRelevanceDiagnostics.find((d) => d.claimId === claim.id),
+    })
+  })
+  const claimAlignmentDistribution = buildClaimAlignmentDistribution(claimAlignments)
+  const alignmentByClaimId = new Map(claimAlignments.map((a) => [a.claimId, a]))
+
+  const contextualFromUsable = claims.filter(
+    (c) => !alignmentEligibleForCrossSource(alignmentByClaimId.get(c.id)?.alignment ?? 'UNRELATED'),
+  )
+  peripheralClaims = [...peripheralClaims, ...contextualFromUsable]
+  claims = claims.filter((c) =>
+    alignmentEligibleForCrossSource(alignmentByClaimId.get(c.id)?.alignment ?? 'UNRELATED'),
+  )
+
+  const sourceAnswerability = evaluateSourceAnswerability({
+    sources: sources.map((s) => ({
+      sourceId: s.sourceId,
+      title: s.title,
+    })),
+    alignments: claimAlignments,
+  })
+  const crossSourceAnswerability = evaluateCrossSourceAnswerability(sourceAnswerability)
+
   const funnelFinalUsable = claims.length
   const usableClaimIds = new Set(claims.map((c) => c.id))
   const preQualityUsableClaims = [...claims]
+
+  const participatingSourceIds = new Set([
+    ...synthesisSourceIds,
+    ...relationshipEligibleSourceIds,
+  ])
 
   const comparablePool = buildComparableClaimPool({
     usableClaims: preQualityUsableClaims,
@@ -286,6 +357,7 @@ export async function runReasoningPipeline(input: {
     excludedSourceIds: new Set(excludedSources.map((e) => e.sourceId)),
     centralQuestion: clustered.centralQuestion,
     synthesisSourceIds,
+    participatingSourceIds,
   })
 
   const claimQuality = applyClaimQualityGate({
@@ -296,7 +368,11 @@ export async function runReasoningPipeline(input: {
   })
 
   const comparableClaims = comparablePool.comparableClaims
-  let generationClaims = comparablePool.generationClaims
+  let generationClaims = comparablePool.generationClaims.filter((c) => {
+    const align = alignmentByClaimId.get(c.id)
+    if (align && !alignmentEligibleForCrossSource(align.alignment)) return false
+    return isCrossSourceRelationshipEligibleClaim(c).eligible
+  })
   claims = comparableClaims
 
   const evidenceIntegrityViolations = findEvidenceIntegrityViolations(generationClaims)
@@ -376,6 +452,11 @@ export async function runReasoningPipeline(input: {
     claimsPrimaryTier: relevanceFunnel.funnel.primaryTier,
     claimsSupportingTier: relevanceFunnel.funnel.supportingTier,
     claimsPeripheralTier: relevanceFunnel.funnel.peripheralTier,
+    claimAlignmentDirect: claimAlignmentDistribution.DIRECT,
+    claimAlignmentSupporting: claimAlignmentDistribution.SUPPORTING,
+    claimAlignmentContextual: claimAlignmentDistribution.CONTEXTUAL,
+    claimAlignmentUnrelated: claimAlignmentDistribution.UNRELATED,
+    directlyAnswerableSources: crossSourceAnswerability.directlyAnswerableSources,
     candidatePairs: 0,
     directCandidates: 0,
     semanticCandidates: 0,
@@ -392,17 +473,20 @@ export async function runReasoningPipeline(input: {
   }
 
   const gate = assessJudgmentGate({
-    synthesisSourceCount: synthesisSourceIds.size,
+    synthesisSourceCount: participatingSourceIds.size,
     claims,
     relationships: [],
     patternsCount: 0,
   })
 
-  if (!gate.canGenerate || synthesisSourceIds.size < 2) {
-    const reason =
-      synthesisSourceIds.size < 2
-        ? `Only ${synthesisSourceIds.size} relevant source(s) — need at least 2 for cross-source synthesis.`
-        : gate.reason
+  const relationshipProceed = canProceedToRelationshipDiscovery({
+    generationClaims,
+    relationshipEligibleSourceIds,
+    synthesisSourceIds,
+  })
+
+  if (!relationshipProceed.ok || !gate.canGenerate) {
+    const reason = relationshipProceed.reason ?? gate.reason
     onProgress?.({ type: 'log', message: reason })
     return buildInsufficientResult({
       clustered: { ...clustered, sourceRelevance: enhancedRelevance },
@@ -426,7 +510,7 @@ export async function runReasoningPipeline(input: {
   const claimsForCandidates = enrichClaimsForCrossSourceCandidates({
     acceptedClaims: generationClaims,
     supplementalClaims: peripheralClaims,
-    synthesisSourceIds,
+    synthesisSourceIds: participatingSourceIds,
     minPerSource: 2,
     maxTotal: 28,
   })
@@ -446,11 +530,22 @@ export async function runReasoningPipeline(input: {
     stats,
     funnel: candidateFunnel,
     generationDiagnostics,
+    candidateQualityStats,
   } = await generateRelationshipCandidates({
     claims: claimsForCandidates.claims,
     outputLanguage,
     claimsAfterRelevance: funnelFinalUsable,
+    claimAlignments,
   })
+  if (candidateQualityStats) {
+    pipelineStats.questionAlignedCandidates = candidateQualityStats.questionAlignedCandidates
+    pipelineStats.sharedPropositionCandidates = candidateQualityStats.sharedPropositionCandidates
+    pipelineStats.topicOnlyRejected = candidateQualityStats.topicOnlyRejected
+    pipelineStats.differentDimensionRejected = candidateQualityStats.differentDimensionRejected
+    pipelineStats.genericSuppressed = candidateQualityStats.genericSuppressed
+    pipelineStats.malformedSuppressed = candidateQualityStats.malformedSuppressed
+    pipelineStats.candidateQualityInput = candidateQualityStats.inputCandidates
+  }
   pipelineStats.candidatePairs = stats.candidatePairs
   pipelineStats.directCandidates = stats.directCandidates
   pipelineStats.semanticCandidates = stats.semanticCandidates
@@ -611,6 +706,34 @@ export async function runReasoningPipeline(input: {
     evidenceProfile: judgmentEvidenceProfile,
     significantClusters,
   })
+
+  if (verified.length === 0) {
+    const noRelReason = classifyNoRelationshipReason({
+      crossSource: crossSourceAnswerability,
+      candidateCount: candidates.length,
+      verifiedCount: 0,
+      preFilterCandidateCount: candidateQualityStats?.inputCandidates,
+    })
+    const noRelMessage = buildNoRelationshipProductMessage({
+      intent: questionIntent,
+      sourceAnswerability,
+      crossSource: crossSourceAnswerability,
+      reason: noRelReason,
+      outputLanguage,
+    })
+    pipelineStats.noRelationshipReason = noRelReason
+    pipelineStats.goodZeroResult = noRelMessage.isGoodZero
+    if (noRelMessage.isGoodZero || postGate.status === 'weak_evidence') {
+      const patched = applyNoRelationshipJudgmentPatch({
+        judgment,
+        synthesis,
+        message: noRelMessage,
+      })
+      judgment = patched.judgment
+      synthesis = patched.synthesis
+    }
+  }
+
   onProgress?.({ type: 'phase', phase: 'synthesis', status: 'complete' })
   onProgress?.({ type: 'phase', phase: 'judgment', status: 'complete' })
 
@@ -851,5 +974,8 @@ export async function runReasoningPipeline(input: {
   result.diagnostics.relationshipVerificationDiagnostics = verificationDiagnostics
   result.diagnostics.verificationDiagnosticsBundle = verificationDiagnosticsBundle
   result.diagnostics.evidenceCoverage = evidenceCoverage
+  result.diagnostics.questionIntent = questionIntent
+  result.diagnostics.sourceAnswerability = sourceAnswerability
+  result.diagnostics.claimAlignmentDiagnostics = claimAlignments.slice(0, 120)
   return attachAnalysisSchemaVersion(result)
 }

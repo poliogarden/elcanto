@@ -1,0 +1,7 @@
+{
+  "id": "final-decision-case-c",
+  "question": "Does remote work increase or decrease employee productivity?",
+  "benchmarkDataKey": "clear-divide",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

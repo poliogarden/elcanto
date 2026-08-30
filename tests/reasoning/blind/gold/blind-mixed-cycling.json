@@ -1,0 +1,38 @@
+{
+  "fixtureId": "blind-mixed-cycling",
+  "label": "Blind Mixed — Cycling",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "Protected bike lanes reduce cyclist injury",
+      "toClaimPattern": "extensive cycle networks report higher",
+      "normalizedProposition": "protected cycling infrastructure improves safety and commuting adoption",
+      "required": false
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_3"],
+      "reason": "cycling safety vs chess technology are unrelated"
+    },
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_2", "source_4"],
+      "reason": "cycle commuting vs coffee sourcing are unrelated"
+    }
+  ],
+  "expectedSourceParticipation": [
+    { "sourceId": "source_1", "participateInGeneration": true },
+    { "sourceId": "source_2", "participateInGeneration": true },
+    { "sourceId": "source_3", "participateInGeneration": false },
+    { "sourceId": "source_4", "participateInGeneration": false }
+  ],
+  "requireEvidenceIntegrity": true,
+  "requireDefensibleJudgment": true,
+  "allowZeroRelationships": true,
+  "minPrecision": 0.95,
+  "criticalRecall": 0
+}

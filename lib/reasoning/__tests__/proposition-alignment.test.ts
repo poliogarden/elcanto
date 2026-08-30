@@ -114,6 +114,29 @@ describe('proposition alignment precision', () => {
       const result = assessMinimumSharedProposition(a, b)
       expect(result.passed).toBe(true)
     })
+
+    it('accepts attic insulation R-49 agreement without abstract cold-climate proposition', () => {
+      const a = claim(
+        'a',
+        'source_1',
+        'Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.',
+      )
+      const b = claim(
+        'b',
+        'source_2',
+        'Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.',
+      )
+      const result = assessMinimumSharedProposition(
+        a,
+        b,
+        'Both claims agree that attic retrofits use high R-value insulation in cold regions.',
+      )
+      expect(result.passed).toBe(true)
+      expect(result.entailedByA).toBe(true)
+      expect(result.entailedByB).toBe(true)
+      expect(result.addedInference).toBe(false)
+      expect(result.sharedProposition).toBe('attic retrofit insulation levels target R-49')
+    })
   })
 
   describe('MCP verified relationship precision fixture', () => {

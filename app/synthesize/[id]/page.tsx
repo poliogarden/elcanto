@@ -12,7 +12,7 @@ export default async function SynthesizePage({ params }: PageProps) {
   return (
     <main className="flex min-h-screen flex-col bg-background">
       <Masthead />
-      <div className="flex flex-1 flex-col items-center justify-center">
+      <div className="flex flex-1 flex-col w-full">
         <AnalysisProgress synthesisId={id} />
       </div>
       <BrandFooter />

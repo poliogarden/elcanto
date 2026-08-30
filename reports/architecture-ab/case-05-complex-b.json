@@ -1,0 +1,210 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "What is CRISPR gene editing and how is it discussed across these sources?",
+  "finalAnswer": "CRISPR gene editing is a technology that allows precise modifications to DNA using a guide RNA molecule to direct an enzyme, stemming from bacterial immune defenses. It has garnered considerable investment in the biotech industry, with pharmaceutical companies actively seeking to explore its therapeutic potential.",
+  "agreementCount": 2,
+  "divideCount": 0,
+  "complementaryCount": 1,
+  "nonComparableCount": 0,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1752,
+    "crossSourceMs": 3242,
+    "validationMs": 0,
+    "totalMs": 4994
+  },
+  "costSummary": {
+    "llmCalls": 4,
+    "inputTokens": 2113,
+    "outputTokens": 707,
+    "totalEstimatedCostUsd": 0.0007409999999999999
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "What is CRISPR gene editing and how is it discussed across these sources?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "CRISPR is a gene editing technology that employs a guide RNA molecule.",
+          "The guide RNA directs an enzyme to a specific DNA sequence for precise genomic edits.",
+          "Researchers create a guide sequence that matches the target gene, enabling the Cas enzyme to cut or modify the DNA only at that location."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+            "startTime": 15,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "PARTIAL",
+        "position": null,
+        "keyPoints": [
+          "CRISPR technology has garnered significant investment in the biotech sector.",
+          "Pharmaceutical companies are actively seeking to license CRISPR editing platforms for developing therapies."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_2:source_2_seg_section_1",
+            "text": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+            "startTime": 50,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.8
+      },
+      {
+        "sourceId": "source_3",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "CRISPR is a gene-editing tool adapted from bacterial immune defenses.",
+          "It utilizes a natural RNA-guided cleavage system.",
+          "The adaptation occurred during research in the early 2010s."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_3:source_3_seg_section_1",
+            "text": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+            "startTime": 30,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "agreements": [
+      {
+        "statement": "CRISPR is a gene editing technology that utilizes RNA to direct an enzyme for precise genetic modifications.",
+        "sourceIds": [
+          "source_1",
+          "source_3"
+        ],
+        "evidenceRefs": [
+          "source_1:source_1_seg_section_1",
+          "source_3:source_3_seg_section_1"
+        ],
+        "confidence": 0.9
+      },
+      {
+        "statement": "CRISPR technology has been adapted from bacterial immune defenses and employs a natural RNA-guided cleavage system.",
+        "sourceIds": [
+          "source_2",
+          "source_3"
+        ],
+        "evidenceRefs": [
+          "source_2:source_2_seg_section_1",
+          "source_3:source_3_seg_section_1"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "disagreements": [],
+    "complementaryViews": [
+      {
+        "statement": "CRISPR has significant implications for the biotech sector, with substantial investment and interest from pharmaceutical companies for therapeutic development.",
+        "sourceIds": [
+          "source_2"
+        ],
+        "evidenceRefs": [
+          "source_2:source_2_seg_section_1"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "nonComparableSources": [],
+    "uncertainties": [],
+    "finalAnswer": "CRISPR gene editing is a technology that allows precise modifications to DNA using a guide RNA molecule to direct an enzyme, stemming from bacterial immune defenses. It has garnered considerable investment in the biotech industry, with pharmaceutical companies actively seeking to explore its therapeutic potential.",
+    "confidence": 0.9,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+        "startTime": 15,
+        "endTime": 360
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+        "startTime": 50,
+        "endTime": 400
+      },
+      {
+        "ref": "source_3:source_3_seg_section_1",
+        "sourceId": "source_3",
+        "text": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+        "startTime": 30,
+        "endTime": 380
+      }
+    ],
+    "validation": {
+      "agreementSupported": 2,
+      "agreementUnsupported": 0,
+      "disagreementSupported": 0,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 1,
+      "complementaryUnsupported": 0,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [
+        {
+          "statement": "CRISPR is a gene editing technology that utilizes RNA to direct an enzyme for precise genetic modifications.",
+          "sourceIds": [
+            "source_1",
+            "source_3"
+          ],
+          "evidenceRefs": [
+            "source_1:source_1_seg_section_1",
+            "source_3:source_3_seg_section_1"
+          ],
+          "confidence": 0.9
+        },
+        {
+          "statement": "CRISPR technology has been adapted from bacterial immune defenses and employs a natural RNA-guided cleavage system.",
+          "sourceIds": [
+            "source_2",
+            "source_3"
+          ],
+          "evidenceRefs": [
+            "source_2:source_2_seg_section_1",
+            "source_3:source_3_seg_section_1"
+          ],
+          "confidence": 0.8
+        }
+      ],
+      "filteredDisagreements": [],
+      "filteredComplementary": [
+        {
+          "statement": "CRISPR has significant implications for the biotech sector, with substantial investment and interest from pharmaceutical companies for therapeutic development.",
+          "sourceIds": [
+            "source_2"
+          ],
+          "evidenceRefs": [
+            "source_2:source_2_seg_section_1"
+          ],
+          "confidence": 0.8
+        }
+      ]
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1752,
+      "crossSourceMs": 3242,
+      "validationMs": 0,
+      "totalMs": 4994
+    }
+  }
+}

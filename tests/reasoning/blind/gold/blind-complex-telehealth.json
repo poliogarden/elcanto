@@ -1,0 +1,36 @@
+{
+  "fixtureId": "blind-complex-telehealth",
+  "label": "Blind Complex — Telehealth",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "expanded access to specialist consultations for rural",
+      "toClaimPattern": "gained specialist access through expanded telehealth",
+      "normalizedProposition": "telehealth expanded rural specialist access",
+      "required": true
+    },
+    {
+      "type": "DIVIDE",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "reduce hospital readmission rates",
+      "toClaimPattern": "readmissions for heart failure patients rose",
+      "normalizedProposition": "telehealth impact on heart failure readmissions",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_3"],
+      "fromClaimPattern": "parking garage",
+      "reason": "clinical telehealth outcomes vs parking expansion are unrelated"
+    }
+  ],
+  "requireEvidenceIntegrity": true,
+  "requireDefensibleJudgment": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

@@ -26,6 +26,7 @@ import { EvidenceDrawer } from '@/components/survival/evidence-drawer'
 import { getAnalysisResult } from '@/lib/reasoning/adapter-survival'
 import { buildExplorerGraph } from '@/lib/visualization/relationship-explorer-model'
 import type { SynthesisDocument } from '@/lib/types/synthesis-document'
+import { countFailedVoices } from '@/lib/types/synthesis-document'
 
 type DrawerState =
   | { kind: 'claim'; claim: SurvivalClaim }
@@ -72,7 +73,13 @@ export function SurvivalBoard({ survival, document }: Props) {
     survival.excludedVideoCount ??
     survival.excludedSources?.length ??
     0
+  const failedCount = countFailedVoices(document)
   const centralQuestion = survival.topicCoherence?.centralQuestion
+
+  const showSourceBanner =
+    excludedCount > 0 ||
+    failedCount > 0 ||
+    survival.topicCoherence?.coherenceLevel === 'low'
 
   function claimById(id: string): SurvivalClaim | undefined {
     return survival.claims.find((c) => c.claimId === id)
@@ -82,12 +89,15 @@ export function SurvivalBoard({ survival, document }: Props) {
     <div className="mx-auto w-full max-w-7xl px-4 py-8 font-ui sm:px-6">
       <SurvivalArchiveActions document={document} />
 
-      {(excludedCount > 0 || survival.topicCoherence?.coherenceLevel === 'low') && (
+      {(showSourceBanner) && (
         <div className="mb-6 rounded-xl border border-coral/30 bg-coral/5 px-4 py-3">
           <p className="text-sm font-medium text-ink">
-            {synthesizedCount} video{synthesizedCount !== 1 ? 's' : ''} synthesized
+            Analyzed: {synthesizedCount} video{synthesizedCount !== 1 ? 's' : ''}
+            {failedCount > 0 && (
+              <span className="text-ink-soft"> · Failed: {failedCount}</span>
+            )}
             {excludedCount > 0 && (
-              <span className="text-ink-soft"> · {excludedCount} excluded (off-topic)</span>
+              <span className="text-ink-soft"> · Excluded: {excludedCount} (off-topic)</span>
             )}
           </p>
           {centralQuestion && (

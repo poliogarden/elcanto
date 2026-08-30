@@ -1,0 +1,77 @@
+{
+  "question": "이 영상들을 함께 봤을 때만 발견할 수 있는 insight는 무엇인가?",
+  "run": {
+    "insights": [],
+    "removed": {
+      "agreements": 0,
+      "disagreements": 0,
+      "complementaryViews": 0,
+      "uniqueViews": 0,
+      "insights": 3,
+      "insight": 0
+    },
+    "diagnostics": {
+      "synthesisModel": "o3",
+      "userQuestion": "이 영상들을 함께 봤을 때만 발견할 수 있는 insight는 무엇인가?",
+      "sourceCount": 3,
+      "transcriptCharsPerSource": [
+        {
+          "sourceId": "source_1",
+          "characterCount": 2806,
+          "segmentCount": 61,
+          "transcriptSource": "youtube_captions"
+        },
+        {
+          "sourceId": "source_2",
+          "characterCount": 1217,
+          "segmentCount": 28,
+          "transcriptSource": "youtube_captions"
+        },
+        {
+          "sourceId": "source_3",
+          "characterCount": 1211,
+          "segmentCount": 44,
+          "transcriptSource": "youtube_captions"
+        }
+      ],
+      "totalInputCharacters": 5234,
+      "contextExceeded": false,
+      "candidateInsightCount": 3,
+      "validatedInsightCount": 0,
+      "removedInsightCount": 3,
+      "partiallyGroundedCount": 0,
+      "evidenceCountPerInsight": [],
+      "removedCandidates": [
+        {
+          "id": "insight_1",
+          "title": "‘모두 테크로 몰려라’ 조언이 불평등 위험을 증폭시킨다",
+          "reason": "NOT_COMPARABLE"
+        },
+        {
+          "id": "insight_2",
+          "title": "‘법조계는 버틴다’ vs. ‘법조계부터 자동화된다’",
+          "reason": "INSUFFICIENT_SOURCES"
+        },
+        {
+          "id": "insight_3",
+          "title": "‘삭제 후 자동화’ 공학 원칙이 곧 미시적 AI 규제가 될 수 있다",
+          "reason": "NOT_COMPARABLE"
+        }
+      ]
+    },
+    "cost": {
+      "llmCalls": 1,
+      "inputTokens": 3085,
+      "outputTokens": 2686,
+      "estimatedCostUsd": null
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 1175,
+      "perSourceAnswerMs": 0,
+      "crossSourceMs": 23995,
+      "validationMs": 9,
+      "finalizeMs": 0,
+      "totalMs": 25172
+    }
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "caseId": "case-02-divide",
+  "setType": "divide",
+  "label": "SET 2 Divide",
+  "centralQuestion": "Does remote work increase or decrease employee productivity?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_rw_prod_01",
+      "voiceIndex": 1,
+      "title": "Productivity Gains from Remote Work",
+      "summary": "Argues remote work boosts employee output.",
+      "thesis": "Remote work increases employee productivity.",
+      "centralQuestion": "Remote work increases employee productivity.",
+      "topics": [
+        "remote work",
+        "productivity",
+        "employee performance"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
+          "topic": "productivity",
+          "confidence": 0.88,
+          "evidenceSummary": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with fewer interruptions from meetings and hallway conversations.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 45,
+          "segmentEndTime": 420
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Remote work increases employee productivity."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 45,
+          "text": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with fewer interruptions from meetings and hallway conversations.",
+          "segmentId": "section_1",
+          "endTime": 420
+        }
+      ],
+      "stance": null,
+      "channel": "Workplace Research",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 45,
+            "endTime": 420,
+            "topic": "Productivity increase",
+            "summary": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with f",
+            "text": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with fewer interruptions from meetings and hallway conversations.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
+                "topic": "productivity",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_rw_prod_02",
+      "voiceIndex": 2,
+      "title": "When Home Offices Hurt Output",
+      "summary": "Challenges optimistic remote productivity narratives.",
+      "thesis": "Remote work decreases employee productivity in many roles.",
+      "centralQuestion": "Remote work decreases employee productivity in many roles.",
+      "topics": [
+        "remote work",
+        "productivity",
+        "home office"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
+          "topic": "productivity",
+          "confidence": 0.88,
+          "evidenceSummary": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 35,
+          "segmentEndTime": 390
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Remote work decreases employee productivity in many roles."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 35,
+          "text": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
+          "segmentId": "section_1",
+          "endTime": 390
+        }
+      ],
+      "stance": null,
+      "channel": "Management Review",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 35,
+            "endTime": 390,
+            "topic": "Productivity decrease",
+            "summary": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and inf",
+            "text": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
+                "topic": "productivity",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_rw_prod_03",
+      "voiceIndex": 3,
+      "title": "Hybrid Scheduling Models",
+      "summary": "Describes hybrid work patterns without taking a productivity side.",
+      "thesis": "Hybrid schedules mix office and remote days based on coordination needs.",
+      "centralQuestion": "Hybrid schedules mix office and remote days based on coordination needs.",
+      "topics": [
+        "hybrid work",
+        "scheduling",
+        "team coordination"
+      ],
+      "claims": [
+        {
+          "id": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "statement": "Hybrid schedules blend office and remote days depending on team coordination needs.",
+          "topic": "hybrid_scheduling",
+          "confidence": 0.88,
+          "evidenceSummary": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remote days for individual tasks.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 25,
+          "segmentEndTime": 300
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Hybrid schedules mix office and remote days based on coordination needs."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_3_seg_section_1",
+          "timestamp": 25,
+          "text": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remote days for individual tasks.",
+          "segmentId": "section_1",
+          "endTime": 300
+        }
+      ],
+      "stance": null,
+      "channel": "Team Design",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 25,
+            "endTime": 300,
+            "topic": "Hybrid patterns",
+            "summary": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remot",
+            "text": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remote days for individual tasks.",
+            "claims": [
+              {
+                "id": "source_3_section_1_claim_1",
+                "statement": "Hybrid schedules blend office and remote days depending on team coordination needs.",
+                "topic": "hybrid_scheduling",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "clear-divide",
+  "isRealYouTube": false
+}

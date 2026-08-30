@@ -1,0 +1,7 @@
+{
+  "id": "question-mismatch",
+  "question": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+  "benchmarkDataKey": "question-mismatch",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

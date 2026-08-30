@@ -1,0 +1,24 @@
+{
+  "fixtureId": "blind-agreement-ev-range",
+  "label": "Blind Agreement — EV Range",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "250 and 300 miles",
+      "toClaimPattern": "400 to 480 kilometers",
+      "normalizedProposition": "consumer EVs achieve comparable mid-range driving distance per charge",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [],
+  "expectedSourceParticipation": [
+    { "sourceId": "source_1", "participateInGeneration": true },
+    { "sourceId": "source_2", "participateInGeneration": true }
+  ],
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

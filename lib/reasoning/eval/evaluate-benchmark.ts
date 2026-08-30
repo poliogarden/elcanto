@@ -4,6 +4,11 @@ import { requiredGoldRelationships } from '@/lib/reasoning/eval/benchmark-gold'
 import { auditMetricPopulation } from '@/lib/reasoning/eval/metric-population'
 import { diagnosePipelineStageFailures } from '@/lib/reasoning/eval/pipeline-diagnosis'
 import { auditRelationshipPrecision } from '@/lib/reasoning/proposition-alignment'
+import {
+  isCoalRetirementOpposition,
+  isNullEffectOpposition,
+  isOpposingDirectionPair,
+} from '@/lib/reasoning/proposition-semantics'
 import { normalizeStatement } from '@/lib/reasoning/source-ingest'
 import type {
   BenchmarkForbiddenRelationship,
@@ -59,7 +64,7 @@ export type BenchmarkEvalResult = {
   pipelineError?: string
 }
 
-function normalizeType(type: string): BenchmarkRelationshipType | 'OTHER' {
+export function normalizeBenchmarkRelationshipType(type: string): BenchmarkRelationshipType | 'OTHER' {
   const t = type.toUpperCase()
   if (t === 'AGREEMENT') return 'AGREEMENT'
   if (t === 'CONTRADICTION' || t === 'DIVIDE' || t === 'DISAGREEMENT') return 'DIVIDE'
@@ -67,12 +72,16 @@ function normalizeType(type: string): BenchmarkRelationshipType | 'OTHER' {
   return 'OTHER'
 }
 
+function normalizeType(type: string): BenchmarkRelationshipType | 'OTHER' {
+  return normalizeBenchmarkRelationshipType(type)
+}
+
 function claimMatchesPattern(claim: ReasoningClaim | undefined, pattern: string): boolean {
   if (!claim) return false
   return normalizeStatement(claim.statement).includes(normalizeStatement(pattern))
 }
 
-function relationshipMatchesGold(
+export function relationshipMatchesGold(
   rel: ReasoningRelationship,
   gold: BenchmarkGoldRelationship,
   claims: ReasoningClaim[],
@@ -112,6 +121,10 @@ function isValidDivideRelationship(
   const a = claims.find((c) => c.id === rel.fromClaimId)
   const b = claims.find((c) => c.id === rel.toClaimId)
   if (!a || !b) return false
+
+  if (isNullEffectOpposition(a.statement, b.statement)) return true
+  if (isOpposingDirectionPair(a.statement, b.statement)) return true
+  if (isCoalRetirementOpposition(a.statement, b.statement)) return true
 
   const ta = tokenSet(a.statement)
   const tb = tokenSet(b.statement)

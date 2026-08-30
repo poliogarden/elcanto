@@ -1,0 +1,7 @@
+{
+  "id": "complementary-wildfire",
+  "question": "How does wildfire smoke affect human health?",
+  "benchmarkDataKey": "complementary-wildfire",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

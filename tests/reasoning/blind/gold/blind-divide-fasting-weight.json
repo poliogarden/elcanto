@@ -1,0 +1,20 @@
+{
+  "fixtureId": "blind-divide-fasting-weight",
+  "label": "Blind Divide — Fasting Weight",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "DIVIDE",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "greater fat loss",
+      "toClaimPattern": "no significant advantage",
+      "normalizedProposition": "intermittent fasting effectiveness for weight reduction",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [],
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

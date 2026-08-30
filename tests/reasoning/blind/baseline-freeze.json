@@ -1,0 +1,56 @@
+{
+  "engine": "reasoning-v2.1",
+  "commit": "70ea277ee9e98b45c1863600942a3f279c7cca3b",
+  "frozenAt": "2026-08-29T14:55:42.324Z",
+  "status": "FROZEN",
+  "v1ExitStatus": "REASONING V1 NOT STABLE",
+  "phaseB": {
+    "blind-same-topic-solar": {
+      "falseAgreement": 0,
+      "falseDivide": 0,
+      "falseComplementary": 0,
+      "pass": true
+    },
+    "blind-same-topic-quantum": {
+      "falseAgreement": 0,
+      "falseDivide": 0,
+      "falseComplementary": 0,
+      "pass": true
+    }
+  },
+  "blindTest": {
+    "stabilityRunsPerFixture": 1,
+    "precision": 1,
+    "recall": 0.2727272727272727,
+    "goldRelationships": 11,
+    "truePositive": 3,
+    "falsePositive": 0,
+    "falseNegative": 8,
+    "falseAgreement": 0,
+    "falseDivide": 0,
+    "falseComplementary": 0,
+    "evidenceIntegrity": "FAIL",
+    "judgmentGrounding": "PASS",
+    "relationshipStability": "FAIL",
+    "pipelineStability": "PASS",
+    "detectedGold": [
+      "blind-agreement-ev-range:AGREEMENT",
+      "blind-complementary-wildfire:COMPLEMENTARY",
+      "blind-complex-carbon-pricing:DIVIDE"
+    ]
+  },
+  "graduationSuite": {
+    "mcp-3video-baseline": "PASS",
+    "clear-agreement": "PASS",
+    "clear-divide": "PASS",
+    "same-topic-different-claims": "PASS",
+    "mixed-irrelevant": "FAIL",
+    "aggregatePrecision": 0.8,
+    "aggregateRecall": 0.8,
+    "falseAgreement": 0,
+    "falseDivide": 0,
+    "falseComplementary": 0,
+    "unsupportedJudgment": 0,
+    "v1ExitStatus": "NOT READY"
+  }
+}

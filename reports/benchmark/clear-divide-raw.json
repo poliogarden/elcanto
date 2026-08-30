@@ -1,12 +1,12 @@
 {
   "meta": {
-    "generatedAt": "2026-08-28T06:21:46.097Z",
-    "engineVersion": "reasoning-v2.1",
-    "schemaVersion": 3,
+    "generatedAt": "2026-08-29T17:24:18.774Z",
+    "engineVersion": "reasoning-v2.2",
+    "schemaVersion": null,
     "fixtureId": "clear-divide",
     "question": "Does remote work increase or decrease employee productivity?",
     "inputSourceCount": 3,
-    "commit": "85693ad0ab725dd263ecb003efe0f4f48f4299f5",
+    "commit": "70ea277ee9e98b45c1863600942a3f279c7cca3b",
     "pipelineMode": "LIVE",
     "e2eQualityValid": false
   },
@@ -32,19 +32,35 @@
   ],
   "reasoning": {
     "mode": "multi",
-    "version": "reasoning-v2.1",
-    "schemaVersion": 3,
+    "version": "reasoning-v2.2",
     "centralQuestion": "Does remote work increase or decrease employee productivity?",
     "clusters": [
       {
         "id": "cluster_1",
-        "label": "Primary Sources Addressing Productivity of Remote Work",
-        "centralQuestion": "Does remote work increase or decrease employee productivity?",
+        "label": "Productivity Increase",
+        "centralQuestion": "Remote work increases employee productivity.",
         "sourceIds": [
-          "source_1",
+          "source_1"
+        ],
+        "relevance": "primary"
+      },
+      {
+        "id": "cluster_2",
+        "label": "Productivity Decrease",
+        "centralQuestion": "Remote work decreases employee productivity in many roles.",
+        "sourceIds": [
           "source_2"
         ],
         "relevance": "primary"
+      },
+      {
+        "id": "cluster_3",
+        "label": "Hybrid Work Models",
+        "centralQuestion": "Hybrid schedules mix office and remote days based on coordination needs.",
+        "sourceIds": [
+          "source_3"
+        ],
+        "relevance": "secondary"
       }
     ],
     "sourceRelevance": [
@@ -52,7 +68,7 @@
         "sourceId": "source_1",
         "classification": "direct",
         "score": 0.71,
-        "reason": "Directly discusses how remote work increases productivity.",
+        "reason": "Directly supports the claim that remote work increases productivity.",
         "relevantClaimIds": [
           "source_1_section_1_claim_1"
         ],
@@ -64,23 +80,21 @@
       },
       {
         "sourceId": "source_2",
-        "classification": "direct",
-        "score": 0.71,
-        "reason": "Directly discusses how remote work decreases productivity.",
-        "relevantClaimIds": [
-          "source_2_section_1_claim_1"
-        ],
-        "tier": "PRIMARY",
-        "centralQuestionSimilarity": 0.42,
-        "topicCoverage": 0.768,
-        "relevantClaimRatio": 1,
-        "evidenceDensity": 1
+        "classification": "off_topic",
+        "score": 0.05,
+        "reason": "Excluded: source classified off-topic for the central question.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
       },
       {
         "sourceId": "source_3",
         "classification": "off_topic",
-        "score": 0,
-        "reason": "Discusses hybrid work models, not the productivity question directly.",
+        "score": 0.05,
+        "reason": "Excluded: source classified off-topic for the central question.",
         "relevantClaimIds": [],
         "tier": "OFF_TOPIC",
         "centralQuestionSimilarity": 0,
@@ -91,11 +105,18 @@
     ],
     "excludedSources": [
       {
+        "sourceId": "source_2",
+        "videoId": "bench_rw_prod_02",
+        "voiceIndex": 2,
+        "title": "When Home Offices Hurt Output",
+        "reason": "Excluded: source classified off-topic for the central question."
+      },
+      {
         "sourceId": "source_3",
         "videoId": "bench_rw_prod_03",
         "voiceIndex": 3,
         "title": "Hybrid Scheduling Models",
-        "reason": "Discusses hybrid work models, not the productivity question directly."
+        "reason": "Excluded: source classified off-topic for the central question."
       }
     ],
     "claims": [
@@ -141,49 +162,6 @@
         "evidenceStrength": "STRONG",
         "comparisonEligibility": "ELIGIBLE",
         "claimQualityClass": "FACTUAL"
-      },
-      {
-        "id": "source_2_section_1_claim_1",
-        "sourceId": "source_2",
-        "videoId": "bench_rw_prod_02",
-        "voiceIndex": 2,
-        "statement": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-        "normalizedStatement": "remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-        "evidenceIds": [
-          "source_2_seg_section_1"
-        ],
-        "claimType": "interpretive",
-        "confidence": "strong",
-        "conceptIds": [
-          "concept_1",
-          "concept_2",
-          "concept_4"
-        ],
-        "evidenceSpans": [
-          {
-            "segmentId": "section_1",
-            "startTime": 35,
-            "endTime": 390,
-            "originalText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
-            "evidenceType": "DIRECT_EVIDENCE",
-            "supportScore": 1
-          }
-        ],
-        "evidenceStatus": "DIRECT_EVIDENCE",
-        "reasoningEligible": true,
-        "evidenceText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
-        "timestampStart": 35,
-        "timestampEnd": 390,
-        "role": "CORE_ARGUMENT",
-        "relevanceScore": 0.5064285714285715,
-        "originalText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-        "fidelityStatus": "SUPPORTED",
-        "fidelityMutations": [],
-        "claimScope": "general",
-        "strength": "strong",
-        "evidenceStrength": "STRONG",
-        "comparisonEligibility": "ELIGIBLE",
-        "claimQualityClass": "INTERPRETIVE"
       }
     ],
     "evidence": [
@@ -273,211 +251,14 @@
     ],
     "stances": [],
     "assumptions": [],
-    "relationships": [
-      {
-        "id": "rel_heur_1",
-        "type": "CONTRADICTION",
-        "fromClaimId": "source_1_section_1_claim_1",
-        "toClaimId": "source_2_section_1_claim_1",
-        "fromSourceId": "source_1",
-        "toSourceId": "source_2",
-        "fromVideoId": "bench_rw_prod_01",
-        "toVideoId": "bench_rw_prod_02",
-        "explanation": "Direct semantic overlap (36%) on shared proposition.",
-        "confidence": "strong",
-        "verificationStatus": "SUPPORTED",
-        "discoveryLevel": "DIRECT_MATCH"
-      }
-    ],
-    "rejectedRelationships": [
-      {
-        "id": "rej_1",
-        "type": "PARTIAL_AGREEMENT",
-        "fromClaimId": "source_1_section_1_claim_1",
-        "toClaimId": "source_2_section_1_claim_1",
-        "fromSourceId": "source_1",
-        "toSourceId": "source_2",
-        "fromVideoId": "bench_rw_prod_01",
-        "toVideoId": "bench_rw_prod_02",
-        "explanation": "Claims address contradictory outcomes of remote work on employee productivity in different contexts.",
-        "confidence": "weak",
-        "verificationStatus": "REJECTED",
-        "rejectionReason": "LOGICAL_GAP"
-      }
-    ],
-    "relationshipClusters": [
-      {
-        "id": "cluster_1",
-        "canonicalClaim": "Remote work increases employee productivity by limiting office distractions during focused tasks. · Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-        "label": "Remote work increases employee productivity by limiting office distrac…",
-        "type": "CONTRADICTION",
-        "dimension": "general",
-        "memberRelationshipIds": [
-          "rel_heur_1"
-        ],
-        "supportingClaimIds": [
-          "source_1_section_1_claim_1",
-          "source_2_section_1_claim_1"
-        ],
-        "supportingSourceIds": [
-          "source_1",
-          "source_2"
-        ],
-        "sourceCount": 2,
-        "sourcePairCount": 1,
-        "evidenceCount": 2,
-        "confidence": "strong",
-        "significanceScore": 0.6179103896103896,
-        "noveltyScore": 0.6666666666666666,
-        "evidenceStrength": 0.045,
-        "genericnessScore": 0,
-        "visualKind": "divide",
-        "parentIds": [],
-        "childIds": [
-          "rel_heur_1"
-        ]
-      }
-    ],
-    "significantRelationships": [
-      {
-        "id": "cluster_1",
-        "canonicalClaim": "Remote work increases employee productivity by limiting office distractions during focused tasks. · Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-        "label": "Remote work increases employee productivity by limiting office distrac…",
-        "type": "CONTRADICTION",
-        "dimension": "general",
-        "memberRelationshipIds": [
-          "rel_heur_1"
-        ],
-        "supportingClaimIds": [
-          "source_1_section_1_claim_1",
-          "source_2_section_1_claim_1"
-        ],
-        "supportingSourceIds": [
-          "source_1",
-          "source_2"
-        ],
-        "sourceCount": 2,
-        "sourcePairCount": 1,
-        "evidenceCount": 2,
-        "confidence": "strong",
-        "significanceScore": 0.6179103896103896,
-        "noveltyScore": 0.6666666666666666,
-        "evidenceStrength": 0.045,
-        "genericnessScore": 0,
-        "visualKind": "divide",
-        "parentIds": [],
-        "childIds": [
-          "rel_heur_1"
-        ]
-      }
-    ],
-    "patterns": [
-      {
-        "id": "pattern_1",
-        "type": "polarization",
-        "title": "Divergent Views on Remote Work Productivity",
-        "description": "There is a polarized view on the impact of remote work on employee productivity, with one source asserting an increase due to reduced distractions and another claiming a decrease due to home interruptions.",
-        "relationshipIds": [
-          "rel_heur_1"
-        ],
-        "claimIds": [
-          "source_1_section_1_claim_1",
-          "source_2_section_1_claim_1"
-        ],
-        "confidence": "strong",
-        "sourceIds": [
-          "source_1",
-          "source_2"
-        ],
-        "verificationStatus": "SUPPORTED"
-      }
-    ],
-    "synthesis": {
-      "statement": "The analysis reveals a polarized understanding of remote work’s effect on employee productivity, with supporting evidence for both increases due to reduced office distractions and decreases attributed to home interruptions.",
-      "explanation": "The synthesized statement reflects the strong evidence from both analyzed sources that articulate opposing views regarding remote work and productivity. One source argues for increased productivity citing fewer distractions when remote, while the other counters this by highlighting more interruptions in a home setting.",
-      "patternIds": [
-        "pattern_1"
-      ],
-      "confidence": "strong",
-      "verificationStatus": "SUPPORTED"
-    },
-    "judgment": {
-      "statement": "The evidence strongly supports divergent impacts of remote work on employee productivity, though it does not provide a definitive answer; more research is needed to clarify these conflicting perspectives.",
-      "whatIsSupported": "Both sources present coherent arguments regarding the effects of remote work—one for increased productivity due to fewer distractions, the other for decreased productivity due to home interruptions.",
-      "whatIsUncertain": "There remains uncertainty regarding the overall impact of remote work on productivity due to the contradictory claims and lack of consensus.",
-      "keyReason": "The opposing conclusions derived from strong evidence present a clear division in understanding the effects of remote work on productivity.",
-      "confidence": "moderate",
-      "missingEvidence": [
-        "Additional research that reconciles or clarifies the contradictory claims regarding remote work's impact on productivity."
-      ],
-      "verificationStatus": "SUPPORTED",
-      "sourceCoverageNote": "Supported by 2 of 2 sources",
-      "evidenceStrengthLabel": "Strong evidence",
-      "supportingSourceCount": 2,
-      "totalAnalyzedSourceCount": 2,
-      "coverageSummary": "Supported by 2 of 2 sources · 1 verified cluster · Strong evidence",
-      "reasoningSteps": [
-        {
-          "statement": "The evidence strongly supports divergent impacts of remote work on employee productivity, though it does not provide a definitive answer; more research is needed to clarify these conflicting perspectives.",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ]
-        },
-        {
-          "statement": "Both sources present coherent arguments regarding the effects of remote work—one for increased productivity due to fewer distractions, the other for decreased productivity due to home interruptions.",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ]
-        },
-        {
-          "statement": "The opposing conclusions derived from strong evidence present a clear division in understanding the effects of remote work on productivity.",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ]
-        },
-        {
-          "statement": "There remains uncertainty regarding the overall impact of remote work on productivity due to the contradictory claims and lack of consensus.",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ]
-        }
-      ],
-      "limitations": []
-    },
+    "relationships": [],
+    "rejectedRelationships": [],
+    "relationshipClusters": [],
+    "significantRelationships": [],
+    "patterns": [],
+    "synthesis": null,
+    "judgment": null,
     "insights": [],
-    "rejectedEmergentCandidates": [],
     "knowledgeGaps": [],
     "landscape": {
       "agree": {
@@ -485,38 +266,33 @@
         "cards": []
       },
       "divide": {
-        "countLabel": "2",
-        "cards": [
-          {
-            "id": "cluster_1",
-            "title": "Remote work increases employee productivity by limiting office distrac…",
-            "summary": "2 sources · 1 verified link"
-          }
-        ]
+        "countLabel": "0",
+        "cards": []
       },
       "unclear": {
-        "countLabel": "0",
+        "countLabel": "1",
         "cards": []
       }
     },
     "diagnostics": {
       "survivalTest": {
-        "q1_crossSourceValue": true,
-        "q2_newRelationships": true,
-        "q3_beyondSummary": true,
+        "q1_crossSourceValue": false,
+        "q2_newRelationships": false,
+        "q3_beyondSummary": false,
         "q4_trueEmergent": false,
-        "q5_tenSecondClarity": true,
+        "q5_tenSecondClarity": false,
         "q6_noForcedLinks": true,
-        "q7_structurallyDifferent": true,
+        "q7_structurallyDifferent": false,
         "notes": [
+          "No verified cross-source relationships.",
           "No emergent insights passed verification.",
-          "1 source(s) excluded from synthesis."
+          "2 source(s) excluded from synthesis."
         ]
       },
-      "rejectedRelationshipCount": 1,
+      "rejectedRelationshipCount": 0,
       "rejectedInsightCount": 0,
-      "clusterCount": 1,
-      "primaryClusterSourceCount": 2,
+      "clusterCount": 3,
+      "primaryClusterSourceCount": 1,
       "passesRun": [
         "source_ingest",
         "claim_normalization",
@@ -541,146 +317,35 @@
       "pipelineStats": {
         "sourcesCount": 3,
         "inputSources": 3,
-        "relevantSources": 2,
-        "excludedSources": 1,
-        "synthesizedSources": 2,
+        "relevantSources": 1,
+        "excludedSources": 2,
+        "synthesizedSources": 1,
         "claimsExtracted": 3,
-        "relevantClaims": 2,
-        "acceptedClaims": 2,
+        "relevantClaims": 1,
+        "acceptedClaims": 1,
         "rejectedClaims": 0,
         "duplicateClaimsMerged": 0,
-        "candidatePairs": 1,
-        "directCandidates": 1,
+        "candidatePairs": 0,
+        "directCandidates": 0,
         "semanticCandidates": 0,
         "inferenceCandidates": 0,
-        "verifiedRelationships": 1,
-        "rejectedRelationships": 1,
+        "verifiedRelationships": 0,
+        "rejectedRelationships": 0,
         "emergentCandidates": 0,
         "verifiedEmergentInsights": 0,
-        "discoveryPassesCompleted": [
-          "direct_match",
-          "semantic_relationship",
-          "topic_bridge",
-          "cross_source_inference",
-          "llm_enrichment"
-        ],
-        "deduplicatedRelationships": 1,
-        "relationshipClusters": 1,
-        "significantRelationships": 1,
-        "genericRelationshipsSuppressed": 0,
-        "duplicateRelationshipsMerged": 0,
-        "weakRelationshipsSuppressed": 0,
-        "partialAgreementRejected": 0,
-        "judgmentPropositions": 4,
-        "unsupportedJudgmentPropositionsRemoved": 0,
-        "sourceRelevancePrimary": 2,
+        "discoveryPassesCompleted": [],
+        "deduplicatedRelationships": 0,
+        "relationshipClusters": 0,
+        "significantRelationships": 0,
+        "sourceRelevancePrimary": 1,
         "sourceRelevanceSecondary": 0,
         "sourceRelevancePeripheral": 0,
-        "sourceRelevanceOffTopic": 1,
+        "sourceRelevanceOffTopic": 2,
         "claimsPrimaryTier": 0,
-        "claimsSupportingTier": 2,
+        "claimsSupportingTier": 1,
         "claimsPeripheralTier": 0,
-        "funnelFinalUsable": 2,
-        "verifiedAgreements": 0,
-        "verifiedComplementary": 0,
-        "verifiedContradictions": 1,
-        "crossSourceVerifiedRelationships": 1
-      },
-      "judgmentPropositionLineage": [
-        {
-          "proposition": "The evidence strongly supports divergent impacts of remote work on employee productivity, though it does not provide a definitive answer; more research is needed to clarify these conflicting perspectives.",
-          "supportStatus": "SUPPORTED",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "relationshipIds": [
-            "rel_heur_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ],
-          "evidenceIds": [
-            "source_1_seg_section_1",
-            "source_2_seg_section_1"
-          ]
-        },
-        {
-          "proposition": "Both sources present coherent arguments regarding the effects of remote work—one for increased productivity due to fewer distractions, the other for decreased productivity due to home interruptions.",
-          "supportStatus": "SUPPORTED",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "relationshipIds": [
-            "rel_heur_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ],
-          "evidenceIds": [
-            "source_1_seg_section_1",
-            "source_2_seg_section_1"
-          ]
-        },
-        {
-          "proposition": "The opposing conclusions derived from strong evidence present a clear division in understanding the effects of remote work on productivity.",
-          "supportStatus": "SUPPORTED",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "relationshipIds": [
-            "rel_heur_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ],
-          "evidenceIds": [
-            "source_1_seg_section_1",
-            "source_2_seg_section_1"
-          ]
-        },
-        {
-          "proposition": "There remains uncertainty regarding the overall impact of remote work on productivity due to the contradictory claims and lack of consensus.",
-          "supportStatus": "SUPPORTED",
-          "clusterIds": [
-            "cluster_1"
-          ],
-          "relationshipIds": [
-            "rel_heur_1"
-          ],
-          "claimIds": [
-            "source_1_section_1_claim_1",
-            "source_2_section_1_claim_1"
-          ],
-          "sourceIds": [
-            "source_1",
-            "source_2"
-          ],
-          "evidenceIds": [
-            "source_1_seg_section_1",
-            "source_2_seg_section_1"
-          ]
-        }
-      ],
-      "sourceCountSummary": {
-        "submittedSourceCount": 3,
-        "analyzedSourceCount": 3,
-        "relevantSourceCount": 2,
-        "excludedSourceCount": 1
+        "funnelFinalUsable": 1,
+        "crossSourceVerifiedRelationships": 0
       },
       "relevanceFunnel": {
         "usableClaims": [
@@ -718,54 +383,20 @@
             "timestampEnd": 420,
             "role": "SUPPORTING_ARGUMENT",
             "relevanceScore": 0.5259090909090909
-          },
-          {
-            "id": "source_2_section_1_claim_1",
-            "sourceId": "source_2",
-            "videoId": "bench_rw_prod_02",
-            "voiceIndex": 2,
-            "statement": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-            "normalizedStatement": "remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-            "evidenceIds": [
-              "source_2_seg_section_1"
-            ],
-            "claimType": "interpretive",
-            "confidence": "strong",
-            "conceptIds": [
-              "concept_1",
-              "concept_2",
-              "concept_4"
-            ],
-            "evidenceSpans": [
-              {
-                "segmentId": "section_1",
-                "startTime": 35,
-                "endTime": 390,
-                "originalText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
-                "evidenceType": "DIRECT_EVIDENCE",
-                "supportScore": 1
-              }
-            ],
-            "evidenceStatus": "DIRECT_EVIDENCE",
-            "reasoningEligible": true,
-            "evidenceText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
-            "timestampStart": 35,
-            "timestampEnd": 390,
-            "role": "CORE_ARGUMENT",
-            "relevanceScore": 0.5064285714285715
           }
         ],
         "peripheralClaims": [],
+        "relationshipEligibleSourceIds": {},
         "funnel": {
           "extracted": 3,
-          "fromSynthesisSources": 2,
-          "topicRelevant": 2,
-          "questionAligned": 2,
+          "fromSynthesisSources": 3,
+          "topicRelevant": 1,
+          "questionAligned": 1,
           "primaryTier": 0,
-          "supportingTier": 2,
+          "supportingTier": 1,
           "peripheralTier": 0,
-          "offTopicTier": 0,
-          "finalUsable": 2
+          "offTopicTier": 2,
+          "finalUsable": 1
         },
         "diagnostics": [
           {
@@ -783,12 +414,25 @@
             "claimId": "source_2_section_1_claim_1",
             "sourceId": "source_2",
             "claimText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-            "relevanceScore": 0.5064285714285715,
-            "topicScore": 0.42,
-            "questionAlignmentScore": 0.2857142857142857,
-            "sourcePriorScore": 0.9,
-            "tier": "SUPPORTING",
-            "decision": "KEEP"
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
+          },
+          {
+            "claimId": "source_3_section_1_claim_1",
+            "sourceId": "source_3",
+            "claimText": "Hybrid schedules blend office and remote days depending on team coordination needs.",
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
           }
         ],
         "warnings": []
@@ -809,351 +453,30 @@
           "claimId": "source_2_section_1_claim_1",
           "sourceId": "source_2",
           "claimText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-          "relevanceScore": 0.5064285714285715,
-          "topicScore": 0.42,
-          "questionAlignmentScore": 0.2857142857142857,
-          "sourcePriorScore": 0.9,
-          "tier": "SUPPORTING",
-          "decision": "KEEP"
-        }
-      ],
-      "pipelineWarnings": [],
-      "relationshipVerificationDiagnostics": [
-        {
-          "fromClaimId": "source_1_section_1_claim_1",
-          "toClaimId": "source_2_section_1_claim_1",
-          "fromSourceId": "source_1",
-          "toSourceId": "source_2",
-          "fromClaimText": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
-          "toClaimText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-          "proposedType": "PARTIAL_AGREEMENT",
-          "stage": "PRE_LLM",
-          "scores": {
-            "semanticSimilarity": 0.36363636363636365,
-            "topicAlignment": 0.55,
-            "subjectEntityAlignment": 0.7,
-            "predicateAlignment": 0.5,
-            "polarity": "OPPOSE",
-            "scopeCompatibility": 0.9,
-            "evidenceCompatibility": 0.75,
-            "finalAlignment": 0.5960000000000001,
-            "requiredThreshold": 0.48,
-            "failedConditions": [],
-            "passed": true,
-            "reason": "Pair is plausibly comparable — defer to full verifier."
-          }
-        }
-      ],
-      "candidateFunnel": {
-        "claimsAfterRelevance": 2,
-        "claimsAfterNormalization": 2,
-        "claimsForCandidateGeneration": 2,
-        "participatingSourceCount": 2,
-        "claimsPerSource": {
-          "source_1": 1,
-          "source_2": 1
-        },
-        "possibleCrossSourcePairs": 1,
-        "pairsAfterSourceFilter": 1,
-        "heuristicDirect": 1,
-        "heuristicSemantic": 1,
-        "heuristicInference": 0,
-        "heuristicBridge": 1,
-        "heuristicTotal": 1,
-        "llmCandidatesAdded": 0,
-        "sameSourceCandidatesDropped": 0,
-        "candidatePairs": 1
-      },
-      "candidateGenerationDiagnostics": [],
-      "sourceParticipation": {
-        "rows": [
-          {
-            "sourceId": "source_1",
-            "extracted": 1,
-            "relevanceUsable": 1,
-            "comparable": 1,
-            "qualityAccepted": 1,
-            "generationClaims": 1,
-            "possibleCrossSourcePairs": 1,
-            "candidatePairsAsMember": 1,
-            "semanticCandidatesAsMember": 0,
-            "verifiedRelationships": 1,
-            "clusterMembership": 1
-          },
-          {
-            "sourceId": "source_2",
-            "extracted": 1,
-            "relevanceUsable": 1,
-            "comparable": 1,
-            "qualityAccepted": 1,
-            "generationClaims": 1,
-            "possibleCrossSourcePairs": 1,
-            "candidatePairsAsMember": 1,
-            "semanticCandidatesAsMember": 0,
-            "verifiedRelationships": 1,
-            "clusterMembership": 1
-          },
-          {
-            "sourceId": "source_3",
-            "extracted": 1,
-            "relevanceUsable": 0,
-            "comparable": 0,
-            "qualityAccepted": 0,
-            "generationClaims": 0,
-            "possibleCrossSourcePairs": 0,
-            "candidatePairsAsMember": 0,
-            "semanticCandidatesAsMember": 0,
-            "verifiedRelationships": 0,
-            "clusterMembership": 0
-          }
-        ],
-        "relevantSourceCount": 2,
-        "generationParticipatingCount": 2,
-        "verifiedParticipatingCount": 2
-      },
-      "claimTransitionDiagnostics": [
-        {
-          "claimId": "source_1_section_1_claim_1",
-          "sourceId": "source_1",
-          "claimText": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
-          "relevanceScore": 0.5259090909090909,
-          "tier": "SUPPORTING",
-          "relevanceDecision": "KEEP",
-          "usable": true,
-          "comparable": true,
-          "comparisonEligibility": "ELIGIBLE",
-          "evidenceStrength": "STRONG",
-          "claimQualityClass": "FACTUAL",
-          "qualityAccepted": true,
-          "fidelityStatus": "SUPPORTED",
-          "fidelityMutation": [],
-          "evidenceText": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with f",
-          "generationEligible": true,
-          "inGenerationSet": true
-        },
-        {
-          "claimId": "source_2_section_1_claim_1",
-          "sourceId": "source_2",
-          "claimText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-          "relevanceScore": 0.5064285714285715,
-          "tier": "SUPPORTING",
-          "relevanceDecision": "KEEP",
-          "usable": true,
-          "comparable": true,
-          "comparisonEligibility": "ELIGIBLE",
-          "evidenceStrength": "STRONG",
-          "claimQualityClass": "INTERPRETIVE",
-          "qualityAccepted": true,
-          "fidelityStatus": "SUPPORTED",
-          "fidelityMutation": [],
-          "evidenceText": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and inf",
-          "generationEligible": true,
-          "inGenerationSet": true
+          "relevanceScore": 0,
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
         },
         {
           "claimId": "source_3_section_1_claim_1",
           "sourceId": "source_3",
           "claimText": "Hybrid schedules blend office and remote days depending on team coordination needs.",
           "relevanceScore": 0,
-          "tier": "UNKNOWN",
-          "relevanceDecision": "DROP",
-          "usable": false,
-          "comparable": false,
-          "qualityAccepted": false,
-          "evidenceText": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remot",
-          "generationEligible": false,
-          "inGenerationSet": false
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
         }
       ],
-      "comparableClaimFunnel": {
-        "usableInput": 2,
-        "comparable": 2,
-        "generationEligible": 2,
-        "highConfidence": 2,
-        "excluded": 0,
-        "limited": 0,
-        "noEvidenceEligible": 0,
-        "hypeLimited": 0,
-        "recoveryRecovered": 0,
-        "duplicatesMerged": 0
-      },
-      "verificationDiagnosticsBundle": {
-        "candidateAudit": [
-          {
-            "candidateId": "cand_1",
-            "sourceA": "source_1",
-            "sourceB": "source_2",
-            "voiceA": 1,
-            "voiceB": 2,
-            "claimA": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
-            "claimB": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-            "claimAId": "source_1_section_1_claim_1",
-            "claimBId": "source_2_section_1_claim_1",
-            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
-            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
-            "origin": "direct",
-            "discoveryLevel": "DIRECT_MATCH",
-            "proposedType": "PARTIAL_AGREEMENT",
-            "predictedRelationship": "partial_agreement",
-            "semanticSimilarity": 0.36363636363636365,
-            "topicSimilarity": 0.55,
-            "subjectSimilarity": 0.7,
-            "predicateSimilarity": 0.5,
-            "polarityCompatibility": "OPPOSE",
-            "candidateScore": 0.5701818181818181,
-            "verificationResult": "PASS",
-            "verificationStage": "PRE_LLM",
-            "finalVerificationScore": 0.5960000000000001,
-            "requiredThreshold": 0.48,
-            "verificationDetail": "Pair is plausibly comparable — defer to full verifier."
-          }
-        ],
-        "topCandidates": [
-          {
-            "candidateId": "cand_1",
-            "sourceA": "source_1",
-            "sourceB": "source_2",
-            "voiceA": 1,
-            "voiceB": 2,
-            "claimA": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
-            "claimB": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices.",
-            "claimAId": "source_1_section_1_claim_1",
-            "claimBId": "source_2_section_1_claim_1",
-            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
-            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
-            "origin": "direct",
-            "discoveryLevel": "DIRECT_MATCH",
-            "proposedType": "PARTIAL_AGREEMENT",
-            "predictedRelationship": "partial_agreement",
-            "semanticSimilarity": 0.36363636363636365,
-            "topicSimilarity": 0.55,
-            "subjectSimilarity": 0.7,
-            "predicateSimilarity": 0.5,
-            "polarityCompatibility": "OPPOSE",
-            "candidateScore": 0.5701818181818181,
-            "verificationResult": "PASS",
-            "verificationStage": "PRE_LLM",
-            "finalVerificationScore": 0.5960000000000001,
-            "requiredThreshold": 0.48,
-            "verificationDetail": "Pair is plausibly comparable — defer to full verifier.",
-            "rank": 1
-          }
-        ],
-        "rejectionDistribution": {},
-        "crossSourceMatrix": [
-          {
-            "sourceA": "source_1",
-            "sourceB": "source_2",
-            "labelA": "V1",
-            "labelB": "V2",
-            "possiblePairs": 1,
-            "generatedCandidates": 1,
-            "verifiedRelationships": 1
-          }
-        ],
-        "claimSpecificityBySource": [
-          {
-            "sourceId": "source_1",
-            "voiceIndex": 1,
-            "specific": 1,
-            "general": 0,
-            "hype": 0,
-            "meta": 0,
-            "procedural": 0,
-            "observational": 0,
-            "total": 1
-          },
-          {
-            "sourceId": "source_2",
-            "voiceIndex": 2,
-            "specific": 1,
-            "general": 0,
-            "hype": 0,
-            "meta": 0,
-            "procedural": 0,
-            "observational": 0,
-            "total": 1
-          }
-        ],
-        "claimEvidenceBySource": [
-          {
-            "sourceId": "source_1",
-            "voiceIndex": 1,
-            "directEvidence": 1,
-            "paraphraseSupported": 0,
-            "contextSupported": 0,
-            "noEvidence": 0,
-            "total": 1,
-            "generationDirectOrParaphrase": 1,
-            "generationNoEvidence": 0
-          },
-          {
-            "sourceId": "source_2",
-            "voiceIndex": 2,
-            "directEvidence": 1,
-            "paraphraseSupported": 0,
-            "contextSupported": 0,
-            "noEvidence": 0,
-            "total": 1,
-            "generationDirectOrParaphrase": 1,
-            "generationNoEvidence": 0
-          }
-        ],
-        "generationClaimEvidence": {
-          "total": 2,
-          "withDirectOrParaphrase": 2,
-          "withoutEvidence": 0
-        }
-      },
-      "evidenceCoverage": {
-        "extracted": 3,
-        "direct": 3,
-        "paraphrase": 0,
-        "context": 0,
-        "noEvidence": 0,
-        "reasoningEligible": 3,
-        "reasoningExcluded": 0,
-        "generationTotal": 2,
-        "generationWithEvidence": 2,
-        "generationNoEvidence": 0,
-        "bySource": [
-          {
-            "sourceId": "source_1",
-            "voiceIndex": 1,
-            "direct": 1,
-            "paraphrase": 0,
-            "context": 0,
-            "noEvidence": 0,
-            "reasoningEligible": 1,
-            "generationWithEvidence": 1,
-            "generationNoEvidence": 0
-          },
-          {
-            "sourceId": "source_2",
-            "voiceIndex": 2,
-            "direct": 1,
-            "paraphrase": 0,
-            "context": 0,
-            "noEvidence": 0,
-            "reasoningEligible": 1,
-            "generationWithEvidence": 1,
-            "generationNoEvidence": 0
-          },
-          {
-            "sourceId": "source_3",
-            "voiceIndex": 3,
-            "direct": 1,
-            "paraphrase": 0,
-            "context": 0,
-            "noEvidence": 0,
-            "reasoningEligible": 1,
-            "generationWithEvidence": 0,
-            "generationNoEvidence": 0
-          }
-        ]
-      }
+      "pipelineWarnings": []
     },
-    "createdAt": "2026-08-28T06:21:46.097Z"
+    "createdAt": "2026-08-29T17:24:18.773Z"
   },
   "unitRegression": [],
   "e2eEvaluation": {
@@ -1161,15 +484,19 @@
     "result": "DEGRADED",
     "infrastructureResult": "PASS",
     "reasoningQualityResult": "DEGRADED",
-    "reason": "agreement+divide+complementary=0 (need > 0)",
+    "reason": "relevantSources=1 (need >= 2); candidatePairs=0 (need > 0); verifiedRelationships=0 (need > 0); relationshipClusters=0 (need > 0); agreement+divide+complementary=0 (need > 0)",
     "failureReasons": [
+      "relevantSources=1 (need >= 2)",
+      "candidatePairs=0 (need > 0)",
+      "verifiedRelationships=0 (need > 0)",
+      "relationshipClusters=0 (need > 0)",
       "agreement+divide+complementary=0 (need > 0)"
     ],
     "qualityCriteria": {
-      "relevantSources": 2,
-      "candidatePairs": 1,
-      "verifiedRelationships": 1,
-      "relationshipClusters": 1,
+      "relevantSources": 1,
+      "candidatePairs": 0,
+      "verifiedRelationships": 0,
+      "relationshipClusters": 0,
       "agreementDivideComplementary": 0,
       "verificationCollapse": false,
       "unsupportedJudgmentPropositions": 0,

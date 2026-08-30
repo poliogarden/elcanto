@@ -204,3 +204,63 @@ export async function findActiveSynthesisJobBySynthesisIdLocal(
     return null
   }
 }
+
+export type RecentSynthesisJobSummary = {
+  jobId: string
+  synthesisId: string
+  status: SynthesisJob['status']
+  createdAt: string
+  completedAt?: string
+  voiceCount: number
+  analyzedCount?: number
+  failedCount?: number
+  engineVersion?: string
+  topic?: string
+  endToEndMs?: number
+  totalCostUsd?: number | null
+}
+
+export async function listRecentSynthesisJobsLocal(
+  limit = 50,
+): Promise<RecentSynthesisJobSummary[]> {
+  try {
+    const { readdir } = await import('fs/promises')
+    const entries = await readdir(JOBS_DIR, { withFileTypes: true })
+    const summaries: RecentSynthesisJobSummary[] = []
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const job = await loadSynthesisJobLocal(entry.name)
+      if (!job) continue
+
+      const doc = job.document
+      const meta = doc?.productionMeta
+      summaries.push({
+        jobId: job.id,
+        synthesisId: job.synthesisId,
+        status: job.status,
+        createdAt: job.createdAt,
+        completedAt: job.completedAt,
+        voiceCount: job.draft.voices.length,
+        analyzedCount: meta?.analyzedCount ?? doc?.voices.filter((v) => v.analysis).length,
+        failedCount: meta?.failedCount,
+        engineVersion: meta?.reasoningEngineVersion,
+        topic: doc?.topic ?? doc?.userQuestion,
+        endToEndMs: meta?.perfSummary?.endToEndMs ?? job.perfSummary?.endToEndMs,
+        totalCostUsd:
+          meta?.costSummary?.totalEstimatedCostUsd ??
+          job.perfSummary?.estimatedCostUsd,
+      })
+    }
+
+    return summaries
+      .sort((a, b) => {
+        const aTime = a.completedAt ?? a.createdAt
+        const bTime = b.completedAt ?? b.createdAt
+        return new Date(bTime).getTime() - new Date(aTime).getTime()
+      })
+      .slice(0, limit)
+  } catch {
+    return []
+  }
+}

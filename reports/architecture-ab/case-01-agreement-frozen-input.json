@@ -1,0 +1,249 @@
+{
+  "caseId": "case-01-agreement",
+  "setType": "agreement",
+  "label": "SET 1 Agreement",
+  "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_rw_commute_01",
+      "voiceIndex": 1,
+      "title": "Remote Work and Daily Commutes",
+      "summary": "Discusses how remote arrangements change employee travel patterns.",
+      "thesis": "Remote work reduces employee commuting time compared to office-only schedules.",
+      "centralQuestion": "Remote work reduces employee commuting time compared to office-only schedules.",
+      "topics": [
+        "remote work",
+        "commuting",
+        "employee travel"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+          "topic": "commuting_time",
+          "confidence": 0.88,
+          "evidenceSummary": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 40,
+          "segmentEndTime": 420
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Remote work reduces employee commuting time compared to office-only schedules."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 40,
+          "text": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+          "segmentId": "section_1",
+          "endTime": 420
+        }
+      ],
+      "stance": null,
+      "channel": "Workplace Futures",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 40,
+            "endTime": 420,
+            "topic": "Commute reduction",
+            "summary": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated rou",
+            "text": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+                "topic": "commuting_time",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_rw_commute_02",
+      "voiceIndex": 2,
+      "title": "Home Offices and Travel Time",
+      "summary": "Explains travel eliminated when employees work from home.",
+      "thesis": "Working from home removes much of the daily workplace travel employees used to make.",
+      "centralQuestion": "Working from home removes much of the daily workplace travel employees used to make.",
+      "topics": [
+        "remote work",
+        "working from home",
+        "daily travel"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+          "topic": "commuting_time",
+          "confidence": 0.88,
+          "evidenceSummary": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 55,
+          "segmentEndTime": 400
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Working from home removes much of the daily workplace travel employees used to make."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 55,
+          "text": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+          "segmentId": "section_1",
+          "endTime": 400
+        }
+      ],
+      "stance": null,
+      "channel": "Distributed Teams",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 55,
+            "endTime": 400,
+            "topic": "Eliminated daily travel",
+            "summary": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, an",
+            "text": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+                "topic": "commuting_time",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_rw_commute_03",
+      "voiceIndex": 3,
+      "title": "Rolling Out Remote Policies",
+      "summary": "Covers implementation costs of remote work programs.",
+      "thesis": "Remote rollouts require new tooling and training investments.",
+      "centralQuestion": "Remote rollouts require new tooling and training investments.",
+      "topics": [
+        "remote work",
+        "collaboration software",
+        "implementation"
+      ],
+      "claims": [
+        {
+          "id": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "statement": "Organizations rolling out remote work must budget for secure collaboration tools and employee training.",
+          "topic": "implementation_cost",
+          "confidence": 0.88,
+          "evidenceSummary": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 30,
+          "segmentEndTime": 360
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Remote rollouts require new tooling and training investments."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_3_seg_section_1",
+          "timestamp": 30,
+          "text": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+          "segmentId": "section_1",
+          "endTime": 360
+        }
+      ],
+      "stance": null,
+      "channel": "Ops Leaders",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 30,
+            "endTime": 360,
+            "topic": "Implementation requirements",
+            "summary": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees ",
+            "text": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+            "claims": [
+              {
+                "id": "source_3_section_1_claim_1",
+                "statement": "Organizations rolling out remote work must budget for secure collaboration tools and employee training.",
+                "topic": "implementation_cost",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "clear-agreement",
+  "isRealYouTube": false
+}

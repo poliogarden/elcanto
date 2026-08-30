@@ -1,0 +1,194 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+  "finalAnswer": "The recommended R-value for attic insulation in retrofits within cold climates is at least R-49, with an optimal range of R-49 to R-60 being ideal to minimize heat loss during extensive heating seasons.",
+  "agreementCount": 1,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "nonComparableCount": 3,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1446,
+    "crossSourceMs": 3802,
+    "validationMs": 0,
+    "totalMs": 5248
+  },
+  "costSummary": {
+    "llmCalls": 6,
+    "inputTokens": 2726,
+    "outputTokens": 668,
+    "totalEstimatedCostUsd": 0.00081
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Recommended attic insulation R-value for cold-climate home retrofits is at least R-49."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects",
+            "startTime": 40,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Recommended R-value for attic insulation in cold climates is R-49 to R-60.",
+          "This range is aimed at minimizing heat loss during long heating seasons."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_2:source_2_seg_section_1",
+            "text": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+            "startTime": 35,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.95
+      },
+      {
+        "sourceId": "source_3",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [],
+        "confidence": 0
+      },
+      {
+        "sourceId": "source_4",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [],
+        "confidence": 0
+      },
+      {
+        "sourceId": "source_5",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [],
+        "confidence": 0
+      }
+    ],
+    "agreements": [
+      {
+        "statement": "Both sources recommend an R-value for attic insulation in cold climates.",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "evidenceRefs": [
+          "source_1:source_1_seg_section_1",
+          "source_2:source_2_seg_section_1"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "disagreements": [],
+    "complementaryViews": [],
+    "nonComparableSources": [
+      {
+        "sourceId": "source_3",
+        "reason": "This source is not relevant to the topic of attic insulation recommendations."
+      },
+      {
+        "sourceId": "source_4",
+        "reason": "This source is not relevant to the topic of attic insulation recommendations."
+      },
+      {
+        "sourceId": "source_5",
+        "reason": "This source is not relevant to the topic of attic insulation recommendations."
+      }
+    ],
+    "uncertainties": [],
+    "finalAnswer": "The recommended R-value for attic insulation in retrofits within cold climates is at least R-49, with an optimal range of R-49 to R-60 being ideal to minimize heat loss during extensive heating seasons.",
+    "confidence": 0.95,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+        "startTime": 40,
+        "endTime": 420
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+        "startTime": 35,
+        "endTime": 390
+      },
+      {
+        "ref": "source_3:source_3_seg_section_1",
+        "sourceId": "source_3",
+        "text": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen vibration from tires and engines.",
+        "startTime": 20,
+        "endTime": 280
+      },
+      {
+        "ref": "source_4:source_4_seg_section_1",
+        "sourceId": "source_4",
+        "text": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to keep floor decking clear.",
+        "startTime": 25,
+        "endTime": 260
+      },
+      {
+        "ref": "source_5:source_5_seg_section_1",
+        "sourceId": "source_5",
+        "text": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while afternoon sun warms exposed slopes.",
+        "startTime": 10,
+        "endTime": 240
+      }
+    ],
+    "validation": {
+      "agreementSupported": 1,
+      "agreementUnsupported": 1,
+      "disagreementSupported": 0,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 0,
+      "complementaryUnsupported": 1,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [
+        {
+          "statement": "Both sources recommend an R-value for attic insulation in cold climates.",
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ],
+          "evidenceRefs": [
+            "source_1:source_1_seg_section_1",
+            "source_2:source_2_seg_section_1"
+          ],
+          "confidence": 0.9
+        }
+      ],
+      "filteredDisagreements": [],
+      "filteredComplementary": []
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1446,
+      "crossSourceMs": 3802,
+      "validationMs": 0,
+      "totalMs": 5248
+    }
+  }
+}

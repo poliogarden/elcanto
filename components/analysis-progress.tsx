@@ -15,6 +15,8 @@ import {
   saveSynthesisJobId,
 } from '@/lib/storage/synthesis-session'
 import { VoiceRelationshipCanvas } from '@/components/home/voice-relationship-canvas'
+import { InsightExplorerResult } from '@/components/insight-explorer/insight-explorer-result'
+import { isDirectSynthesisDocument } from '@/lib/direct-synthesis/persisted'
 import { useTranslation } from '@/lib/i18n/locale-context'
 import { resolveVideoThumbnail } from '@/lib/youtube/thumbnail'
 import type { SynthesisPerfSummary } from '@/lib/synthesis/synthesis-perf'
@@ -61,6 +63,12 @@ function synthesisStepFromJob(
   }
 }
 
+function shouldShowLegacyRelationshipGraph(doc: SynthesisDocument | null): boolean {
+  if (!doc) return false
+  if (isDirectSynthesisDocument(doc)) return false
+  return Boolean(doc.reasoning?.mode === 'multi' || doc.survival)
+}
+
 function backendPhaseFromJob(
   phase: SynthesisJobPhase,
   survivalPhase?: SynthesisDocument['survivalProgressPhase'],
@@ -104,6 +112,11 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
   const synthesisStep = job
     ? synthesisStepFromJob(job.phase, job.document?.survivalProgressPhase)
     : 0
+  const isDirectDoc = doc ? isDirectSynthesisDocument(doc) : false
+  const isDirectComplete =
+    isDirectDoc && job?.status === 'completed' && Boolean(doc?.directSynthesis)
+  const showLegacyGraph = shouldShowLegacyRelationshipGraph(doc)
+  const showProcessingUi = !isDirectComplete && phase !== 'complete'
   const canvasPhase = phase === 'complete' ? 'complete' : 'processing'
   const statusLabel = job ? jobPhaseLabel(job) : creatingJob ? 'QUEUED' : 'QUEUED'
 
@@ -253,6 +266,10 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
       }
     }
 
+    if (isDirectSynthesisDocument(finalDoc)) {
+      return
+    }
+
     void (async () => {
       await new Promise((resolve) => setTimeout(resolve, 900))
       router.push(`/synthesis/${synthesisId}`)
@@ -264,100 +281,106 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
     ? backendPhaseFromJob(job.phase, job.document?.survivalProgressPhase)
     : null
 
+  if (isDirectComplete && doc?.directSynthesis) {
+    return <InsightExplorerResult direct={doc.directSynthesis} document={doc} embedded />
+  }
+
   return (
     <section className="mx-auto w-full max-w-[1280px] px-5 py-4 md:px-6 md:py-6">
-      <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p className="mono-label text-xs text-ink-soft">
-          {doc?.number ?? 'SYNTHESIS'} / {t('loading.inProduction')}
-        </p>
+      {showProcessingUi && (
+        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+          <p className="mono-label text-xs text-ink-soft">
+            {doc?.number ?? 'SYNTHESIS'} / {t('loading.inProduction')}
+          </p>
 
-        <h1 className="mt-4 mb-3 font-serif text-3xl font-medium leading-tight tracking-tight text-balance md:text-4xl lg:text-5xl">
-          {phase === 'synthesizing' ? (
+          <h1 className="mt-4 mb-3 font-serif text-3xl font-medium leading-tight tracking-tight text-balance md:text-4xl lg:text-5xl">
+            {phase === 'synthesizing' ? (
+              <>
+                {t('loading.bringingTogether')}
+                <br />
+                {t('loading.voicesTogether', { count: ready })}
+              </>
+            ) : (
+              <>
+                {t('loading.listeningTo')}
+                <br />
+                {t('loading.voices', { count: total })}
+              </>
+            )}
+          </h1>
+
+          <p className="mono text-sm text-ink" aria-live="polite">
+            {currentStepLabel}
+          </p>
+
+          {phase === 'synthesizing' && (
             <>
-              {t('loading.bringingTogether')}
-              <br />
-              {t('loading.voicesTogether', { count: ready })}
-            </>
-          ) : (
-            <>
-              {t('loading.listeningTo')}
-              <br />
-              {t('loading.voices', { count: total })}
+              <p className="mono mt-2 text-[11px] text-ink-soft">
+                {elapsedSec > 0
+                  ? t('loading.elapsedHint', { seconds: elapsedSec })
+                  : t('loading.elapsedBody')}
+              </p>
+              <SynthesisLoadingBar
+                step={synthesisStep}
+                backendPhase={backendPhase}
+                elapsedSec={elapsedSec}
+                statusLabel={t('loading.synthesizing')}
+              />
             </>
           )}
-        </h1>
 
-        <p className="mono text-sm text-ink" aria-live="polite">
-          {currentStepLabel}
-        </p>
-
-        {phase === 'synthesizing' && (
-          <>
-            <p className="mono mt-2 text-[11px] text-ink-soft">
-              {elapsedSec > 0
-                ? t('loading.elapsedHint', { seconds: elapsedSec })
-                : t('loading.elapsedBody')}
-            </p>
-            <SynthesisLoadingBar
-              step={synthesisStep}
-              backendPhase={backendPhase}
-              elapsedSec={elapsedSec}
-              statusLabel={t('loading.synthesizing')}
-            />
-          </>
-        )}
-
-        {total > 0 && doc && (
-          <div className="mx-auto mt-6 flex flex-wrap justify-center gap-2">
-            {doc.voices.map((entry) => {
-              const thumb = resolveVideoThumbnail(
-                entry.voice.youtubeId,
-                entry.voice.thumbnail,
-              )
-              const done = Boolean(entry.analysis) || entry.voice.status === 'done'
-              const failed = entry.voice.status === 'failed'
-              return (
-                <div
-                  key={entry.voice.id}
-                  className={`relative h-14 w-24 overflow-hidden rounded-lg ${
-                    failed ? 'opacity-40' : done ? 'ring-2 ring-coral' : 'opacity-70'
-                  }`}
-                >
-                  {thumb ? (
-                    <img src={thumb} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-paper-2 text-xs">
+          {total > 0 && doc && (
+            <div className="mx-auto mt-6 flex flex-wrap justify-center gap-2">
+              {doc.voices.map((entry) => {
+                const thumb = resolveVideoThumbnail(
+                  entry.voice.youtubeId,
+                  entry.voice.thumbnail,
+                )
+                const done = Boolean(entry.analysis) || entry.voice.status === 'done'
+                const failedVoice = entry.voice.status === 'failed'
+                return (
+                  <div
+                    key={entry.voice.id}
+                    className={`relative h-14 w-24 overflow-hidden rounded-lg ${
+                      failedVoice ? 'opacity-40' : done ? 'ring-2 ring-coral' : 'opacity-70'
+                    }`}
+                  >
+                    {thumb ? (
+                      <img src={thumb} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-paper-2 text-xs">
+                        {String(entry.voice.n).padStart(2, '0')}
+                      </div>
+                    )}
+                    <span className="absolute left-1 top-1 rounded bg-black/60 px-1 text-[9px] text-white">
                       {String(entry.voice.n).padStart(2, '0')}
-                    </div>
-                  )}
-                  <span className="absolute left-1 top-1 rounded bg-black/60 px-1 text-[9px] text-white">
-                    {String(entry.voice.n).padStart(2, '0')}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
-        {total > 0 && (
-          <p className="mono-label mt-4 text-xs text-ink">
-            {t('loading.voicesAnalyzed', { ready, total })}
-            {failed > 0 && (
-              <span className="text-ink-soft">
-                {t('loading.voicesFailed', { count: failed })}
-              </span>
-            )}
-          </p>
-        )}
+          {total > 0 && (
+            <p className="mono-label mt-4 text-xs text-ink">
+              {t('loading.voicesAnalyzed', { ready, total })}
+              {failed > 0 && (
+                <span className="text-ink-soft">
+                  {t('loading.voicesFailed', { count: failed })}
+                </span>
+              )}
+            </p>
+          )}
 
-        {phase === 'analyzing' && analyzingIndex > 0 && (
-          <p className="mono-label mt-2 text-xs text-ink-soft">
-            {t('loading.analyzingVoice', { current: analyzingIndex, total })}
-          </p>
-        )}
-      </div>
+          {phase === 'analyzing' && analyzingIndex > 0 && (
+            <p className="mono-label mt-2 text-xs text-ink-soft">
+              {t('loading.analyzingVoice', { current: analyzingIndex, total })}
+            </p>
+          )}
+        </div>
+      )}
 
-      {doc && phase === 'analyzing' && (
+      {showProcessingUi && doc && phase === 'analyzing' && (
         <div className="mx-auto mt-8 w-full max-w-2xl border-t border-line pt-4 text-left">
           {doc.voices.map((entry) => (
             <div
@@ -382,7 +405,10 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
         </div>
       )}
 
-      {(phase === 'synthesizing' || phase === 'complete') && doc && (
+      {showProcessingUi &&
+        showLegacyGraph &&
+        phase === 'synthesizing' &&
+        doc && (
         <div className="mx-auto mt-10 w-full max-w-3xl">
           <p className="mono-label mb-4 text-center text-[10px] text-ink-soft">
             {t('loading.bringingThemTogether')}
@@ -394,6 +420,7 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
         </div>
       )}
 
+      {showProcessingUi && (
       <ol className="mx-auto mt-10 w-full max-w-xl border-t border-line">
         <ProgressRow
           index={1}
@@ -418,9 +445,7 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
               ? synthesisStep === 0
                 ? 'now'
                 : 'done'
-              : phase === 'complete'
-                ? 'done'
-                : 'wait'
+              : 'wait'
           }
           phase={phase}
           t={t}
@@ -434,16 +459,15 @@ export function AnalysisProgress({ synthesisId }: AnalysisProgressProps) {
               ? synthesisStep >= 1
                 ? 'now'
                 : 'wait'
-              : phase === 'complete'
-                ? 'done'
-                : 'wait'
+              : 'wait'
           }
           phase={phase}
           t={t}
         />
       </ol>
+      )}
 
-      {perfSummary && process.env.NODE_ENV !== 'production' && (
+      {showProcessingUi && perfSummary && process.env.NODE_ENV !== 'production' && (
         <div className="mono mx-auto mt-8 max-w-xl border border-line p-4 text-center text-[10px] text-ink-soft">
           <p className="mb-2 text-ink">SYNTHESIS PERF (dev)</p>
           {perfSummary.individualAnalysisMs != null && (

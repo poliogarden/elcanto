@@ -147,6 +147,7 @@ export function slimSynthesisDocument(doc: SynthesisDocument): SynthesisDocument
 
 export function isSynthesisDocumentHydrated(doc: SynthesisDocument): boolean {
   if (doc.storageTier === 'slim') return false
+  if (doc.directSynthesis?.directAnswer) return true
   if (doc.reasoning?.mode === 'multi') {
     return doc.reasoning.claims.length > 0 || Boolean(doc.survival)
   }

@@ -1,0 +1,408 @@
+{
+  "architecture": "reasoning_v2.2",
+  "centralQuestion": "How does wildfire smoke affect human health?",
+  "judgmentStatement": null,
+  "synthesisSummary": null,
+  "agreementCount": 0,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "verifiedRelationshipCount": 0,
+  "rejectedRelationshipCount": 0,
+  "goodZero": true,
+  "pipelineStats": {
+    "sourcesCount": 2,
+    "inputSources": 2,
+    "relevantSources": 2,
+    "excludedSources": 0,
+    "synthesizedSources": 2,
+    "claimsExtracted": 2,
+    "relevantClaims": 0,
+    "acceptedClaims": 0,
+    "rejectedClaims": 0,
+    "duplicateClaimsMerged": 0,
+    "candidatePairs": 0,
+    "directCandidates": 0,
+    "semanticCandidates": 0,
+    "inferenceCandidates": 0,
+    "verifiedRelationships": 0,
+    "rejectedRelationships": 0,
+    "emergentCandidates": 0,
+    "verifiedEmergentInsights": 0,
+    "discoveryPassesCompleted": [],
+    "deduplicatedRelationships": 0,
+    "relationshipClusters": 0,
+    "significantRelationships": 0,
+    "sourceRelevancePrimary": 2,
+    "sourceRelevanceSecondary": 0,
+    "sourceRelevancePeripheral": 0,
+    "sourceRelevanceOffTopic": 0,
+    "claimsPrimaryTier": 0,
+    "claimsSupportingTier": 2,
+    "claimsPeripheralTier": 0,
+    "funnelFinalUsable": 0,
+    "crossSourceVerifiedRelationships": 0
+  },
+  "timingMs": {
+    "reasoningMs": 1620,
+    "totalMs": 1620
+  },
+  "costSummary": {
+    "llmCalls": 1,
+    "inputTokens": 541,
+    "outputTokens": 145,
+    "totalEstimatedCostUsd": 0.000168
+  },
+  "raw": {
+    "mode": "multi",
+    "version": "reasoning-v2.2",
+    "centralQuestion": "How does wildfire smoke affect human health?",
+    "clusters": [
+      {
+        "id": "health_impact",
+        "label": "Impact of Wildfire Smoke on Health",
+        "centralQuestion": "How does wildfire smoke affect human health?",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "relevance": "primary"
+      }
+    ],
+    "sourceRelevance": [
+      {
+        "sourceId": "source_1",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "Directly addresses the impact of wildfire smoke on respiratory health.",
+        "relevantClaimIds": [
+          "source_1_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_2",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "Directly discusses the effect of wildfire smoke on cardiovascular health.",
+        "relevantClaimIds": [
+          "source_2_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      }
+    ],
+    "excludedSources": [],
+    "claims": [],
+    "evidence": [
+      {
+        "id": "source_1_seg_section_1",
+        "sourceId": "source_1",
+        "videoId": "blind_wildfire_01",
+        "timestampStart": 30,
+        "timestampEnd": 380,
+        "text": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_2_seg_section_1",
+        "sourceId": "source_2",
+        "videoId": "blind_wildfire_02",
+        "timestampStart": 45,
+        "timestampEnd": 400,
+        "text": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      }
+    ],
+    "concepts": [
+      {
+        "id": "concept_1",
+        "label": "wildfire smoke",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_2",
+        "label": "particulate matter",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_3",
+        "label": "respiratory health",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_4",
+        "label": "cardiovascular",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_5",
+        "label": "emergency admissions",
+        "sourceIds": [
+          "source_2"
+        ]
+      }
+    ],
+    "stances": [],
+    "assumptions": [],
+    "relationships": [],
+    "rejectedRelationships": [],
+    "relationshipClusters": [],
+    "significantRelationships": [],
+    "patterns": [],
+    "synthesis": null,
+    "judgment": null,
+    "insights": [],
+    "knowledgeGaps": [],
+    "landscape": {
+      "agree": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "divide": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "unclear": {
+        "countLabel": "2",
+        "cards": []
+      }
+    },
+    "diagnostics": {
+      "survivalTest": {
+        "q1_crossSourceValue": false,
+        "q2_newRelationships": false,
+        "q3_beyondSummary": false,
+        "q4_trueEmergent": false,
+        "q5_tenSecondClarity": false,
+        "q6_noForcedLinks": true,
+        "q7_structurallyDifferent": false,
+        "notes": [
+          "No verified cross-source relationships.",
+          "No emergent insights passed verification."
+        ]
+      },
+      "rejectedRelationshipCount": 0,
+      "rejectedInsightCount": 0,
+      "clusterCount": 1,
+      "primaryClusterSourceCount": 2,
+      "passesRun": [
+        "source_ingest",
+        "claim_normalization",
+        "clustering",
+        "source_relevance_enhance",
+        "claim_relevance",
+        "direct_match_discovery",
+        "semantic_discovery",
+        "inference_discovery",
+        "verification",
+        "partial_agreement_strict",
+        "semantic_deduplication",
+        "relationship_clustering",
+        "significance_ranking",
+        "evidence_integrity",
+        "patterns",
+        "synthesis",
+        "judgment",
+        "emergent",
+        "critic"
+      ],
+      "pipelineStats": {
+        "sourcesCount": 2,
+        "inputSources": 2,
+        "relevantSources": 2,
+        "excludedSources": 0,
+        "synthesizedSources": 2,
+        "claimsExtracted": 2,
+        "relevantClaims": 0,
+        "acceptedClaims": 0,
+        "rejectedClaims": 0,
+        "duplicateClaimsMerged": 0,
+        "candidatePairs": 0,
+        "directCandidates": 0,
+        "semanticCandidates": 0,
+        "inferenceCandidates": 0,
+        "verifiedRelationships": 0,
+        "rejectedRelationships": 0,
+        "emergentCandidates": 0,
+        "verifiedEmergentInsights": 0,
+        "discoveryPassesCompleted": [],
+        "deduplicatedRelationships": 0,
+        "relationshipClusters": 0,
+        "significantRelationships": 0,
+        "sourceRelevancePrimary": 2,
+        "sourceRelevanceSecondary": 0,
+        "sourceRelevancePeripheral": 0,
+        "sourceRelevanceOffTopic": 0,
+        "claimsPrimaryTier": 0,
+        "claimsSupportingTier": 2,
+        "claimsPeripheralTier": 0,
+        "funnelFinalUsable": 0,
+        "crossSourceVerifiedRelationships": 0
+      },
+      "relevanceFunnel": {
+        "usableClaims": [
+          {
+            "id": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "videoId": "blind_wildfire_01",
+            "voiceIndex": 1,
+            "statement": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+            "normalizedStatement": "fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+            "evidenceIds": [
+              "source_1_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_2",
+              "concept_3"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 30,
+                "endTime": 380,
+                "originalText": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+            "timestampStart": 30,
+            "timestampEnd": 380,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.47071428571428575
+          },
+          {
+            "id": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "videoId": "blind_wildfire_02",
+            "voiceIndex": 2,
+            "statement": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+            "normalizedStatement": "wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+            "evidenceIds": [
+              "source_2_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_4",
+              "concept_5"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 45,
+                "endTime": 400,
+                "originalText": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+            "timestampStart": 45,
+            "timestampEnd": 400,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.4766666666666667
+          }
+        ],
+        "peripheralClaims": [],
+        "relationshipEligibleSourceIds": {},
+        "funnel": {
+          "extracted": 2,
+          "fromSynthesisSources": 2,
+          "topicRelevant": 2,
+          "questionAligned": 0,
+          "primaryTier": 0,
+          "supportingTier": 2,
+          "peripheralTier": 0,
+          "offTopicTier": 0,
+          "finalUsable": 2
+        },
+        "diagnostics": [
+          {
+            "claimId": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "claimText": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+            "relevanceScore": 0.47071428571428575,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.14285714285714285,
+            "sourcePriorScore": 0.9,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "claimText": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+            "relevanceScore": 0.4766666666666667,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.16666666666666666,
+            "sourcePriorScore": 0.9,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          }
+        ],
+        "warnings": []
+      },
+      "claimRelevanceDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+          "relevanceScore": 0.47071428571428575,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.14285714285714285,
+          "sourcePriorScore": 0.9,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+          "relevanceScore": 0.4766666666666667,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.16666666666666666,
+          "sourcePriorScore": 0.9,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        }
+      ],
+      "pipelineWarnings": [
+        {
+          "code": "SOURCE_PARTICIPATION_COLLAPSE",
+          "message": "Only 0/2 participating sources in generation pool.",
+          "extractedClaims": 2,
+          "relevantClaims": 0,
+          "relevantSources": 2
+        }
+      ]
+    },
+    "createdAt": "2026-08-29T18:38:57.682Z"
+  }
+}

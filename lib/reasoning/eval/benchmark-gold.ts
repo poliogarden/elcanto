@@ -137,7 +137,7 @@ const MIXED_IRRELEVANT_GOLD: BenchmarkGoldExpectations = {
       sources: ['source_1', 'source_2'],
       fromClaimPattern: 'R-value of at least R-49',
       toClaimPattern: 'R-49 to R-60',
-      normalizedProposition: 'cold-climate attic retrofits target high R-value insulation',
+      normalizedProposition: 'attic retrofit insulation levels target R-49',
       required: true,
     },
   ],

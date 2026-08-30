@@ -1,0 +1,513 @@
+{
+  "architecture": "reasoning_v2.2",
+  "centralQuestion": "What is CRISPR gene editing and how is it discussed across these sources?",
+  "judgmentStatement": null,
+  "synthesisSummary": null,
+  "agreementCount": 0,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "verifiedRelationshipCount": 0,
+  "rejectedRelationshipCount": 0,
+  "goodZero": true,
+  "pipelineStats": {
+    "sourcesCount": 3,
+    "inputSources": 3,
+    "relevantSources": 3,
+    "excludedSources": 0,
+    "synthesizedSources": 3,
+    "claimsExtracted": 3,
+    "relevantClaims": 0,
+    "acceptedClaims": 0,
+    "rejectedClaims": 0,
+    "duplicateClaimsMerged": 0,
+    "candidatePairs": 0,
+    "directCandidates": 0,
+    "semanticCandidates": 0,
+    "inferenceCandidates": 0,
+    "verifiedRelationships": 0,
+    "rejectedRelationships": 0,
+    "emergentCandidates": 0,
+    "verifiedEmergentInsights": 0,
+    "discoveryPassesCompleted": [],
+    "deduplicatedRelationships": 0,
+    "relationshipClusters": 0,
+    "significantRelationships": 0,
+    "sourceRelevancePrimary": 1,
+    "sourceRelevanceSecondary": 2,
+    "sourceRelevancePeripheral": 0,
+    "sourceRelevanceOffTopic": 0,
+    "claimsPrimaryTier": 0,
+    "claimsSupportingTier": 3,
+    "claimsPeripheralTier": 0,
+    "funnelFinalUsable": 0,
+    "crossSourceVerifiedRelationships": 0
+  },
+  "timingMs": {
+    "reasoningMs": 2307,
+    "totalMs": 2307
+  },
+  "costSummary": {
+    "llmCalls": 1,
+    "inputTokens": 666,
+    "outputTokens": 261,
+    "totalEstimatedCostUsd": 0.000257
+  },
+  "raw": {
+    "mode": "multi",
+    "version": "reasoning-v2.2",
+    "centralQuestion": "What is CRISPR gene editing and how is it discussed across these sources?",
+    "clusters": [
+      {
+        "id": "cluster_1",
+        "label": "Primary Sources on CRISPR Gene Editing",
+        "centralQuestion": "What is CRISPR gene editing?",
+        "sourceIds": [
+          "source_1"
+        ],
+        "relevance": "primary"
+      },
+      {
+        "id": "cluster_2",
+        "label": "Secondary Sources Related to CRISPR",
+        "centralQuestion": "What is the financial and historical context of CRISPR?",
+        "sourceIds": [
+          "source_2",
+          "source_3"
+        ],
+        "relevance": "secondary"
+      }
+    ],
+    "sourceRelevance": [
+      {
+        "sourceId": "source_1",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "This source directly explains the mechanism of CRISPR gene editing.",
+        "relevantClaimIds": [
+          "source_1_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_2",
+        "classification": "supporting",
+        "score": 0.71,
+        "reason": "While it discusses CRISPR's financial implications, it provides context rather than directly answering the user's question about gene editing.",
+        "relevantClaimIds": [
+          "source_2_section_1_claim_1"
+        ],
+        "tier": "SECONDARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_3",
+        "classification": "supporting",
+        "score": 0.71,
+        "reason": "This source offers historical context for CRISPR, which is related but not directly answering the question about gene editing itself.",
+        "relevantClaimIds": [
+          "source_3_section_1_claim_1"
+        ],
+        "tier": "SECONDARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      }
+    ],
+    "excludedSources": [],
+    "claims": [],
+    "evidence": [
+      {
+        "id": "source_1_seg_section_1",
+        "sourceId": "source_1",
+        "videoId": "bench_crispr_01",
+        "timestampStart": 15,
+        "timestampEnd": 360,
+        "text": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_2_seg_section_1",
+        "sourceId": "source_2",
+        "videoId": "bench_crispr_02",
+        "timestampStart": 50,
+        "timestampEnd": 400,
+        "text": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_3_seg_section_1",
+        "sourceId": "source_3",
+        "videoId": "bench_crispr_03",
+        "timestampStart": 30,
+        "timestampEnd": 380,
+        "text": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      }
+    ],
+    "concepts": [
+      {
+        "id": "concept_1",
+        "label": "CRISPR",
+        "sourceIds": [
+          "source_1",
+          "source_2",
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_2",
+        "label": "gene editing",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_3",
+        "label": "mechanism",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_4",
+        "label": "biotech funding",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_5",
+        "label": "market interest",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_6",
+        "label": "history",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_7",
+        "label": "scientific development",
+        "sourceIds": [
+          "source_3"
+        ]
+      }
+    ],
+    "stances": [],
+    "assumptions": [],
+    "relationships": [],
+    "rejectedRelationships": [],
+    "relationshipClusters": [],
+    "significantRelationships": [],
+    "patterns": [],
+    "synthesis": null,
+    "judgment": null,
+    "insights": [],
+    "knowledgeGaps": [],
+    "landscape": {
+      "agree": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "divide": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "unclear": {
+        "countLabel": "3",
+        "cards": []
+      }
+    },
+    "diagnostics": {
+      "survivalTest": {
+        "q1_crossSourceValue": false,
+        "q2_newRelationships": false,
+        "q3_beyondSummary": false,
+        "q4_trueEmergent": false,
+        "q5_tenSecondClarity": false,
+        "q6_noForcedLinks": true,
+        "q7_structurallyDifferent": false,
+        "notes": [
+          "No verified cross-source relationships.",
+          "No emergent insights passed verification."
+        ]
+      },
+      "rejectedRelationshipCount": 0,
+      "rejectedInsightCount": 0,
+      "clusterCount": 2,
+      "primaryClusterSourceCount": 1,
+      "passesRun": [
+        "source_ingest",
+        "claim_normalization",
+        "clustering",
+        "source_relevance_enhance",
+        "claim_relevance",
+        "direct_match_discovery",
+        "semantic_discovery",
+        "inference_discovery",
+        "verification",
+        "partial_agreement_strict",
+        "semantic_deduplication",
+        "relationship_clustering",
+        "significance_ranking",
+        "evidence_integrity",
+        "patterns",
+        "synthesis",
+        "judgment",
+        "emergent",
+        "critic"
+      ],
+      "pipelineStats": {
+        "sourcesCount": 3,
+        "inputSources": 3,
+        "relevantSources": 3,
+        "excludedSources": 0,
+        "synthesizedSources": 3,
+        "claimsExtracted": 3,
+        "relevantClaims": 0,
+        "acceptedClaims": 0,
+        "rejectedClaims": 0,
+        "duplicateClaimsMerged": 0,
+        "candidatePairs": 0,
+        "directCandidates": 0,
+        "semanticCandidates": 0,
+        "inferenceCandidates": 0,
+        "verifiedRelationships": 0,
+        "rejectedRelationships": 0,
+        "emergentCandidates": 0,
+        "verifiedEmergentInsights": 0,
+        "discoveryPassesCompleted": [],
+        "deduplicatedRelationships": 0,
+        "relationshipClusters": 0,
+        "significantRelationships": 0,
+        "sourceRelevancePrimary": 1,
+        "sourceRelevanceSecondary": 2,
+        "sourceRelevancePeripheral": 0,
+        "sourceRelevanceOffTopic": 0,
+        "claimsPrimaryTier": 0,
+        "claimsSupportingTier": 3,
+        "claimsPeripheralTier": 0,
+        "funnelFinalUsable": 0,
+        "crossSourceVerifiedRelationships": 0
+      },
+      "relevanceFunnel": {
+        "usableClaims": [
+          {
+            "id": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "videoId": "bench_crispr_01",
+            "voiceIndex": 1,
+            "statement": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits.",
+            "normalizedStatement": "crispr uses a guide rna molecule to direct an enzyme to a specific dna sequence for precise edits.",
+            "evidenceIds": [
+              "source_1_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_2",
+              "concept_3"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 15,
+                "endTime": 360,
+                "originalText": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+            "timestampStart": 15,
+            "timestampEnd": 360,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.4542307692307692
+          },
+          {
+            "id": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "videoId": "bench_crispr_02",
+            "voiceIndex": 2,
+            "statement": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+            "normalizedStatement": "crispr-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+            "evidenceIds": [
+              "source_2_seg_section_1"
+            ],
+            "claimType": "factual",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_4",
+              "concept_5"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 50,
+                "endTime": 400,
+                "originalText": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+            "timestampStart": 50,
+            "timestampEnd": 400,
+            "role": "FACT",
+            "relevanceScore": 0.43596153846153846
+          },
+          {
+            "id": "source_3_section_1_claim_1",
+            "sourceId": "source_3",
+            "videoId": "bench_crispr_03",
+            "voiceIndex": 3,
+            "statement": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s.",
+            "normalizedStatement": "scientists adapted the crispr mechanism from bacterial immune defenses during research in the early 2010s.",
+            "evidenceIds": [
+              "source_3_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_6",
+              "concept_7"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 30,
+                "endTime": 380,
+                "originalText": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+            "timestampStart": 30,
+            "timestampEnd": 380,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.41535714285714287
+          }
+        ],
+        "peripheralClaims": [],
+        "relationshipEligibleSourceIds": {},
+        "funnel": {
+          "extracted": 3,
+          "fromSynthesisSources": 3,
+          "topicRelevant": 3,
+          "questionAligned": 0,
+          "primaryTier": 0,
+          "supportingTier": 3,
+          "peripheralTier": 0,
+          "offTopicTier": 0,
+          "finalUsable": 3
+        },
+        "diagnostics": [
+          {
+            "claimId": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "claimText": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits.",
+            "relevanceScore": 0.4542307692307692,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.07692307692307693,
+            "sourcePriorScore": 0.9,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "claimText": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+            "relevanceScore": 0.43596153846153846,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.15384615384615385,
+            "sourcePriorScore": 0.75,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_3_section_1_claim_1",
+            "sourceId": "source_3",
+            "claimText": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s.",
+            "relevanceScore": 0.41535714285714287,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.07142857142857142,
+            "sourcePriorScore": 0.75,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          }
+        ],
+        "warnings": []
+      },
+      "claimRelevanceDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits.",
+          "relevanceScore": 0.4542307692307692,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.07692307692307693,
+          "sourcePriorScore": 0.9,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+          "relevanceScore": 0.43596153846153846,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.15384615384615385,
+          "sourcePriorScore": 0.75,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "claimText": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s.",
+          "relevanceScore": 0.41535714285714287,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.07142857142857142,
+          "sourcePriorScore": 0.75,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        }
+      ],
+      "pipelineWarnings": [
+        {
+          "code": "SOURCE_PARTICIPATION_COLLAPSE",
+          "message": "Only 0/3 participating sources in generation pool.",
+          "extractedClaims": 3,
+          "relevantClaims": 0,
+          "relevantSources": 3
+        }
+      ]
+    },
+    "createdAt": "2026-08-29T18:39:14.959Z"
+  }
+}

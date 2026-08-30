@@ -3,6 +3,12 @@ import {
   classifyPropositionDimension,
   type PropositionDimension,
 } from '@/lib/reasoning/proposition-alignment'
+import {
+  deriveHazardHealthCombinedExplanation,
+  derivePhenomenonOutcomeCombinedExplanation,
+  isHazardHealthComplementaryPair,
+  isPhenomenonOutcomeComplementaryPair,
+} from '@/lib/reasoning/proposition-semantics'
 import type { ReasoningClaim } from '@/lib/reasoning/types'
 
 export type ExplanatoryObjectFamily =
@@ -11,6 +17,8 @@ export type ExplanatoryObjectFamily =
   | 'adoption'
   | 'market_discourse'
   | 'development'
+  | 'health_outcome'
+  | 'ecosystem_outcome'
   | 'general'
 
 export type ComplementarySharedExplanationResult = {
@@ -48,6 +56,10 @@ const COMPLEMENTARY_OBJECT_PAIRS = new Set([
   'integration_mechanism:integration_mechanism',
   'capability_outcome:capability_outcome',
   'adoption:adoption',
+  'health_outcome:health_outcome',
+  'ecosystem_outcome:ecosystem_outcome',
+  'health_outcome:ecosystem_outcome',
+  'ecosystem_outcome:health_outcome',
 ])
 
 const INCOMPATIBLE_OBJECT_PAIRS = new Set([
@@ -78,6 +90,8 @@ const COMPLEMENTARY_DIMENSION_PAIRS = new Set([
   'MECHANISM:DEFINITION',
   'COMPARISON:ADOPTION',
   'ADOPTION:COMPARISON',
+  'EFFECT:EFFECT',
+  'MECHANISM:MECHANISM',
 ])
 
 function contentTokens(text: string): string[] {
@@ -97,6 +111,12 @@ function overlapRatio(a: string, b: string): number {
 
 export function classifyExplanatoryObjectFamily(statement: string): ExplanatoryObjectFamily {
   const s = statement.toLowerCase()
+  if (/\b(wildfire|smoke|particulate|respiratory|cardiovascular|inflammation|admissions)\b/.test(s)) {
+    return 'health_outcome'
+  }
+  if (/\b(coral|bleaching|reef ecosystem|habitat diversity|structural complexity)\b/.test(s)) {
+    return 'ecosystem_outcome'
+  }
   if (/\b(marketplace|market|discourse|discussion|popular|attention|interest|trend|hot topic)\b/.test(s)) {
     return 'market_discourse'
   }
@@ -129,6 +149,13 @@ function areExplanatoryObjectsCompatible(
   dimensionA: PropositionDimension,
   dimensionB: PropositionDimension,
 ): boolean {
+  if (familyA === 'ecosystem_outcome' && familyB === 'ecosystem_outcome') {
+    return true
+  }
+  if (familyA === 'health_outcome' && familyB === 'health_outcome') {
+    return true
+  }
+
   if (familyA === 'market_discourse' || familyB === 'market_discourse') {
     if (familyA === 'integration_mechanism' || familyB === 'integration_mechanism') return false
     if (familyA === 'capability_outcome' || familyB === 'capability_outcome') return false
@@ -185,6 +212,12 @@ function deriveCombinedExplanation(
     return 'MCP affects how tools are integrated and adopted in practice'
   }
 
+  const hazardExplanation = deriveHazardHealthCombinedExplanation(a, b)
+  if (hazardExplanation) return hazardExplanation
+
+  const phenomenonExplanation = derivePhenomenonOutcomeCombinedExplanation(a, b)
+  if (phenomenonExplanation) return phenomenonExplanation
+
   const shared = contentTokens(a).filter((t) => contentTokens(b).includes(t))
   if (shared.length >= 2) {
     const subject = /\bmcp\b/i.test(`${a} ${b}`) ? 'MCP' : 'The topic'
@@ -228,6 +261,9 @@ function hasAddedInference(combined: string, claimA: string, claimB: string): bo
 }
 
 function claimsProvideDifferentInformation(a: string, b: string): boolean {
+  if (isHazardHealthComplementaryPair(a, b) || isPhenomenonOutcomeComplementaryPair(a, b)) {
+    return true
+  }
   const dimA = classifyPropositionDimension(a)
   const dimB = classifyPropositionDimension(b)
   if (dimA !== dimB && dimA !== 'GENERAL' && dimB !== 'GENERAL') return true

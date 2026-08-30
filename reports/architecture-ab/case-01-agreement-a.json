@@ -1,0 +1,1207 @@
+{
+  "architecture": "reasoning_v2.2",
+  "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+  "judgmentStatement": "It can be concluded with high confidence that remote work reduces daily commuting time for employees.",
+  "synthesisSummary": null,
+  "agreementCount": 1,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "verifiedRelationshipCount": 1,
+  "rejectedRelationshipCount": 0,
+  "goodZero": false,
+  "pipelineStats": {
+    "sourcesCount": 3,
+    "inputSources": 3,
+    "relevantSources": 2,
+    "excludedSources": 1,
+    "synthesizedSources": 2,
+    "claimsExtracted": 3,
+    "relevantClaims": 2,
+    "acceptedClaims": 2,
+    "rejectedClaims": 0,
+    "duplicateClaimsMerged": 0,
+    "candidatePairs": 1,
+    "directCandidates": 1,
+    "semanticCandidates": 0,
+    "inferenceCandidates": 0,
+    "verifiedRelationships": 1,
+    "rejectedRelationships": 0,
+    "emergentCandidates": 0,
+    "verifiedEmergentInsights": 0,
+    "discoveryPassesCompleted": [
+      "direct_match",
+      "semantic_relationship",
+      "topic_bridge",
+      "cross_source_inference",
+      "llm_enrichment"
+    ],
+    "deduplicatedRelationships": 1,
+    "relationshipClusters": 1,
+    "significantRelationships": 1,
+    "genericRelationshipsSuppressed": 0,
+    "duplicateRelationshipsMerged": 0,
+    "weakRelationshipsSuppressed": 0,
+    "partialAgreementRejected": 0,
+    "judgmentPropositions": 2,
+    "unsupportedJudgmentPropositionsRemoved": 0,
+    "sourceRelevancePrimary": 2,
+    "sourceRelevanceSecondary": 0,
+    "sourceRelevancePeripheral": 0,
+    "sourceRelevanceOffTopic": 1,
+    "claimsPrimaryTier": 1,
+    "claimsSupportingTier": 1,
+    "claimsPeripheralTier": 0,
+    "funnelFinalUsable": 2,
+    "verifiedAgreements": 1,
+    "verifiedComplementary": 0,
+    "verifiedContradictions": 0,
+    "crossSourceVerifiedRelationships": 1
+  },
+  "timingMs": {
+    "reasoningMs": 15129,
+    "totalMs": 15129
+  },
+  "costSummary": {
+    "llmCalls": 7,
+    "inputTokens": 5350,
+    "outputTokens": 834,
+    "totalEstimatedCostUsd": 0.001303
+  },
+  "raw": {
+    "mode": "multi",
+    "version": "reasoning-v2.2",
+    "schemaVersion": 3,
+    "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+    "clusters": [
+      {
+        "id": "cluster_1",
+        "label": "Direct Answer on Commuting Reduction",
+        "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "relevance": "primary"
+      }
+    ],
+    "sourceRelevance": [
+      {
+        "sourceId": "source_1",
+        "classification": "direct",
+        "score": 0.79,
+        "reason": "Addresses the central question directly by discussing commuting time reduction with remote work.",
+        "relevantClaimIds": [
+          "source_1_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.58,
+        "topicCoverage": 0.832,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_2",
+        "classification": "direct",
+        "score": 0.71,
+        "reason": "Directly explains how working from home eliminates daily commuting travel.",
+        "relevantClaimIds": [
+          "source_2_section_1_claim_1"
+        ],
+        "tier": "PRIMARY",
+        "centralQuestionSimilarity": 0.42,
+        "topicCoverage": 0.768,
+        "relevantClaimRatio": 1,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_3",
+        "classification": "off_topic",
+        "score": 0.2,
+        "reason": "Focuses on implementation issues of remote work policies rather than commuting time.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
+      }
+    ],
+    "excludedSources": [
+      {
+        "sourceId": "source_3",
+        "videoId": "bench_rw_commute_03",
+        "voiceIndex": 3,
+        "title": "Rolling Out Remote Policies",
+        "reason": "Focuses on implementation issues of remote work policies rather than commuting time."
+      }
+    ],
+    "claims": [
+      {
+        "id": "source_1_section_1_claim_1",
+        "sourceId": "source_1",
+        "videoId": "bench_rw_commute_01",
+        "voiceIndex": 1,
+        "statement": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+        "normalizedStatement": "remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+        "evidenceIds": [
+          "source_1_seg_section_1"
+        ],
+        "claimType": "descriptive",
+        "confidence": "strong",
+        "conceptIds": [
+          "concept_1",
+          "concept_2",
+          "concept_3"
+        ],
+        "evidenceSpans": [
+          {
+            "segmentId": "section_1",
+            "startTime": 40,
+            "endTime": 420,
+            "originalText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+            "evidenceType": "DIRECT_EVIDENCE",
+            "supportScore": 1
+          }
+        ],
+        "evidenceStatus": "DIRECT_EVIDENCE",
+        "reasoningEligible": true,
+        "evidenceText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+        "timestampStart": 40,
+        "timestampEnd": 420,
+        "role": "CORE_ARGUMENT",
+        "relevanceScore": 0.6688461538461539,
+        "originalText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+        "fidelityStatus": "SUPPORTED",
+        "fidelityMutations": [],
+        "claimScope": "general",
+        "strength": "strong",
+        "evidenceStrength": "STRONG",
+        "comparisonEligibility": "ELIGIBLE",
+        "claimQualityClass": "FACTUAL"
+      },
+      {
+        "id": "source_2_section_1_claim_1",
+        "sourceId": "source_2",
+        "videoId": "bench_rw_commute_02",
+        "voiceIndex": 2,
+        "statement": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+        "normalizedStatement": "working from home cuts much of the daily travel that employees otherwise make to their office.",
+        "evidenceIds": [
+          "source_2_seg_section_1"
+        ],
+        "claimType": "descriptive",
+        "confidence": "strong",
+        "conceptIds": [
+          "concept_1",
+          "concept_4",
+          "concept_5"
+        ],
+        "evidenceSpans": [
+          {
+            "segmentId": "section_1",
+            "startTime": 55,
+            "endTime": 400,
+            "originalText": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+            "evidenceType": "DIRECT_EVIDENCE",
+            "supportScore": 1
+          }
+        ],
+        "evidenceStatus": "DIRECT_EVIDENCE",
+        "reasoningEligible": true,
+        "evidenceText": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+        "timestampStart": 55,
+        "timestampEnd": 400,
+        "role": "SUPPORTING_ARGUMENT",
+        "relevanceScore": 0.5064285714285715,
+        "originalText": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+        "fidelityStatus": "SUPPORTED",
+        "fidelityMutations": [],
+        "claimScope": "industry",
+        "strength": "strong",
+        "evidenceStrength": "STRONG",
+        "comparisonEligibility": "ELIGIBLE",
+        "claimQualityClass": "FACTUAL"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "source_1_seg_section_1",
+        "sourceId": "source_1",
+        "videoId": "bench_rw_commute_01",
+        "timestampStart": 40,
+        "timestampEnd": 420,
+        "text": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_2_seg_section_1",
+        "sourceId": "source_2",
+        "videoId": "bench_rw_commute_02",
+        "timestampStart": 55,
+        "timestampEnd": 400,
+        "text": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_3_seg_section_1",
+        "sourceId": "source_3",
+        "videoId": "bench_rw_commute_03",
+        "timestampStart": 30,
+        "timestampEnd": 360,
+        "text": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      }
+    ],
+    "concepts": [
+      {
+        "id": "concept_1",
+        "label": "remote work",
+        "sourceIds": [
+          "source_1",
+          "source_2",
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_2",
+        "label": "commuting",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_3",
+        "label": "employee travel",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_4",
+        "label": "working from home",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_5",
+        "label": "daily travel",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_6",
+        "label": "collaboration software",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_7",
+        "label": "implementation",
+        "sourceIds": [
+          "source_3"
+        ]
+      }
+    ],
+    "stances": [],
+    "assumptions": [],
+    "relationships": [
+      {
+        "id": "rel_1",
+        "type": "AGREEMENT",
+        "fromClaimId": "source_1_section_1_claim_1",
+        "toClaimId": "source_2_section_1_claim_1",
+        "fromSourceId": "source_1",
+        "toSourceId": "source_2",
+        "fromVideoId": "bench_rw_commute_01",
+        "toVideoId": "bench_rw_commute_02",
+        "explanation": "Both claims state that remote work reduces or eliminates commuting to an office, indicating agreement on the impact of remote work on employee travel.",
+        "confidence": "strong",
+        "verificationStatus": "SUPPORTED",
+        "discoveryLevel": "DIRECT_MATCH",
+        "reasoningBridge": null
+      }
+    ],
+    "rejectedRelationships": [],
+    "relationshipClusters": [
+      {
+        "id": "cluster_1",
+        "canonicalClaim": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. · Working from home cuts much of the daily travel that employees otherwise make to their office.",
+        "label": "Remote work reduces the amount of time employees spend commuting to a …",
+        "type": "AGREEMENT",
+        "dimension": "significance",
+        "memberRelationshipIds": [
+          "rel_1"
+        ],
+        "supportingClaimIds": [
+          "source_1_section_1_claim_1",
+          "source_2_section_1_claim_1"
+        ],
+        "supportingSourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "sourceCount": 2,
+        "sourcePairCount": 1,
+        "evidenceCount": 2,
+        "confidence": "strong",
+        "significanceScore": 0.6307747252747252,
+        "noveltyScore": 0.5666666666666667,
+        "evidenceStrength": 0.045,
+        "genericnessScore": 0,
+        "visualKind": "agree",
+        "parentIds": [],
+        "childIds": [
+          "rel_1"
+        ]
+      }
+    ],
+    "significantRelationships": [
+      {
+        "id": "cluster_1",
+        "canonicalClaim": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. · Working from home cuts much of the daily travel that employees otherwise make to their office.",
+        "label": "Remote work reduces the amount of time employees spend commuting to a …",
+        "type": "AGREEMENT",
+        "dimension": "significance",
+        "memberRelationshipIds": [
+          "rel_1"
+        ],
+        "supportingClaimIds": [
+          "source_1_section_1_claim_1",
+          "source_2_section_1_claim_1"
+        ],
+        "supportingSourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "sourceCount": 2,
+        "sourcePairCount": 1,
+        "evidenceCount": 2,
+        "confidence": "strong",
+        "significanceScore": 0.6307747252747252,
+        "noveltyScore": 0.5666666666666667,
+        "evidenceStrength": 0.045,
+        "genericnessScore": 0,
+        "visualKind": "agree",
+        "parentIds": [],
+        "childIds": [
+          "rel_1"
+        ]
+      }
+    ],
+    "patterns": [
+      {
+        "id": "pattern_1",
+        "type": "recurring_driver",
+        "title": "The Impact of Remote Work on Commuting Time",
+        "description": "The evidence consistently indicates that remote work serves as a recurring driver for reduced commuting time for employees, as seen in both supported claims.",
+        "relationshipIds": [
+          "rel_1"
+        ],
+        "claimIds": [
+          "source_1_section_1_claim_1",
+          "source_2_section_1_claim_1"
+        ],
+        "confidence": "strong",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "verificationStatus": "SUPPORTED"
+      }
+    ],
+    "synthesis": {
+      "statement": "Remote work is shown to significantly reduce commuting time for employees, as both analyzed sources confirm this relationship without contradicting evidence.",
+      "explanation": "The two sources consistently indicate that remote work leads to less daily travel to the workplace, marking it as a significant factor in reducing commuting time.",
+      "patternIds": [
+        "pattern_1"
+      ],
+      "confidence": "strong",
+      "verificationStatus": "SUPPORTED"
+    },
+    "judgment": {
+      "statement": "It can be concluded with high confidence that remote work reduces daily commuting time for employees.",
+      "whatIsSupported": "Both analyzed sources agree that remote work leads to a decrease in the amount of time employees spend commuting to a workplace.",
+      "whatIsUncertain": "",
+      "keyReason": "",
+      "confidence": "moderate",
+      "missingEvidence": [],
+      "verificationStatus": "SUPPORTED",
+      "sourceCoverageNote": "Supported by 2 of 2 sources",
+      "evidenceStrengthLabel": "Strong evidence",
+      "supportingSourceCount": 2,
+      "totalAnalyzedSourceCount": 2,
+      "coverageSummary": "Supported by 2 of 2 sources · 1 verified cluster · Strong evidence",
+      "reasoningSteps": [
+        {
+          "statement": "It can be concluded with high confidence that remote work reduces daily commuting time for employees.",
+          "clusterIds": [
+            "cluster_1"
+          ],
+          "claimIds": [
+            "source_1_section_1_claim_1",
+            "source_2_section_1_claim_1"
+          ],
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ]
+        },
+        {
+          "statement": "Both analyzed sources agree that remote work leads to a decrease in the amount of time employees spend commuting to a workplace.",
+          "clusterIds": [
+            "cluster_1"
+          ],
+          "claimIds": [
+            "source_1_section_1_claim_1",
+            "source_2_section_1_claim_1"
+          ],
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ]
+        }
+      ],
+      "limitations": []
+    },
+    "insights": [],
+    "rejectedEmergentCandidates": [],
+    "knowledgeGaps": [],
+    "landscape": {
+      "agree": {
+        "countLabel": "1",
+        "cards": [
+          {
+            "id": "cluster_1",
+            "title": "Remote work reduces the amount of time employees spend commuting to a …",
+            "summary": "2 sources · 1 evidence pair"
+          }
+        ]
+      },
+      "divide": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "unclear": {
+        "countLabel": "0",
+        "cards": []
+      }
+    },
+    "diagnostics": {
+      "survivalTest": {
+        "q1_crossSourceValue": true,
+        "q2_newRelationships": true,
+        "q3_beyondSummary": true,
+        "q4_trueEmergent": false,
+        "q5_tenSecondClarity": true,
+        "q6_noForcedLinks": true,
+        "q7_structurallyDifferent": true,
+        "notes": [
+          "No emergent insights passed verification.",
+          "1 source(s) excluded from synthesis."
+        ]
+      },
+      "rejectedRelationshipCount": 0,
+      "rejectedInsightCount": 0,
+      "clusterCount": 1,
+      "primaryClusterSourceCount": 2,
+      "passesRun": [
+        "source_ingest",
+        "claim_normalization",
+        "clustering",
+        "source_relevance_enhance",
+        "claim_relevance",
+        "direct_match_discovery",
+        "semantic_discovery",
+        "inference_discovery",
+        "verification",
+        "partial_agreement_strict",
+        "semantic_deduplication",
+        "relationship_clustering",
+        "significance_ranking",
+        "evidence_integrity",
+        "patterns",
+        "synthesis",
+        "judgment",
+        "emergent",
+        "critic"
+      ],
+      "pipelineStats": {
+        "sourcesCount": 3,
+        "inputSources": 3,
+        "relevantSources": 2,
+        "excludedSources": 1,
+        "synthesizedSources": 2,
+        "claimsExtracted": 3,
+        "relevantClaims": 2,
+        "acceptedClaims": 2,
+        "rejectedClaims": 0,
+        "duplicateClaimsMerged": 0,
+        "candidatePairs": 1,
+        "directCandidates": 1,
+        "semanticCandidates": 0,
+        "inferenceCandidates": 0,
+        "verifiedRelationships": 1,
+        "rejectedRelationships": 0,
+        "emergentCandidates": 0,
+        "verifiedEmergentInsights": 0,
+        "discoveryPassesCompleted": [
+          "direct_match",
+          "semantic_relationship",
+          "topic_bridge",
+          "cross_source_inference",
+          "llm_enrichment"
+        ],
+        "deduplicatedRelationships": 1,
+        "relationshipClusters": 1,
+        "significantRelationships": 1,
+        "genericRelationshipsSuppressed": 0,
+        "duplicateRelationshipsMerged": 0,
+        "weakRelationshipsSuppressed": 0,
+        "partialAgreementRejected": 0,
+        "judgmentPropositions": 2,
+        "unsupportedJudgmentPropositionsRemoved": 0,
+        "sourceRelevancePrimary": 2,
+        "sourceRelevanceSecondary": 0,
+        "sourceRelevancePeripheral": 0,
+        "sourceRelevanceOffTopic": 1,
+        "claimsPrimaryTier": 1,
+        "claimsSupportingTier": 1,
+        "claimsPeripheralTier": 0,
+        "funnelFinalUsable": 2,
+        "verifiedAgreements": 1,
+        "verifiedComplementary": 0,
+        "verifiedContradictions": 0,
+        "crossSourceVerifiedRelationships": 1
+      },
+      "judgmentPropositionLineage": [
+        {
+          "proposition": "It can be concluded with high confidence that remote work reduces daily commuting time for employees.",
+          "supportStatus": "SUPPORTED",
+          "clusterIds": [
+            "cluster_1"
+          ],
+          "relationshipIds": [
+            "rel_1"
+          ],
+          "claimIds": [
+            "source_1_section_1_claim_1",
+            "source_2_section_1_claim_1"
+          ],
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ],
+          "evidenceIds": [
+            "source_1_seg_section_1",
+            "source_2_seg_section_1"
+          ]
+        },
+        {
+          "proposition": "Both analyzed sources agree that remote work leads to a decrease in the amount of time employees spend commuting to a workplace.",
+          "supportStatus": "SUPPORTED",
+          "clusterIds": [
+            "cluster_1"
+          ],
+          "relationshipIds": [
+            "rel_1"
+          ],
+          "claimIds": [
+            "source_1_section_1_claim_1",
+            "source_2_section_1_claim_1"
+          ],
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ],
+          "evidenceIds": [
+            "source_1_seg_section_1",
+            "source_2_seg_section_1"
+          ]
+        }
+      ],
+      "sourceCountSummary": {
+        "submittedSourceCount": 3,
+        "analyzedSourceCount": 3,
+        "relevantSourceCount": 2,
+        "excludedSourceCount": 1
+      },
+      "relevanceFunnel": {
+        "usableClaims": [
+          {
+            "id": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "videoId": "bench_rw_commute_01",
+            "voiceIndex": 1,
+            "statement": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+            "normalizedStatement": "remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+            "evidenceIds": [
+              "source_1_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_2",
+              "concept_3"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 40,
+                "endTime": 420,
+                "originalText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+            "timestampStart": 40,
+            "timestampEnd": 420,
+            "role": "CORE_ARGUMENT",
+            "relevanceScore": 0.6688461538461539
+          },
+          {
+            "id": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "videoId": "bench_rw_commute_02",
+            "voiceIndex": 2,
+            "statement": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+            "normalizedStatement": "working from home cuts much of the daily travel that employees otherwise make to their office.",
+            "evidenceIds": [
+              "source_2_seg_section_1"
+            ],
+            "claimType": "descriptive",
+            "confidence": "strong",
+            "conceptIds": [
+              "concept_1",
+              "concept_4",
+              "concept_5"
+            ],
+            "evidenceSpans": [
+              {
+                "segmentId": "section_1",
+                "startTime": 55,
+                "endTime": 400,
+                "originalText": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+                "evidenceType": "DIRECT_EVIDENCE",
+                "supportScore": 1
+              }
+            ],
+            "evidenceStatus": "DIRECT_EVIDENCE",
+            "reasoningEligible": true,
+            "evidenceText": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+            "timestampStart": 55,
+            "timestampEnd": 400,
+            "role": "SUPPORTING_ARGUMENT",
+            "relevanceScore": 0.5064285714285715
+          }
+        ],
+        "peripheralClaims": [],
+        "relationshipEligibleSourceIds": {},
+        "funnel": {
+          "extracted": 3,
+          "fromSynthesisSources": 3,
+          "topicRelevant": 2,
+          "questionAligned": 2,
+          "primaryTier": 1,
+          "supportingTier": 1,
+          "peripheralTier": 0,
+          "offTopicTier": 1,
+          "finalUsable": 2
+        },
+        "diagnostics": [
+          {
+            "claimId": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "claimText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+            "relevanceScore": 0.6688461538461539,
+            "topicScore": 0.58,
+            "questionAlignmentScore": 0.6153846153846154,
+            "sourcePriorScore": 0.9,
+            "tier": "PRIMARY",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "claimText": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+            "relevanceScore": 0.5064285714285715,
+            "topicScore": 0.42,
+            "questionAlignmentScore": 0.2857142857142857,
+            "sourcePriorScore": 0.9,
+            "tier": "SUPPORTING",
+            "decision": "KEEP"
+          },
+          {
+            "claimId": "source_3_section_1_claim_1",
+            "sourceId": "source_3",
+            "claimText": "Organizations rolling out remote work must budget for secure collaboration tools and employee training.",
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
+          }
+        ],
+        "warnings": []
+      },
+      "claimRelevanceDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+          "relevanceScore": 0.6688461538461539,
+          "topicScore": 0.58,
+          "questionAlignmentScore": 0.6153846153846154,
+          "sourcePriorScore": 0.9,
+          "tier": "PRIMARY",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+          "relevanceScore": 0.5064285714285715,
+          "topicScore": 0.42,
+          "questionAlignmentScore": 0.2857142857142857,
+          "sourcePriorScore": 0.9,
+          "tier": "SUPPORTING",
+          "decision": "KEEP"
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "claimText": "Organizations rolling out remote work must budget for secure collaboration tools and employee training.",
+          "relevanceScore": 0,
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
+        }
+      ],
+      "pipelineWarnings": [],
+      "relationshipVerificationDiagnostics": [
+        {
+          "fromClaimId": "source_1_section_1_claim_1",
+          "toClaimId": "source_2_section_1_claim_1",
+          "fromSourceId": "source_1",
+          "toSourceId": "source_2",
+          "fromClaimText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+          "toClaimText": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+          "proposedType": "AGREEMENT",
+          "stage": "PRE_LLM",
+          "scores": {
+            "semanticSimilarity": 0.15384615384615385,
+            "topicAlignment": 0.55,
+            "subjectEntityAlignment": 0.7,
+            "predicateAlignment": 0.15,
+            "polarity": "NEUTRAL",
+            "scopeCompatibility": 0.9,
+            "evidenceCompatibility": 0.75,
+            "finalAlignment": 0.5008461538461539,
+            "requiredThreshold": 0.48,
+            "failedConditions": [],
+            "passed": true,
+            "reason": "Pair is plausibly comparable — defer to full verifier."
+          }
+        }
+      ],
+      "candidateFunnel": {
+        "claimsAfterRelevance": 2,
+        "claimsAfterNormalization": 2,
+        "claimsForCandidateGeneration": 2,
+        "participatingSourceCount": 2,
+        "claimsPerSource": {
+          "source_1": 1,
+          "source_2": 1
+        },
+        "possibleCrossSourcePairs": 1,
+        "pairsAfterSourceFilter": 1,
+        "heuristicDirect": 1,
+        "heuristicSemantic": 0,
+        "heuristicInference": 0,
+        "heuristicBridge": 1,
+        "heuristicTotal": 1,
+        "llmCandidatesAdded": 0,
+        "sameSourceCandidatesDropped": 0,
+        "candidatePairs": 1
+      },
+      "candidateGenerationDiagnostics": [],
+      "sourceParticipation": {
+        "rows": [
+          {
+            "sourceId": "source_1",
+            "extracted": 1,
+            "relevanceUsable": 1,
+            "comparable": 1,
+            "qualityAccepted": 1,
+            "generationClaims": 1,
+            "possibleCrossSourcePairs": 1,
+            "candidatePairsAsMember": 1,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 1,
+            "clusterMembership": 1
+          },
+          {
+            "sourceId": "source_2",
+            "extracted": 1,
+            "relevanceUsable": 1,
+            "comparable": 1,
+            "qualityAccepted": 1,
+            "generationClaims": 1,
+            "possibleCrossSourcePairs": 1,
+            "candidatePairsAsMember": 1,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 1,
+            "clusterMembership": 1
+          },
+          {
+            "sourceId": "source_3",
+            "extracted": 1,
+            "relevanceUsable": 0,
+            "comparable": 0,
+            "qualityAccepted": 0,
+            "generationClaims": 0,
+            "possibleCrossSourcePairs": 0,
+            "candidatePairsAsMember": 0,
+            "semanticCandidatesAsMember": 0,
+            "verifiedRelationships": 0,
+            "clusterMembership": 0
+          }
+        ],
+        "relevantSourceCount": 2,
+        "generationParticipatingCount": 2,
+        "verifiedParticipatingCount": 2
+      },
+      "claimTransitionDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+          "relevanceScore": 0.6688461538461539,
+          "tier": "PRIMARY",
+          "relevanceDecision": "KEEP",
+          "usable": true,
+          "comparable": true,
+          "comparisonEligibility": "ELIGIBLE",
+          "evidenceStrength": "STRONG",
+          "claimQualityClass": "FACTUAL",
+          "qualityAccepted": true,
+          "fidelityStatus": "SUPPORTED",
+          "fidelityMutation": [],
+          "evidenceText": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated rou",
+          "generationEligible": true,
+          "inGenerationSet": true
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+          "relevanceScore": 0.5064285714285715,
+          "tier": "SUPPORTING",
+          "relevanceDecision": "KEEP",
+          "usable": true,
+          "comparable": true,
+          "comparisonEligibility": "ELIGIBLE",
+          "evidenceStrength": "STRONG",
+          "claimQualityClass": "FACTUAL",
+          "qualityAccepted": true,
+          "fidelityStatus": "SUPPORTED",
+          "fidelityMutation": [],
+          "evidenceText": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, an",
+          "generationEligible": true,
+          "inGenerationSet": true
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "claimText": "Organizations rolling out remote work must budget for secure collaboration tools and employee training.",
+          "relevanceScore": 0,
+          "tier": "OFF_TOPIC",
+          "relevanceDecision": "DROP",
+          "usable": false,
+          "comparable": false,
+          "qualityAccepted": false,
+          "evidenceText": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees ",
+          "generationEligible": false,
+          "inGenerationSet": false
+        }
+      ],
+      "comparableClaimFunnel": {
+        "usableInput": 2,
+        "comparable": 2,
+        "generationEligible": 2,
+        "highConfidence": 2,
+        "excluded": 0,
+        "limited": 0,
+        "noEvidenceEligible": 0,
+        "hypeLimited": 0,
+        "recoveryRecovered": 0,
+        "duplicatesMerged": 0
+      },
+      "verificationDiagnosticsBundle": {
+        "candidateAudit": [
+          {
+            "candidateId": "cand_1",
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "voiceA": 1,
+            "voiceB": 2,
+            "claimA": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+            "claimB": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+            "claimAId": "source_1_section_1_claim_1",
+            "claimBId": "source_2_section_1_claim_1",
+            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
+            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
+            "origin": "direct",
+            "discoveryLevel": "DIRECT_MATCH",
+            "proposedType": "AGREEMENT",
+            "predictedRelationship": "agreement",
+            "semanticSimilarity": 0.15384615384615385,
+            "topicSimilarity": 0.55,
+            "subjectSimilarity": 0.7,
+            "predicateSimilarity": 0.15,
+            "polarityCompatibility": "NEUTRAL",
+            "candidateScore": 0.4414615384615385,
+            "verificationResult": "PASS",
+            "verificationStage": "PRE_LLM",
+            "finalVerificationScore": 0.5008461538461539,
+            "requiredThreshold": 0.48,
+            "verificationDetail": "Pair is plausibly comparable — defer to full verifier."
+          }
+        ],
+        "topCandidates": [
+          {
+            "candidateId": "cand_1",
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "voiceA": 1,
+            "voiceB": 2,
+            "claimA": "Remote work reduces the amount of time employees spend commuting to a central workplace each day.",
+            "claimB": "Working from home cuts much of the daily travel that employees otherwise make to their office.",
+            "claimAId": "source_1_section_1_claim_1",
+            "claimBId": "source_2_section_1_claim_1",
+            "claimAEvidenceStatus": "DIRECT_EVIDENCE",
+            "claimBEvidenceStatus": "DIRECT_EVIDENCE",
+            "origin": "direct",
+            "discoveryLevel": "DIRECT_MATCH",
+            "proposedType": "AGREEMENT",
+            "predictedRelationship": "agreement",
+            "semanticSimilarity": 0.15384615384615385,
+            "topicSimilarity": 0.55,
+            "subjectSimilarity": 0.7,
+            "predicateSimilarity": 0.15,
+            "polarityCompatibility": "NEUTRAL",
+            "candidateScore": 0.4414615384615385,
+            "verificationResult": "PASS",
+            "verificationStage": "PRE_LLM",
+            "finalVerificationScore": 0.5008461538461539,
+            "requiredThreshold": 0.48,
+            "verificationDetail": "Pair is plausibly comparable — defer to full verifier.",
+            "rank": 1
+          }
+        ],
+        "rejectionDistribution": {},
+        "crossSourceMatrix": [
+          {
+            "sourceA": "source_1",
+            "sourceB": "source_2",
+            "labelA": "V1",
+            "labelB": "V2",
+            "possiblePairs": 1,
+            "generatedCandidates": 1,
+            "verifiedRelationships": 1
+          }
+        ],
+        "claimSpecificityBySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "specific": 1,
+            "general": 0,
+            "hype": 0,
+            "meta": 0,
+            "procedural": 0,
+            "observational": 0,
+            "total": 1
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "specific": 1,
+            "general": 0,
+            "hype": 0,
+            "meta": 0,
+            "procedural": 0,
+            "observational": 0,
+            "total": 1
+          }
+        ],
+        "claimEvidenceBySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "directEvidence": 1,
+            "paraphraseSupported": 0,
+            "contextSupported": 0,
+            "noEvidence": 0,
+            "total": 1,
+            "generationDirectOrParaphrase": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "directEvidence": 1,
+            "paraphraseSupported": 0,
+            "contextSupported": 0,
+            "noEvidence": 0,
+            "total": 1,
+            "generationDirectOrParaphrase": 1,
+            "generationNoEvidence": 0
+          }
+        ],
+        "generationClaimEvidence": {
+          "total": 2,
+          "withDirectOrParaphrase": 2,
+          "withoutEvidence": 0
+        }
+      },
+      "evidenceCoverage": {
+        "extracted": 3,
+        "direct": 3,
+        "paraphrase": 0,
+        "context": 0,
+        "noEvidence": 0,
+        "reasoningEligible": 3,
+        "reasoningExcluded": 0,
+        "generationTotal": 2,
+        "generationWithEvidence": 2,
+        "generationNoEvidence": 0,
+        "bySource": [
+          {
+            "sourceId": "source_1",
+            "voiceIndex": 1,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_2",
+            "voiceIndex": 2,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 1,
+            "generationNoEvidence": 0
+          },
+          {
+            "sourceId": "source_3",
+            "voiceIndex": 3,
+            "direct": 1,
+            "paraphrase": 0,
+            "context": 0,
+            "noEvidence": 0,
+            "reasoningEligible": 1,
+            "generationWithEvidence": 0,
+            "generationNoEvidence": 0
+          }
+        ]
+      },
+      "questionIntent": {
+        "rawQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+        "subject": "remote work reduce daily",
+        "dimension": "general",
+        "predicate": "does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+        "expectedAnswerType": "general",
+        "scope": "remote work reduce daily commuting time employees spend traveling workplace",
+        "topicTokens": [
+          "remote",
+          "work",
+          "reduce",
+          "daily",
+          "commuting",
+          "time",
+          "employees",
+          "spend",
+          "traveling",
+          "workplace"
+        ]
+      },
+      "sourceAnswerability": [
+        {
+          "sourceId": "source_1",
+          "answerability": "DIRECTLY_ANSWERABLE",
+          "directClaims": 1,
+          "supportingClaims": 0,
+          "contextualClaims": 0,
+          "title": "Remote Work and Daily Commutes"
+        },
+        {
+          "sourceId": "source_2",
+          "answerability": "PARTIALLY_ANSWERABLE",
+          "directClaims": 0,
+          "supportingClaims": 1,
+          "contextualClaims": 0,
+          "title": "Home Offices and Travel Time"
+        },
+        {
+          "sourceId": "source_3",
+          "answerability": "NOT_ANSWERABLE",
+          "directClaims": 0,
+          "supportingClaims": 0,
+          "contextualClaims": 0,
+          "title": "Rolling Out Remote Policies"
+        }
+      ],
+      "claimAlignmentDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "alignment": "DIRECT",
+          "questionAlignmentScore": 0.6153846153846154,
+          "topicScore": 0.58,
+          "tier": "PRIMARY",
+          "reason": "primary_question_match"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "alignment": "SUPPORTING",
+          "questionAlignmentScore": 0.2857142857142857,
+          "topicScore": 0.42,
+          "tier": "SUPPORTING",
+          "reason": "supporting_evidence"
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "alignment": "UNRELATED",
+          "questionAlignmentScore": 0,
+          "topicScore": 0,
+          "tier": "OFF_TOPIC",
+          "reason": "off_topic"
+        }
+      ]
+    },
+    "createdAt": "2026-08-29T18:38:35.273Z"
+  }
+}

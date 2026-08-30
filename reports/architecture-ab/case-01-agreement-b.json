@@ -1,0 +1,165 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+  "finalAnswer": "Yes, remote work reduces the daily commuting time that employees spend traveling to a workplace, as it allows them to avoid rush-hour traffic and eliminates the need for daily trips to their office.",
+  "agreementCount": 1,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "nonComparableCount": 1,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1606,
+    "crossSourceMs": 2184,
+    "validationMs": 1,
+    "totalMs": 3791
+  },
+  "costSummary": {
+    "llmCalls": 4,
+    "inputTokens": 2003,
+    "outputTokens": 503,
+    "totalEstimatedCostUsd": 0.000602
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Remote work reduces commuting time.",
+          "Employees avoid rush-hour traffic when working from home.",
+          "Workers no longer make repeated round trips to a workplace, saving hours weekly."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+            "startTime": 40,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Remote work significantly reduces daily commuting time for employees.",
+          "Employees reclaim time that was previously spent on transportation to their workplace."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_2:source_2_seg_section_1",
+            "text": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+            "startTime": 55,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_3",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [
+          {
+            "evidenceRef": "source_3:source_3_seg_section_1",
+            "text": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+            "startTime": 30,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.5
+      }
+    ],
+    "agreements": [
+      {
+        "statement": "Remote work reduces commuting time for employees.",
+        "sourceIds": [
+          "source_1",
+          "source_2"
+        ],
+        "evidenceRefs": [
+          "source_1:source_1_seg_section_1",
+          "source_2:source_2_seg_section_1"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "disagreements": [],
+    "complementaryViews": [],
+    "nonComparableSources": [
+      {
+        "sourceId": "source_3",
+        "reason": "This source discusses the logistical aspects of remote work rollout and is not relevant to the question about commuting time."
+      }
+    ],
+    "uncertainties": [],
+    "finalAnswer": "Yes, remote work reduces the daily commuting time that employees spend traveling to a workplace, as it allows them to avoid rush-hour traffic and eliminates the need for daily trips to their office.",
+    "confidence": 0.9,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "Remote work reduces the amount of time employees spend commuting to a central workplace each day. Workers who stay home avoid rush-hour traffic and repeated round trips that previously consumed hours every week.",
+        "startTime": 40,
+        "endTime": 420
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "Working from home cuts much of the daily travel that employees otherwise make to their office. Teams report reclaiming time previously lost to buses, trains, and highway commutes.",
+        "startTime": 55,
+        "endTime": 400
+      },
+      {
+        "ref": "source_3:source_3_seg_section_1",
+        "sourceId": "source_3",
+        "text": "Organizations rolling out remote work must budget for secure collaboration tools and employee training. These rollout costs are separate from whether employees save time on commuting.",
+        "startTime": 30,
+        "endTime": 360
+      }
+    ],
+    "validation": {
+      "agreementSupported": 1,
+      "agreementUnsupported": 0,
+      "disagreementSupported": 0,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 0,
+      "complementaryUnsupported": 0,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [
+        {
+          "statement": "Remote work reduces commuting time for employees.",
+          "sourceIds": [
+            "source_1",
+            "source_2"
+          ],
+          "evidenceRefs": [
+            "source_1:source_1_seg_section_1",
+            "source_2:source_2_seg_section_1"
+          ],
+          "confidence": 0.9
+        }
+      ],
+      "filteredDisagreements": [],
+      "filteredComplementary": []
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1606,
+      "crossSourceMs": 2184,
+      "validationMs": 1,
+      "totalMs": 3791
+    }
+  }
+}

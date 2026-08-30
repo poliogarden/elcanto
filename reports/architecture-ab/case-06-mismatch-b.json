@@ -1,0 +1,147 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+  "finalAnswer": "Achieving 53% accuracy in decision-making, particularly in professional stock picking, is often regarded as a notable performance, as this level of accuracy surpasses random guessing and is enhanced further when disciplined position sizing is practiced. Therefore, while not exceptional in absolute terms, it is considered a good standard in the context of stock analysis.",
+  "agreementCount": 1,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "nonComparableCount": 2,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1425,
+    "crossSourceMs": 2412,
+    "validationMs": 0,
+    "totalMs": 3837
+  },
+  "costSummary": {
+    "llmCalls": 4,
+    "inputTokens": 1814,
+    "outputTokens": 411,
+    "totalEstimatedCostUsd": 0.0005189999999999999
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Achieving 53% accuracy in major directional calls in professional stock picking is considered a good performance.",
+          "This accuracy is not perfect but is better than random selection, especially when paired with disciplined position sizing."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+            "startTime": 120,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [],
+        "confidence": 0
+      },
+      {
+        "sourceId": "source_3",
+        "answerability": "NOT_RELEVANT",
+        "position": null,
+        "keyPoints": [],
+        "evidence": [],
+        "confidence": 0
+      }
+    ],
+    "agreements": [
+      {
+        "statement": "Achieving 53% accuracy in major directional stock picking is considered a good performance as it exceeds random selection.",
+        "sourceIds": [
+          "source_1"
+        ],
+        "evidenceRefs": [
+          "source_1:source_1_seg_section_1"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "disagreements": [],
+    "complementaryViews": [],
+    "nonComparableSources": [
+      {
+        "sourceId": "source_2",
+        "reason": "The source does not provide any relevant information pertaining to the question."
+      },
+      {
+        "sourceId": "source_3",
+        "reason": "The source does not provide any relevant information pertaining to the question."
+      }
+    ],
+    "uncertainties": [],
+    "finalAnswer": "Achieving 53% accuracy in decision-making, particularly in professional stock picking, is often regarded as a notable performance, as this level of accuracy surpasses random guessing and is enhanced further when disciplined position sizing is practiced. Therefore, while not exceptional in absolute terms, it is considered a good standard in the context of stock analysis.",
+    "confidence": 0.9,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+        "startTime": 120,
+        "endTime": 480
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uniquely good at.",
+        "startTime": 90,
+        "endTime": 420
+      },
+      {
+        "ref": "source_3:source_3_seg_section_1",
+        "sourceId": "source_3",
+        "text": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specifications alone.",
+        "startTime": 60,
+        "endTime": 360
+      }
+    ],
+    "validation": {
+      "agreementSupported": 1,
+      "agreementUnsupported": 0,
+      "disagreementSupported": 0,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 0,
+      "complementaryUnsupported": 0,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [
+        {
+          "statement": "Achieving 53% accuracy in major directional stock picking is considered a good performance as it exceeds random selection.",
+          "sourceIds": [
+            "source_1"
+          ],
+          "evidenceRefs": [
+            "source_1:source_1_seg_section_1"
+          ],
+          "confidence": 0.9
+        }
+      ],
+      "filteredDisagreements": [],
+      "filteredComplementary": []
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1425,
+      "crossSourceMs": 2412,
+      "validationMs": 0,
+      "totalMs": 3837
+    }
+  }
+}

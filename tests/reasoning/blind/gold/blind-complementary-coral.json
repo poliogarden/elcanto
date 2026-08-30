@@ -1,0 +1,26 @@
+{
+  "fixtureId": "blind-complementary-coral",
+  "label": "Blind Complementary — Coral",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "COMPLEMENTARY",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "expel symbiotic algae",
+      "toClaimPattern": "lose structural complexity",
+      "normalizedProposition": "coral bleaching damages reef ecosystems through mechanism and consequence",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "reason": "bleaching mechanism vs ecosystem consequence are complementary angles"
+    }
+  ],
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

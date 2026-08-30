@@ -1,0 +1,249 @@
+{
+  "caseId": "case-06-mismatch",
+  "setType": "mismatch",
+  "label": "SET 6 Question Mismatch",
+  "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_decision_53",
+      "voiceIndex": 1,
+      "title": "Decision Accuracy in Investing",
+      "summary": "Discusses hit rates in stock picking and portfolio decisions.",
+      "thesis": "Professional investors are right only about half the time.",
+      "centralQuestion": "Professional investors are right only about half the time.",
+      "topics": [
+        "decision making",
+        "accuracy",
+        "investing"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "Professional stock pickers are right about fifty-three percent of the time on major directional calls.",
+          "topic": "decision_accuracy",
+          "confidence": 0.88,
+          "evidenceSummary": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 120,
+          "segmentEndTime": 480
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Professional investors are right only about half the time."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 120,
+          "text": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+          "segmentId": "section_1",
+          "endTime": 480
+        }
+      ],
+      "stance": null,
+      "channel": "Market Psychology",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 120,
+            "endTime": 480,
+            "topic": "Hit rate",
+            "summary": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats ",
+            "text": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "Professional stock pickers are right about fifty-three percent of the time on major directional calls.",
+                "topic": "decision_accuracy",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_failure_adapt",
+      "voiceIndex": 2,
+      "title": "Failure and Personal Strength",
+      "summary": "Talks about failure, adaptation, and finding personal strengths.",
+      "thesis": "Failure is inevitable; success comes from adapting and finding what you are good at.",
+      "centralQuestion": "Failure is inevitable; success comes from adapting and finding what you are good at.",
+      "topics": [
+        "failure",
+        "resilience",
+        "personal development"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "Success after failure depends on adapting and finding what you are uniquely good at.",
+          "topic": "personal_development",
+          "confidence": 0.88,
+          "evidenceSummary": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uniquely good at.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 90,
+          "segmentEndTime": 420
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Failure is inevitable; success comes from adapting and finding what you are good at."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 90,
+          "text": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uniquely good at.",
+          "segmentId": "section_1",
+          "endTime": 420
+        }
+      ],
+      "stance": null,
+      "channel": "Career Resilience",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 90,
+            "endTime": 420,
+            "topic": "Adaptation after failure",
+            "summary": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uni",
+            "text": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uniquely good at.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "Success after failure depends on adapting and finding what you are uniquely good at.",
+                "topic": "personal_development",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_marketing_values",
+      "voiceIndex": 3,
+      "title": "Brand Values in Marketing",
+      "summary": "Explains how great campaigns express brand values.",
+      "thesis": "Marketing is fundamentally about communicating values, not just products.",
+      "centralQuestion": "Marketing is fundamentally about communicating values, not just products.",
+      "topics": [
+        "marketing",
+        "brand values",
+        "advertising"
+      ],
+      "claims": [
+        {
+          "id": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "statement": "Marketing is about communicating brand values rather than product specs alone.",
+          "topic": "marketing_strategy",
+          "confidence": 0.88,
+          "evidenceSummary": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specifications alone.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 60,
+          "segmentEndTime": 360
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Marketing is fundamentally about communicating values, not just products."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_3_seg_section_1",
+          "timestamp": 60,
+          "text": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specifications alone.",
+          "segmentId": "section_1",
+          "endTime": 360
+        }
+      ],
+      "stance": null,
+      "channel": "Brand Strategy",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 60,
+            "endTime": 360,
+            "topic": "Values-based marketing",
+            "summary": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specification",
+            "text": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specifications alone.",
+            "claims": [
+              {
+                "id": "source_3_section_1_claim_1",
+                "statement": "Marketing is about communicating brand values rather than product specs alone.",
+                "topic": "marketing_strategy",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "question-mismatch",
+  "isRealYouTube": false
+}

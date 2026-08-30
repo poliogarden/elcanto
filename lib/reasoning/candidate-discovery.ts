@@ -1,5 +1,13 @@
 import { pairKey } from '@/lib/reasoning/alignment'
 import { normalizeStatement } from '@/lib/reasoning/source-ingest'
+import {
+  isHazardHealthComplementaryPair,
+  isNullEffectOpposition,
+  isNumericRangeEquivalent,
+  isOpposingDirectionPair,
+  isPhenomenonOutcomeComplementaryPair,
+  hasSemanticPredicateCompatibility,
+} from '@/lib/reasoning/proposition-semantics'
 import type {
   ConfidenceLevel,
   DiscoveryLevel,
@@ -137,6 +145,67 @@ export function discoverDirectMatchCandidates(claims: ReasoningClaim[]): Relatio
     const overlap = overlapRatio(fromTokens, toTokens)
     const sharedConcepts = from.conceptIds.filter((id) => to.conceptIds.includes(id))
 
+    const dimension = extractSharedDimension(from.statement, to.statement)
+
+    if (hasSemanticPredicateCompatibility(from.statement, to.statement)) {
+      addCandidate(map, {
+        fromClaimId: from.id,
+        toClaimId: to.id,
+        type: 'AGREEMENT',
+        rationale: 'Semantic predicate compatibility on shared policy or metric proposition.',
+        confidence: 'moderate',
+        discoveryLevel: 'DIRECT_MATCH',
+        dimension: dimension ?? 'performance',
+      })
+      continue
+    }
+
+    if (
+      isNullEffectOpposition(from.statement, to.statement) ||
+      isOpposingDirectionPair(from.statement, to.statement)
+    ) {
+      const overlap = overlapRatio(fromTokens, toTokens)
+      addCandidate(map, {
+        fromClaimId: from.id,
+        toClaimId: to.id,
+        type: overlap >= 0.2 ? 'CONTRADICTION' : 'TENSION',
+        rationale: 'Semantic opposition on shared outcome proposition despite low lexical overlap.',
+        confidence: 'moderate',
+        discoveryLevel: 'DIRECT_MATCH',
+        dimension,
+      })
+      continue
+    }
+
+    if (isNumericRangeEquivalent(from.statement, to.statement)) {
+      addCandidate(map, {
+        fromClaimId: from.id,
+        toClaimId: to.id,
+        type: 'AGREEMENT',
+        rationale: 'Numeric range equivalence after unit normalization.',
+        confidence: 'strong',
+        discoveryLevel: 'DIRECT_MATCH',
+        dimension: dimension ?? 'performance',
+      })
+      continue
+    }
+
+    if (
+      isHazardHealthComplementaryPair(from.statement, to.statement) ||
+      isPhenomenonOutcomeComplementaryPair(from.statement, to.statement)
+    ) {
+      addCandidate(map, {
+        fromClaimId: from.id,
+        toClaimId: to.id,
+        type: 'COMPLEMENTARY',
+        rationale: 'Shared hazard or phenomenon with distinct downstream outcomes.',
+        confidence: 'moderate',
+        discoveryLevel: 'SEMANTIC_RELATIONSHIP',
+        dimension,
+      })
+      continue
+    }
+
     if (overlap < 0.15 && sharedConcepts.length === 0) continue
 
     const fromPos = POSITIVE_MARKERS.test(from.statement)
@@ -144,14 +213,17 @@ export function discoverDirectMatchCandidates(claims: ReasoningClaim[]): Relatio
     const toPos = POSITIVE_MARKERS.test(to.statement)
     const toNeg = NEGATIVE_MARKERS.test(to.statement)
 
-    const dimension = extractSharedDimension(from.statement, to.statement)
-
     if (overlap >= 0.28 || (overlap >= 0.15 && sharedConcepts.length > 0)) {
       let type: ReasoningRelationshipType = 'AGREEMENT'
       let confidence: ConfidenceLevel = overlap >= 0.45 ? 'strong' : 'moderate'
 
       if ((fromPos && toNeg) || (fromNeg && toPos)) {
         type = overlap >= 0.3 ? 'CONTRADICTION' : 'TENSION'
+      } else if (
+        isNullEffectOpposition(from.statement, to.statement) ||
+        isOpposingDirectionPair(from.statement, to.statement)
+      ) {
+        type = overlap >= 0.25 ? 'CONTRADICTION' : 'TENSION'
       } else if (overlap >= 0.25 && overlap < 0.45) {
         type = 'PARTIAL_AGREEMENT'
       }

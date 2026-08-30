@@ -1,0 +1,24 @@
+{
+  "fixtureId": "blind-agreement-ocean-ph",
+  "label": "Blind Agreement — Ocean pH",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "declined by approximately 0.1 units",
+      "toClaimPattern": "measurable drop in average pH",
+      "normalizedProposition": "ocean surface pH has declined over time",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [],
+  "expectedSourceParticipation": [
+    { "sourceId": "source_1", "participateInGeneration": true },
+    { "sourceId": "source_2", "participateInGeneration": true }
+  ],
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

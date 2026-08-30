@@ -1,8 +1,19 @@
-import { AI_CONFIG } from '@/lib/ai/config'
-import { runWithAIContext } from '@/lib/ai/usage/context'
+import { AI_CONFIG, getModelForRole } from '@/lib/ai/config'
+import { runWithAIContext, buildSynthesisCostSummary } from '@/lib/ai/usage/context'
+import type { AIUsageRecord } from '@/lib/ai/usage/types'
 import { analyzeOneSource } from '@/lib/pipeline/analyze-source'
+import { buildProductionPipelineDiagnostics } from '@/lib/production/build-pipeline-diagnostics'
+import { buildDirectProductionDiagnostics } from '@/lib/production/build-direct-diagnostics'
+import {
+  DIRECT_SYNTHESIS_ENGINE_VERSION,
+  resolveProductionReasoningEngine,
+} from '@/lib/direct-synthesis/engine-config'
+import { runDirectSynthesisPipeline } from '@/lib/direct-synthesis/pipeline'
+import { toPersistedDirectSynthesis } from '@/lib/direct-synthesis/persisted'
 import { runReasoningPipeline } from '@/lib/reasoning/pipeline'
+import { REASONING_V2_ENGINE_VERSION } from '@/lib/reasoning/v2/engine-config'
 import { runSingleSourceReasoning } from '@/lib/reasoning/single-source'
+import { SynthesisPerfCollector } from '@/lib/synthesis/synthesis-perf'
 import type { ReasoningProgressPhase } from '@/lib/reasoning/types'
 import type { SynthesisJobPhase } from '@/lib/synthesis/synthesis-job-types'
 import {
@@ -15,9 +26,13 @@ import {
   type SynthesisDocument,
 } from '@/lib/types/synthesis-document'
 import {
-  resolveDraftQuestion,
   resolveDraftSynthesisMode,
 } from '@/lib/types/synthesis-draft'
+import {
+  hasUserSubmittedQuestion,
+  isGenericCentralQuestion,
+  resolveJobCentralQuestion,
+} from '@/lib/synthesis/resolve-central-question'
 import type { SourceAnalysis, SourceFailure } from '@/lib/types/source'
 import { createSourceId } from '@/lib/types/source'
 import { normalizeDraftVoice } from '@/lib/voice/normalize-voice'
@@ -39,18 +54,21 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
 
     const requestId = crypto.randomUUID()
     const analyzeStartedAt = Date.now()
+    const costAccumulator: AIUsageRecord[] = []
+    const perf = new SynthesisPerfCollector()
+    perf.start('total')
 
     await runWithAIContext(
-      { requestId, synthesisId: claimed.synthesisId },
+      { requestId, synthesisId: claimed.synthesisId, costAccumulator },
       async () => {
         let document = createSynthesisDocument(claimed.synthesisId, claimed.draft.voices)
         document.mode = resolveDraftSynthesisMode(claimed.draft)
-        const synthesisQuestion = resolveDraftQuestion(claimed.draft)
-        if (synthesisQuestion) {
+        let centralQuestion = resolveJobCentralQuestion(claimed.draft)
+        if (hasUserSubmittedQuestion(claimed.draft)) {
           document = {
             ...document,
-            userQuestion: synthesisQuestion,
-            topic: synthesisQuestion,
+            userQuestion: centralQuestion,
+            topic: centralQuestion,
           }
         }
         document.status = 'analyzing'
@@ -75,6 +93,8 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
           updateChain = updateChain.then(fn)
           return updateChain
         }
+
+        perf.start('individual_analysis')
 
         await mapWithConcurrency(
           document.voices,
@@ -168,6 +188,7 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
 
         await updateChain
 
+        perf.end('individual_analysis')
         analyses.sort((a, b) => a.voiceIndex - b.voiceIndex)
 
         const latest = await loadSynthesisJob(jobId)
@@ -185,120 +206,261 @@ export async function runSynthesisJob(jobId: string): Promise<void> {
 
         const individualAnalysisMs = Date.now() - analyzeStartedAt
         const outputLanguage = claimed.draft.outputLanguage
+        const reasoningEngine = resolveProductionReasoningEngine(
+          process.env.ELCANTO_REASONING_ENGINE,
+        )
 
-        const useReasoning = analyses.length >= 2
+        if (analyses.length >= 1) {
+          document = {
+            ...document,
+            status: 'synthesizing',
+            survivalProgressPhase: 'claims',
+          }
+          await updateSynthesisJob(jobId, {
+            phase: 'connecting',
+            document,
+          })
 
-        if (useReasoning) {
-          const voiceMeta = document.voices
-            .filter((v) => v.analysis)
-            .map((v) => ({ channel: v.voice.channel, thumbnail: v.voice.thumbnail }))
-
-          const reasoning = await runReasoningPipeline({
-            sources: analyses,
-            voices: voiceMeta,
-            userQuestion: synthesisQuestion,
-            outputLanguage: outputLanguage ?? undefined,
-            onProgress: (event) => {
-              if (event.type === 'phase') {
-                const phaseMap: Partial<Record<ReasoningProgressPhase, typeof document.survivalProgressPhase>> =
-                  {
-                    source_ingest: 'coherence',
-                    clustering: 'coherence',
-                    alignment: 'claims',
-                    relationships: 'relationships',
-                    verification: 'verification',
-                    patterns: 'synthesis',
-                    synthesis: 'synthesis',
-                    judgment: 'synthesis',
-                    emergent: 'synthesis',
-                    critic: 'synthesis',
-                  }
-                const jobPhase =
-                  event.phase === 'source_ingest' || event.phase === 'clustering'
-                    ? 'connecting'
-                    : event.phase === 'relationships' || event.phase === 'verification'
-                      ? 'connecting'
-                      : 'synthesizing'
-
-                if (event.status === 'start') {
-                  void updateSynthesisJob(jobId, {
-                    phase: jobPhase,
-                    document: {
-                      ...document,
-                      status: 'synthesizing',
-                      survivalProgressPhase: phaseMap[event.phase] ?? 'synthesis',
-                    },
-                  })
-                }
+          if (reasoningEngine === 'direct') {
+            centralQuestion = resolveJobCentralQuestion(claimed.draft, document)
+            if (!isGenericCentralQuestion(centralQuestion)) {
+              document = {
+                ...document,
+                userQuestion: centralQuestion,
+                topic: centralQuestion,
               }
-            },
-          })
+            }
+            const directRun = await perf.time('reasoning', async () => {
+              await updateSynthesisJob(jobId, {
+                phase: 'synthesizing',
+                document: {
+                  ...document,
+                  survivalProgressPhase: 'synthesis',
+                },
+              })
+              return runDirectSynthesisPipeline({
+                centralQuestion,
+                sources: analyses,
+                outputLanguage: outputLanguage ?? undefined,
+              })
+            })
 
-          const finalDoc: SynthesisDocument = {
-            ...document,
-            status: 'complete',
-            reasoning,
-            topic: reasoning.judgment?.statement ?? reasoning.centralQuestion,
-            userQuestion: document.userQuestion ?? synthesisQuestion,
+            const directSynthesis = toPersistedDirectSynthesis(directRun)
+            const diagnostics = buildDirectProductionDiagnostics({
+              document,
+              direct: directSynthesis,
+            })
+            const costSummary = buildSynthesisCostSummary(costAccumulator, analyses.length)
+            perf.end('total')
+            const perfSummary = perf.summary(costAccumulator, {
+              cached: 0,
+              uncached: analyses.length,
+            })
+            perfSummary.individualAnalysisMs = individualAnalysisMs
+            perfSummary.endToEndMs = Date.now() - analyzeStartedAt
+
+            const finalDoc: SynthesisDocument = {
+              ...document,
+              status: 'complete',
+              reasoningEngine: 'direct',
+              directSynthesis,
+              topic: directSynthesis.directAnswer.slice(0, 200),
+              userQuestion: isGenericCentralQuestion(centralQuestion)
+                ? document.userQuestion
+                : centralQuestion,
+              productionMeta: {
+                reasoningEngine: 'direct',
+                reasoningEngineVersion: DIRECT_SYNTHESIS_ENGINE_VERSION,
+                analysisVersion: AI_CONFIG.analysisVersion,
+                analysisSchemaVersion: AI_CONFIG.analysisSchemaVersion,
+                analysisModel: getModelForRole('analysis'),
+                synthesisModel: getModelForRole('synthesis'),
+                pipelineRunAt: new Date().toISOString(),
+                analyzedCount: analyses.length,
+                failedCount: failures.length,
+                requestedCount: voiceTotal,
+                diagnostics,
+                costSummary,
+                perfSummary,
+              },
+            }
+
+            await updateSynthesisJob(jobId, {
+              status: 'completed',
+              phase: 'complete',
+              document: finalDoc,
+              perfSummary,
+              completedAt: new Date().toISOString(),
+              error: undefined,
+            })
+
+            synthesisLog('direct-synthesis-job-complete', {
+              jobId,
+              synthesisId: claimed.synthesisId,
+              voices: voiceTotal,
+              analyzed: analyses.length,
+              agreements: directSynthesis.agreements.length,
+              disagreements: directSynthesis.disagreements.length,
+              llmCalls: directRun.cost.llmCalls,
+            })
+            return
           }
 
-          await updateSynthesisJob(jobId, {
-            status: 'completed',
-            phase: 'complete',
-            document: finalDoc,
-            perfSummary: {
-              phases: [],
-              totalMs: Date.now() - analyzeStartedAt,
-              stagesMs: 0,
-              llmCalls: 0,
-              inputTokens: 0,
-              outputTokens: 0,
-              estimatedCostUsd: null,
-              cachedSources: 0,
-              uncachedSources: analyses.length,
-              individualAnalysisMs,
-              endToEndMs: Date.now() - analyzeStartedAt,
-            },
-            completedAt: new Date().toISOString(),
-            error: undefined,
-          })
+          // Legacy V2.2 — only when ELCANTO_REASONING_ENGINE=legacy-v2
+          if (analyses.length >= 2) {
+            const voiceMeta = document.voices
+              .filter((v) => v.analysis)
+              .map((v) => ({ channel: v.voice.channel, thumbnail: v.voice.thumbnail }))
 
-          synthesisLog('reasoning-job-complete', {
-            jobId,
-            synthesisId: claimed.synthesisId,
-            voices: voiceTotal,
-            analyzed: analyses.length,
-            relationships: reasoning.relationships.length,
-            patterns: reasoning.patterns.length,
-            insights: reasoning.insights.length,
-            excluded: reasoning.excludedSources.length,
-          })
-          return
-        }
+            const reasoning = await perf.time('reasoning', () =>
+              runReasoningPipeline({
+                sources: analyses,
+                voices: voiceMeta,
+                userQuestion: centralQuestion,
+                outputLanguage: outputLanguage ?? undefined,
+                onProgress: (event) => {
+                  if (event.type === 'phase') {
+                    const phaseMap: Partial<
+                      Record<ReasoningProgressPhase, typeof document.survivalProgressPhase>
+                    > = {
+                      source_ingest: 'coherence',
+                      clustering: 'coherence',
+                      alignment: 'claims',
+                      relationships: 'relationships',
+                      verification: 'verification',
+                      patterns: 'synthesis',
+                      synthesis: 'synthesis',
+                      judgment: 'synthesis',
+                      emergent: 'synthesis',
+                      critic: 'synthesis',
+                    }
+                    const jobPhase =
+                      event.phase === 'source_ingest' || event.phase === 'clustering'
+                        ? 'connecting'
+                        : event.phase === 'relationships' || event.phase === 'verification'
+                          ? 'connecting'
+                          : 'synthesizing'
 
-        if (analyses.length === 1) {
-          const single = runSingleSourceReasoning({ source: analyses[0] })
-          const finalDoc: SynthesisDocument = {
-            ...document,
-            status: 'complete',
-            reasoning: single,
-            topic: single.keyInsight ?? single.summary,
-            userQuestion: document.userQuestion ?? synthesisQuestion,
+                    if (event.status === 'start') {
+                      void updateSynthesisJob(jobId, {
+                        phase: jobPhase,
+                        document: {
+                          ...document,
+                          status: 'synthesizing',
+                          survivalProgressPhase: phaseMap[event.phase] ?? 'synthesis',
+                        },
+                      })
+                    }
+                  }
+                },
+              }),
+            )
+
+            const diagnostics = buildProductionPipelineDiagnostics({ document, reasoning })
+            const costSummary = buildSynthesisCostSummary(costAccumulator, analyses.length)
+            perf.end('total')
+            const perfSummary = perf.summary(costAccumulator, {
+              cached: 0,
+              uncached: analyses.length,
+            })
+            perfSummary.individualAnalysisMs = individualAnalysisMs
+            perfSummary.endToEndMs = Date.now() - analyzeStartedAt
+
+            const finalDoc: SynthesisDocument = {
+              ...document,
+              status: 'complete',
+              reasoningEngine: 'legacy-v2',
+              reasoning,
+              topic: reasoning.judgment?.statement ?? reasoning.centralQuestion,
+              userQuestion: document.userQuestion ?? centralQuestion,
+              productionMeta: {
+                reasoningEngine: 'legacy-v2',
+                reasoningEngineVersion: reasoning.version ?? REASONING_V2_ENGINE_VERSION,
+                analysisVersion: AI_CONFIG.analysisVersion,
+                analysisSchemaVersion: AI_CONFIG.analysisSchemaVersion,
+                analysisModel: getModelForRole('analysis'),
+                synthesisModel: getModelForRole('synthesis'),
+                pipelineRunAt: new Date().toISOString(),
+                analyzedCount: analyses.length,
+                failedCount: failures.length,
+                requestedCount: voiceTotal,
+                diagnostics,
+                costSummary,
+                perfSummary,
+              },
+            }
+
+            await updateSynthesisJob(jobId, {
+              status: 'completed',
+              phase: 'complete',
+              document: finalDoc,
+              perfSummary,
+              completedAt: new Date().toISOString(),
+              error: undefined,
+            })
+
+            synthesisLog('reasoning-job-complete', {
+              jobId,
+              synthesisId: claimed.synthesisId,
+              voices: voiceTotal,
+              analyzed: analyses.length,
+              relationships: reasoning.relationships.length,
+              patterns: reasoning.patterns.length,
+              insights: reasoning.insights.length,
+              excluded: reasoning.excludedSources.length,
+            })
+            return
           }
 
-          await updateSynthesisJob(jobId, {
-            status: 'completed',
-            phase: 'complete',
-            document: finalDoc,
-            completedAt: new Date().toISOString(),
-            error: undefined,
-          })
+          if (analyses.length === 1) {
+            const single = runSingleSourceReasoning({ source: analyses[0] })
+            const costSummary = buildSynthesisCostSummary(costAccumulator, 1)
+            perf.end('total')
+            const perfSummary = perf.summary(costAccumulator, { cached: 0, uncached: 1 })
+            perfSummary.individualAnalysisMs = individualAnalysisMs
+            perfSummary.endToEndMs = Date.now() - analyzeStartedAt
 
-          synthesisLog('single-source-reasoning-complete', {
-            jobId,
-            synthesisId: claimed.synthesisId,
-          })
-          return
+            const finalDoc: SynthesisDocument = {
+              ...document,
+              status: 'complete',
+              reasoningEngine: 'legacy-v2',
+              reasoning: single,
+              topic: single.keyInsight ?? single.summary,
+              userQuestion: document.userQuestion ?? centralQuestion,
+              productionMeta: {
+                reasoningEngine: 'legacy-v2',
+                reasoningEngineVersion: single.version ?? REASONING_V2_ENGINE_VERSION,
+                analysisVersion: AI_CONFIG.analysisVersion,
+                analysisSchemaVersion: AI_CONFIG.analysisSchemaVersion,
+                analysisModel: getModelForRole('analysis'),
+                pipelineRunAt: new Date().toISOString(),
+                analyzedCount: 1,
+                failedCount: failures.length,
+                requestedCount: voiceTotal,
+                diagnostics: buildProductionPipelineDiagnostics({
+                  document,
+                  reasoning: single,
+                }),
+                costSummary,
+                perfSummary,
+              },
+            }
+
+            await updateSynthesisJob(jobId, {
+              status: 'completed',
+              phase: 'complete',
+              document: finalDoc,
+              perfSummary,
+              completedAt: new Date().toISOString(),
+              error: undefined,
+            })
+
+            synthesisLog('single-source-reasoning-complete', {
+              jobId,
+              synthesisId: claimed.synthesisId,
+            })
+            return
+          }
         }
       },
     )

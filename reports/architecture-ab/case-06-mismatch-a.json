@@ -1,0 +1,424 @@
+{
+  "architecture": "reasoning_v2.2",
+  "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+  "judgmentStatement": null,
+  "synthesisSummary": null,
+  "agreementCount": 0,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "verifiedRelationshipCount": 0,
+  "rejectedRelationshipCount": 0,
+  "goodZero": true,
+  "pipelineStats": {
+    "sourcesCount": 3,
+    "inputSources": 3,
+    "relevantSources": 0,
+    "excludedSources": 3,
+    "synthesizedSources": 0,
+    "claimsExtracted": 3,
+    "relevantClaims": 0,
+    "acceptedClaims": 0,
+    "rejectedClaims": 0,
+    "duplicateClaimsMerged": 0,
+    "candidatePairs": 0,
+    "directCandidates": 0,
+    "semanticCandidates": 0,
+    "inferenceCandidates": 0,
+    "verifiedRelationships": 0,
+    "rejectedRelationships": 0,
+    "emergentCandidates": 0,
+    "verifiedEmergentInsights": 0,
+    "discoveryPassesCompleted": [],
+    "deduplicatedRelationships": 0,
+    "relationshipClusters": 0,
+    "significantRelationships": 0,
+    "sourceRelevancePrimary": 0,
+    "sourceRelevanceSecondary": 0,
+    "sourceRelevancePeripheral": 0,
+    "sourceRelevanceOffTopic": 3,
+    "claimsPrimaryTier": 0,
+    "claimsSupportingTier": 0,
+    "claimsPeripheralTier": 0,
+    "funnelFinalUsable": 0,
+    "crossSourceVerifiedRelationships": 0
+  },
+  "timingMs": {
+    "reasoningMs": 2057,
+    "totalMs": 2057
+  },
+  "costSummary": {
+    "llmCalls": 1,
+    "inputTokens": 642,
+    "outputTokens": 226,
+    "totalEstimatedCostUsd": 0.000232
+  },
+  "raw": {
+    "mode": "multi",
+    "version": "reasoning-v2.2",
+    "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+    "clusters": [
+      {
+        "id": "primary",
+        "label": "Primary Cluster - Decision-Making Accuracy",
+        "centralQuestion": "Does achieving 53% accuracy in decision-making really mean exceptional ability?",
+        "sourceIds": [
+          "source_1"
+        ],
+        "relevance": "primary"
+      }
+    ],
+    "sourceRelevance": [
+      {
+        "sourceId": "source_1",
+        "classification": "off_topic",
+        "score": 0,
+        "reason": "Directly discusses decision-making accuracy and its implications in a professional setting.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_2",
+        "classification": "off_topic",
+        "score": 0,
+        "reason": "Discusses adaptation and personal success but not directly related to accuracy in decision-making.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 1
+      },
+      {
+        "sourceId": "source_3",
+        "classification": "off_topic",
+        "score": 0,
+        "reason": "Focuses on marketing and brand values, unrelated to decision-making accuracy.",
+        "relevantClaimIds": [],
+        "tier": "OFF_TOPIC",
+        "centralQuestionSimilarity": 0,
+        "topicCoverage": 0,
+        "relevantClaimRatio": 0,
+        "evidenceDensity": 0
+      }
+    ],
+    "excludedSources": [
+      {
+        "sourceId": "source_1",
+        "videoId": "bench_decision_53",
+        "voiceIndex": 1,
+        "title": "Decision Accuracy in Investing",
+        "reason": "Directly discusses decision-making accuracy and its implications in a professional setting."
+      },
+      {
+        "sourceId": "source_2",
+        "videoId": "bench_failure_adapt",
+        "voiceIndex": 2,
+        "title": "Failure and Personal Strength",
+        "reason": "Discusses adaptation and personal success but not directly related to accuracy in decision-making."
+      },
+      {
+        "sourceId": "source_3",
+        "videoId": "bench_marketing_values",
+        "voiceIndex": 3,
+        "title": "Brand Values in Marketing",
+        "reason": "Focuses on marketing and brand values, unrelated to decision-making accuracy."
+      }
+    ],
+    "claims": [],
+    "evidence": [
+      {
+        "id": "source_1_seg_section_1",
+        "sourceId": "source_1",
+        "videoId": "bench_decision_53",
+        "timestampStart": 120,
+        "timestampEnd": 480,
+        "text": "In professional stock picking you are right about fifty-three percent of the time on major directional calls. That hit rate is far from perfect but still beats random selection when position sizing is disciplined.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_2_seg_section_1",
+        "sourceId": "source_2",
+        "videoId": "bench_failure_adapt",
+        "timestampStart": 90,
+        "timestampEnd": 420,
+        "text": "People experience failure repeatedly in competitive arenas. The key is not avoiding failure but adapting quickly and finding the specific capability you are uniquely good at.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      },
+      {
+        "id": "source_3_seg_section_1",
+        "sourceId": "source_3",
+        "videoId": "bench_marketing_values",
+        "timestampStart": 60,
+        "timestampEnd": 360,
+        "text": "Marketing is about values. Campaigns like Got Milk and Nike succeed because they communicate what the brand stands for rather than listing product specifications alone.",
+        "confidence": 0.8,
+        "segmentId": "section_1"
+      }
+    ],
+    "concepts": [
+      {
+        "id": "concept_1",
+        "label": "decision making",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_2",
+        "label": "accuracy",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_3",
+        "label": "investing",
+        "sourceIds": [
+          "source_1"
+        ]
+      },
+      {
+        "id": "concept_4",
+        "label": "failure",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_5",
+        "label": "resilience",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_6",
+        "label": "personal development",
+        "sourceIds": [
+          "source_2"
+        ]
+      },
+      {
+        "id": "concept_7",
+        "label": "marketing",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_8",
+        "label": "brand values",
+        "sourceIds": [
+          "source_3"
+        ]
+      },
+      {
+        "id": "concept_9",
+        "label": "advertising",
+        "sourceIds": [
+          "source_3"
+        ]
+      }
+    ],
+    "stances": [],
+    "assumptions": [],
+    "relationships": [],
+    "rejectedRelationships": [],
+    "relationshipClusters": [],
+    "significantRelationships": [],
+    "patterns": [],
+    "synthesis": null,
+    "judgment": null,
+    "insights": [],
+    "knowledgeGaps": [],
+    "landscape": {
+      "agree": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "divide": {
+        "countLabel": "0",
+        "cards": []
+      },
+      "unclear": {
+        "countLabel": "0",
+        "cards": []
+      }
+    },
+    "diagnostics": {
+      "survivalTest": {
+        "q1_crossSourceValue": false,
+        "q2_newRelationships": false,
+        "q3_beyondSummary": false,
+        "q4_trueEmergent": false,
+        "q5_tenSecondClarity": false,
+        "q6_noForcedLinks": true,
+        "q7_structurallyDifferent": false,
+        "notes": [
+          "No verified cross-source relationships.",
+          "No emergent insights passed verification.",
+          "3 source(s) excluded from synthesis."
+        ]
+      },
+      "rejectedRelationshipCount": 0,
+      "rejectedInsightCount": 0,
+      "clusterCount": 1,
+      "primaryClusterSourceCount": 1,
+      "passesRun": [
+        "source_ingest",
+        "claim_normalization",
+        "clustering",
+        "source_relevance_enhance",
+        "claim_relevance",
+        "direct_match_discovery",
+        "semantic_discovery",
+        "inference_discovery",
+        "verification",
+        "partial_agreement_strict",
+        "semantic_deduplication",
+        "relationship_clustering",
+        "significance_ranking",
+        "evidence_integrity",
+        "patterns",
+        "synthesis",
+        "judgment",
+        "emergent",
+        "critic"
+      ],
+      "pipelineStats": {
+        "sourcesCount": 3,
+        "inputSources": 3,
+        "relevantSources": 0,
+        "excludedSources": 3,
+        "synthesizedSources": 0,
+        "claimsExtracted": 3,
+        "relevantClaims": 0,
+        "acceptedClaims": 0,
+        "rejectedClaims": 0,
+        "duplicateClaimsMerged": 0,
+        "candidatePairs": 0,
+        "directCandidates": 0,
+        "semanticCandidates": 0,
+        "inferenceCandidates": 0,
+        "verifiedRelationships": 0,
+        "rejectedRelationships": 0,
+        "emergentCandidates": 0,
+        "verifiedEmergentInsights": 0,
+        "discoveryPassesCompleted": [],
+        "deduplicatedRelationships": 0,
+        "relationshipClusters": 0,
+        "significantRelationships": 0,
+        "sourceRelevancePrimary": 0,
+        "sourceRelevanceSecondary": 0,
+        "sourceRelevancePeripheral": 0,
+        "sourceRelevanceOffTopic": 3,
+        "claimsPrimaryTier": 0,
+        "claimsSupportingTier": 0,
+        "claimsPeripheralTier": 0,
+        "funnelFinalUsable": 0,
+        "crossSourceVerifiedRelationships": 0
+      },
+      "relevanceFunnel": {
+        "usableClaims": [],
+        "peripheralClaims": [],
+        "relationshipEligibleSourceIds": {},
+        "funnel": {
+          "extracted": 3,
+          "fromSynthesisSources": 3,
+          "topicRelevant": 0,
+          "questionAligned": 0,
+          "primaryTier": 0,
+          "supportingTier": 0,
+          "peripheralTier": 0,
+          "offTopicTier": 3,
+          "finalUsable": 0
+        },
+        "diagnostics": [
+          {
+            "claimId": "source_1_section_1_claim_1",
+            "sourceId": "source_1",
+            "claimText": "Professional stock pickers are right about fifty-three percent of the time on major directional calls.",
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
+          },
+          {
+            "claimId": "source_2_section_1_claim_1",
+            "sourceId": "source_2",
+            "claimText": "Success after failure depends on adapting and finding what you are uniquely good at.",
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
+          },
+          {
+            "claimId": "source_3_section_1_claim_1",
+            "sourceId": "source_3",
+            "claimText": "Marketing is about communicating brand values rather than product specs alone.",
+            "relevanceScore": 0,
+            "topicScore": 0,
+            "questionAlignmentScore": 0,
+            "sourcePriorScore": 0,
+            "tier": "OFF_TOPIC",
+            "decision": "DROP",
+            "reason": "off_topic_source"
+          }
+        ],
+        "warnings": []
+      },
+      "claimRelevanceDiagnostics": [
+        {
+          "claimId": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "claimText": "Professional stock pickers are right about fifty-three percent of the time on major directional calls.",
+          "relevanceScore": 0,
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
+        },
+        {
+          "claimId": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "claimText": "Success after failure depends on adapting and finding what you are uniquely good at.",
+          "relevanceScore": 0,
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
+        },
+        {
+          "claimId": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "claimText": "Marketing is about communicating brand values rather than product specs alone.",
+          "relevanceScore": 0,
+          "topicScore": 0,
+          "questionAlignmentScore": 0,
+          "sourcePriorScore": 0,
+          "tier": "OFF_TOPIC",
+          "decision": "DROP",
+          "reason": "off_topic_source"
+        }
+      ],
+      "pipelineWarnings": []
+    },
+    "createdAt": "2026-08-29T18:39:22.017Z"
+  }
+}

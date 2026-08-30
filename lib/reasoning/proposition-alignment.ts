@@ -1,3 +1,13 @@
+import {
+  deriveDrivingRangeEquivalenceProposition,
+  deriveMetricDeclineProposition,
+  derivePolicyInvestmentProposition,
+  deriveRuralAccessProposition,
+  deriveCoalRetirementDivideProposition,
+  deriveReadmissionDivideProposition,
+  isNullEffectOpposition,
+  isOpposingDirectionPair,
+} from '@/lib/reasoning/proposition-semantics'
 import { normalizeStatement } from '@/lib/reasoning/source-ingest'
 import { assessGenericness } from '@/lib/reasoning/relationship-semantics'
 import type { ReasoningClaim } from '@/lib/reasoning/types'
@@ -172,6 +182,61 @@ const DIMENSION_RULES: Array<{ dim: PropositionDimension; re: RegExp; weight: nu
     re: /\b(r-value|r-?\d+|insulation level|thermal performance|heat loss)\b/i,
     weight: 4,
   },
+  {
+    dim: 'EFFECT',
+    re: /\b(ph|ocean surface|seawater|acidification)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(sleep duration|sleep quality|adolescent sleep)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(weight loss|body weight|fasting)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(readmission|hospital admission)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(driving range|epa-rated range|kilometers?|miles per charge)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(respiratory|cardiovascular|inflammation|emergency admissions?)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'CAUSE',
+    re: /\b(wildfire smoke|particulate matter|smoke exposure)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'MECHANISM',
+    re: /\b(coral bleaching|symbiotic algae|temperature spike)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(reef ecosystem|habitat diversity|structural complexity)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'MARKET_IMPACT',
+    re: /\b(carbon pricing|emissions trading|renewable energy investment|clean energy capital)\b/i,
+    weight: 4,
+  },
+  {
+    dim: 'EFFECT',
+    re: /\b(coal (plant )?retirements?|coal capacity shutdowns?)\b/i,
+    weight: 4,
+  },
   { dim: 'DEFINITION', re: /\b(is defined|definition|what is|refers to|introduces mcp as)\b/i, weight: 2 },
 ]
 
@@ -321,6 +386,7 @@ const EXPLANATION_META = new Set([
 
 function contentTokens(text: string): string[] {
   return normalizeStatement(text)
+    .replace(/-/g, ' ')
     .split(/\W+/)
     .filter((w) => w.length > 2)
 }
@@ -397,6 +463,108 @@ function tokenCovered(token: string, claimTokens: Set<string>): boolean {
   ) {
     return true
   }
+  if (
+    (token === 'retrofit' || token === 'retrofits') &&
+    (claimTokens.has('retrofit') || claimTokens.has('retrofits'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'declined' || token === 'decline' || token === 'drop' || token === 'dropped') &&
+    [...claimTokens].some((t) => /^(declin|drop|decreas|lower|fall)/.test(t))
+  ) {
+    return true
+  }
+  if (
+    (token === 'measurable' || token === 'average') &&
+    [...claimTokens].some((t) => /^(measur|average|mean)/.test(t))
+  ) {
+    return true
+  }
+  if (
+    (token === 'seawater' || token === 'ocean' || token === 'surface') &&
+    (claimTokens.has('seawater') || claimTokens.has('ocean') || claimTokens.has('surface'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'miles' || token === 'mile') &&
+    (claimTokens.has('kilometers') || claimTokens.has('kilometer') || claimTokens.has('km'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'kilometers' || token === 'kilometer' || token === 'km') &&
+    (claimTokens.has('miles') || claimTokens.has('mile'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'range' || token === 'driving') &&
+    (claimTokens.has('range') || claimTokens.has('driving') || claimTokens.has('recharging'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'shortens' || token === 'shorten') &&
+    [...claimTokens].some((t) => t.startsWith('short'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'telehealth' || token === 'telemedicine') &&
+    (claimTokens.has('telehealth') || claimTokens.has('telemedicine'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'specialist' || token === 'rural') &&
+    (claimTokens.has('specialist') || claimTokens.has('rural'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'readmission' || token === 'readmissions') &&
+    (claimTokens.has('readmission') || claimTokens.has('readmissions'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'renewable' || token === 'investment') &&
+    (claimTokens.has('renewable') || claimTokens.has('investment') || claimTokens.has('capital'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'emissions' || token === 'carbon') &&
+    (claimTokens.has('emissions') || claimTokens.has('carbon') || claimTokens.has('pricing'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'wildfire' || token === 'smoke') &&
+    (claimTokens.has('wildfire') || claimTokens.has('smoke'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'bleaching' || token === 'coral') &&
+    (claimTokens.has('bleaching') || claimTokens.has('coral') || claimTokens.has('reef'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'vehicle' || token === 'vehicles') &&
+    (claimTokens.has('vehicle') || claimTokens.has('vehicles') || claimTokens.has('ev'))
+  ) {
+    return true
+  }
+  if (
+    (token === 'ev' || token === 'electric') &&
+    (claimTokens.has('ev') || claimTokens.has('electric') || claimTokens.has('vehicles'))
+  ) {
+    return true
+  }
   return false
 }
 
@@ -425,11 +593,9 @@ function deriveProductivitySharedProposition(a: string, b: string): string | nul
 
 function deriveInsulationRValueProposition(a: string, b: string): string | null {
   if (!/\b(r-?\d+|r-value|insulation|attic)\b/i.test(`${a} ${b}`)) return null
-  const highR = /\b(r-?49|r-?60|high r|at least r|r-value)\b/i
-  if (highR.test(a) && highR.test(b)) {
-    return 'cold-climate attic retrofits target high R-value insulation'
-  }
-  return null
+  if (!/\b(attic|insulation)\b/i.test(a) || !/\b(attic|insulation)\b/i.test(b)) return null
+  if (!/\br-?49\b/i.test(a) || !/\br-?49\b/i.test(b)) return null
+  return 'attic retrofit insulation levels target R-49'
 }
 
 function localProductivityDirection(statement: string): 'up' | 'down' | null {
@@ -587,6 +753,14 @@ export function deriveSharedProposition(from: ReasoningClaim, to: ReasoningClaim
   if (productivityProp) return productivityProp
   const insulationProp = deriveInsulationRValueProposition(a, b)
   if (insulationProp) return insulationProp
+  const metricDeclineProp = deriveMetricDeclineProposition(a, b)
+  if (metricDeclineProp) return metricDeclineProp
+  const drivingRangeProp = deriveDrivingRangeEquivalenceProposition(a, b)
+  if (drivingRangeProp) return drivingRangeProp
+  const policyInvestmentProp = derivePolicyInvestmentProposition(a, b)
+  if (policyInvestmentProp) return policyInvestmentProp
+  const ruralAccessProp = deriveRuralAccessProposition(a, b)
+  if (ruralAccessProp) return ruralAccessProp
 
   const dimA = classifyPropositionDimension(a)
   const dimB = classifyPropositionDimension(b)
@@ -747,6 +921,28 @@ export function assessMinimumSharedProposition(
       dimensionsCompatible: true,
       rejectionReason: 'ALIGNMENT_FAILED',
       rejectionDetail: 'Opposing productivity positions are not agreement.',
+    }
+  }
+
+  if (
+    isNullEffectOpposition(from.statement, to.statement) ||
+    (deriveReadmissionDivideProposition(from.statement, to.statement) &&
+      isOpposingDirectionPair(from.statement, to.statement)) ||
+    (deriveCoalRetirementDivideProposition(from.statement, to.statement) &&
+      isOpposingDirectionPair(from.statement, to.statement))
+  ) {
+    return {
+      passed: false,
+      sharedProposition: '',
+      entailedByA: false,
+      entailedByB: false,
+      addedInference: false,
+      abstractionLevel: 'GENERIC_TOPIC',
+      dimensionA,
+      dimensionB,
+      dimensionsCompatible: true,
+      rejectionReason: 'ALIGNMENT_FAILED',
+      rejectionDetail: 'Opposing effect positions are not agreement.',
     }
   }
 

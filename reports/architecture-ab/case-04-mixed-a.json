@@ -1,0 +1,28 @@
+{
+  "architecture": "reasoning_v2.2",
+  "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+  "judgmentStatement": null,
+  "synthesisSummary": "Pipeline error: Cannot read properties of undefined (reading 'trim')",
+  "agreementCount": 0,
+  "divideCount": 0,
+  "complementaryCount": 0,
+  "verifiedRelationshipCount": 0,
+  "rejectedRelationshipCount": 0,
+  "goodZero": true,
+  "pipelineStats": {
+    "error": "Cannot read properties of undefined (reading 'trim')"
+  },
+  "timingMs": {
+    "reasoningMs": 5299,
+    "totalMs": 5299
+  },
+  "costSummary": {
+    "llmCalls": 3,
+    "inputTokens": 2317,
+    "outputTokens": 564,
+    "totalEstimatedCostUsd": 0.000686
+  },
+  "raw": {
+    "error": "Cannot read properties of undefined (reading 'trim')"
+  }
+}

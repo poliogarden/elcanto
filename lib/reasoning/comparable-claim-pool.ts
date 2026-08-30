@@ -502,6 +502,8 @@ export function buildComparableClaimPool(input: {
   excludedSourceIds?: Set<string>
   centralQuestion?: string
   synthesisSourceIds: Set<string>
+  /** V2: union of synthesis + claim-level eligible sources for generation floor. */
+  participatingSourceIds?: Set<string>
 }): {
   comparableClaims: ReasoningClaim[]
   generationClaims: ReasoningClaim[]
@@ -595,9 +597,10 @@ export function buildComparableClaimPool(input: {
   }
 
   const tierMap = tierById
+  const poolSourceIds = input.participatingSourceIds ?? input.synthesisSourceIds
   const rawGenerationClaims = selectComparableForGeneration({
     comparableClaims: deduped,
-    synthesisSourceIds: input.synthesisSourceIds,
+    synthesisSourceIds: poolSourceIds,
     relevanceTierByClaimId: tierMap,
     maxTotal: 28,
     maxPrimaryPerSource: 8,
@@ -606,10 +609,10 @@ export function buildComparableClaimPool(input: {
   const generationClaims = rawGenerationClaims.filter(isGenerationEvidenceEligible)
 
   const participatingAfter = new Set(generationClaims.map((c) => c.sourceId)).size
-  if (input.synthesisSourceIds.size >= 2 && participatingAfter < 2) {
+  if (poolSourceIds.size >= 2 && participatingAfter < 2) {
     warnings.push({
       code: 'SOURCE_PARTICIPATION_COLLAPSE',
-      message: `Only ${participatingAfter}/${input.synthesisSourceIds.size} synthesis sources in generation pool.`,
+      message: `Only ${participatingAfter}/${poolSourceIds.size} participating sources in generation pool.`,
     })
   }
 

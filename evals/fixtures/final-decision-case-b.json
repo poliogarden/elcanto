@@ -1,0 +1,7 @@
+{
+  "id": "final-decision-case-b",
+  "question": "Does remote work reduce the daily commuting time that employees spend traveling to a workplace?",
+  "benchmarkDataKey": "clear-agreement",
+  "outputLanguage": "en",
+  "kind": "benchmark"
+}

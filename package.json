@@ -11,7 +11,17 @@
     "lint": "eslint .",
     "test": "vitest run",
     "eval:reasoning": "node scripts/eval-reasoning.mjs",
-    "eval:reasoning:suite": "node scripts/eval-reasoning-suite.mjs"
+    "eval:reasoning:suite": "node scripts/eval-reasoning-suite.mjs",
+    "eval:reasoning:blind": "node scripts/eval-reasoning-blind.mjs",
+    "eval:reasoning:blind:v2": "node scripts/eval-reasoning-blind-v2.mjs",
+    "eval:reasoning:reports:v2": "node scripts/generate-reasoning-v2-reports.mjs",
+    "eval:reasoning:blind:targeted": "node scripts/eval-reasoning-blind-targeted.mjs",
+    "eval:architecture:ab": "vitest run lib/experiments/architecture-ab/architecture-ab.runner.test.ts",
+    "eval:final-decision": "vitest run lib/direct-synthesis/final-decision.runner.test.ts",
+    "eval:final-decision:case-a": "vitest run lib/direct-synthesis/final-decision.runner.test.ts -t \"Case A only\"",
+    "eval:direct-production-smoke": "vitest run lib/direct-synthesis/production-smoke.test.ts",
+    "experiment:raw-synthesis": "node scripts/experiment-raw-synthesis.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1111.0",

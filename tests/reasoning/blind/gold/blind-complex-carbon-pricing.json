@@ -1,0 +1,36 @@
+{
+  "fixtureId": "blind-complex-carbon-pricing",
+  "label": "Blind Complex — Carbon Pricing",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "accelerate renewable energy investment",
+      "toClaimPattern": "drive utility-scale clean energy capital",
+      "normalizedProposition": "carbon pricing drives utility-scale clean energy investment",
+      "required": true
+    },
+    {
+      "type": "DIVIDE",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "Coal plant retirements in the EU declined 15% faster",
+      "toClaimPattern": "coal capacity shutdowns slowed",
+      "normalizedProposition": "carbon pricing impact on EU coal retirements",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_3"],
+      "fromClaimPattern": "cruise tourism",
+      "reason": "carbon policy vs cruise tourism are unrelated"
+    }
+  ],
+  "requireEvidenceIntegrity": true,
+  "requireDefensibleJudgment": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

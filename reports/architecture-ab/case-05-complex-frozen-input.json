@@ -1,0 +1,249 @@
+{
+  "caseId": "case-05-complex",
+  "setType": "complex",
+  "label": "SET 5 Complex",
+  "centralQuestion": "What is CRISPR gene editing and how is it discussed across these sources?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_crispr_01",
+      "voiceIndex": 1,
+      "title": "How CRISPR Editing Works",
+      "summary": "Introduces the molecular mechanism of CRISPR gene editing.",
+      "thesis": "CRISPR is a programmable DNA editing tool guided by RNA.",
+      "centralQuestion": "CRISPR is a programmable DNA editing tool guided by RNA.",
+      "topics": [
+        "CRISPR",
+        "gene editing",
+        "mechanism"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits.",
+          "topic": "mechanism",
+          "confidence": 0.88,
+          "evidenceSummary": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 15,
+          "segmentEndTime": 360
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "CRISPR is a programmable DNA editing tool guided by RNA."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 15,
+          "text": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+          "segmentId": "section_1",
+          "endTime": 360
+        }
+      ],
+      "stance": null,
+      "channel": "Molecular Biology Basics",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 15,
+            "endTime": 360,
+            "topic": "Editing mechanism",
+            "summary": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene,",
+            "text": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits. Researchers design the guide sequence to match a target gene, allowing the Cas enzyme to cut or modify only that location.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "CRISPR uses a guide RNA molecule to direct an enzyme to a specific DNA sequence for precise edits.",
+                "topic": "mechanism",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_crispr_02",
+      "voiceIndex": 2,
+      "title": "CRISPR Investment Landscape",
+      "summary": "Covers commercial interest and funding around CRISPR companies.",
+      "thesis": "CRISPR attracts major private and public investment.",
+      "centralQuestion": "CRISPR attracts major private and public investment.",
+      "topics": [
+        "CRISPR",
+        "biotech funding",
+        "market interest"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+          "topic": "market_popularity",
+          "confidence": 0.88,
+          "evidenceSummary": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 50,
+          "segmentEndTime": 400
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "CRISPR attracts major private and public investment."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 50,
+          "text": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+          "segmentId": "section_1",
+          "endTime": 400
+        }
+      ],
+      "stance": null,
+      "channel": "Biotech Markets",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 50,
+            "endTime": 400,
+            "topic": "Funding trends",
+            "summary": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing pla",
+            "text": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals as pharmaceutical firms race to license editing platforms for therapeutic pipelines.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "CRISPR-related biotech companies have attracted billions of dollars in venture funding and partnership deals.",
+                "topic": "market_popularity",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_crispr_03",
+      "voiceIndex": 3,
+      "title": "Origins of CRISPR Research",
+      "summary": "Traces how bacterial immune systems led to modern CRISPR tools.",
+      "thesis": "CRISPR tools emerged from bacterial defense research in the 2010s.",
+      "centralQuestion": "CRISPR tools emerged from bacterial defense research in the 2010s.",
+      "topics": [
+        "CRISPR",
+        "history",
+        "scientific development"
+      ],
+      "claims": [
+        {
+          "id": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "statement": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s.",
+          "topic": "historical_development",
+          "confidence": 0.88,
+          "evidenceSummary": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 30,
+          "segmentEndTime": 380
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "CRISPR tools emerged from bacterial defense research in the 2010s."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_3_seg_section_1",
+          "timestamp": 30,
+          "text": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+          "segmentId": "section_1",
+          "endTime": 380
+        }
+      ],
+      "stance": null,
+      "channel": "Science History Notes",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 30,
+            "endTime": 380,
+            "topic": "Historical development",
+            "summary": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into",
+            "text": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s, repurposing a natural RNA-guided cleavage system into a laboratory gene-editing tool.",
+            "claims": [
+              {
+                "id": "source_3_section_1_claim_1",
+                "statement": "Scientists adapted the CRISPR mechanism from bacterial immune defenses during research in the early 2010s.",
+                "topic": "historical_development",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "same-topic-different-claims",
+  "isRealYouTube": false
+}

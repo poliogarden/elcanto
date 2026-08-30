@@ -12,6 +12,13 @@ import type { AIOperation } from '@/lib/ai/usage/types'
 
 export type ModelRole = 'coverage' | 'analysis' | 'synthesis' | 'ask'
 
+function maxOutputTokensParam(model: string, maxOutputTokens: number) {
+  if (/^o\d/i.test(model) || model.startsWith('gpt-5')) {
+    return { max_completion_tokens: maxOutputTokens }
+  }
+  return { max_tokens: maxOutputTokens }
+}
+
 export async function callStructured<T>(input: {
   openai: OpenAI
   role: ModelRole
@@ -50,7 +57,9 @@ export async function callStructured<T>(input: {
           { role: 'user', content: input.user },
         ],
         response_format: zodResponseFormat(input.schema, input.schemaName),
-        ...(input.maxOutputTokens != null ? { max_tokens: input.maxOutputTokens } : {}),
+        ...(input.maxOutputTokens != null
+          ? maxOutputTokensParam(model, input.maxOutputTokens)
+          : {}),
       })
 
       const choice = completion.choices[0]

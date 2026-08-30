@@ -1,0 +1,30 @@
+{
+  "fixtureId": "blind-same-topic-quantum",
+  "label": "Blind Same Topic — Quantum",
+  "category": "blind",
+  "expectedRelationships": [],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "gate operation speeds",
+      "toClaimPattern": "venture capital funding",
+      "reason": "hardware speed vs funding are different dimensions"
+    },
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_2", "source_3"],
+      "fromClaimPattern": "funding exceeded",
+      "toClaimPattern": "error correction remains unsolved",
+      "reason": "investment vs engineering barrier are different dimensions"
+    }
+  ],
+  "maxAgreement": 0,
+  "maxDivide": 0,
+  "maxComplementary": 0,
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": true,
+  "allowMissingJudgment": true,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

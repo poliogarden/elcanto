@@ -1,0 +1,170 @@
+{
+  "caseId": "case-03-complementary",
+  "setType": "complementary",
+  "label": "SET 3 Complementary",
+  "centralQuestion": "How does wildfire smoke affect human health?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "blind_wildfire_01",
+      "voiceIndex": 1,
+      "title": "Wildfire Particulate Exposure",
+      "summary": "Reviews respiratory effects of fine particulate matter from wildfire smoke.",
+      "thesis": "Wildfire smoke particulates cause deep lung tissue inflammation.",
+      "centralQuestion": "Wildfire smoke particulates cause deep lung tissue inflammation.",
+      "topics": [
+        "wildfire smoke",
+        "particulate matter",
+        "respiratory health"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+          "topic": "respiratory_impact",
+          "confidence": 0.88,
+          "evidenceSummary": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 30,
+          "segmentEndTime": 380
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Wildfire smoke particulates cause deep lung tissue inflammation."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 30,
+          "text": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+          "segmentId": "section_1",
+          "endTime": 380
+        }
+      ],
+      "stance": null,
+      "channel": "Pulmonary Medicine Review",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 30,
+            "endTime": 380,
+            "topic": "Lung inflammation",
+            "summary": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed ",
+            "text": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation and elevated asthma exacerbation rates in exposed communities.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "Fine particulate matter from wildfire smoke penetrates deep into lung tissue causing respiratory inflammation.",
+                "topic": "respiratory_impact",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "blind_wildfire_02",
+      "voiceIndex": 2,
+      "title": "Smoke and Cardiac Admissions",
+      "summary": "Links wildfire smoke events to cardiovascular hospital admissions.",
+      "thesis": "Wildfire smoke exposure increases cardiovascular emergency admissions.",
+      "centralQuestion": "Wildfire smoke exposure increases cardiovascular emergency admissions.",
+      "topics": [
+        "wildfire smoke",
+        "cardiovascular",
+        "emergency admissions"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+          "topic": "cardiovascular_impact",
+          "confidence": 0.88,
+          "evidenceSummary": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 45,
+          "segmentEndTime": 400
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Wildfire smoke exposure increases cardiovascular emergency admissions."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 45,
+          "text": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+          "segmentId": "section_1",
+          "endTime": 400
+        }
+      ],
+      "stance": null,
+      "channel": "Emergency Medicine Data",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 45,
+            "endTime": 400,
+            "topic": "Cardiac admission spike",
+            "summary": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory",
+            "text": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure peaks, independent of pre-existing respiratory diagnoses.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "Wildfire smoke exposure correlates with increased cardiovascular emergency admissions within 48 hours of exposure.",
+                "topic": "cardiovascular_impact",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "complementary-wildfire",
+  "isRealYouTube": false
+}

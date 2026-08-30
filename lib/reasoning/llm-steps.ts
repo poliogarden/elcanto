@@ -14,6 +14,7 @@ import {
   type CandidateFunnel,
   type CandidateGenerationDiagnostic,
 } from '@/lib/reasoning/candidate-funnel'
+import { filterCandidatesByComparability } from '@/lib/reasoning/v2/candidate-quality-gate'
 import {
   combineConfidence,
   computeConfidenceSignals,
@@ -63,17 +64,49 @@ import {
   passesVerificationPreGate,
   type VerificationAlignmentScores,
 } from '@/lib/reasoning/verification-alignment'
-import type { SourceAnalysis } from '@/lib/types/source'
+import {
+  isNullEffectOpposition,
+  isOpposingDirectionPair,
+  isCoalRetirementOpposition,
+} from '@/lib/reasoning/proposition-semantics'
 
 function shouldTreatOpposingAlignmentAsDivide(
   from: ReasoningClaim,
   to: ReasoningClaim,
   scores: VerificationAlignmentScores,
 ): boolean {
-  if (scores.polarity !== 'OPPOSE') return false
   const dimA = classifyPropositionDimension(from.statement)
   const dimB = classifyPropositionDimension(to.statement)
-  return assessDimensionCompatibility(dimA, dimB, from.statement, to.statement) !== 'DIFFERENT'
+  const dimensionCompatible =
+    assessDimensionCompatibility(dimA, dimB, from.statement, to.statement) !== 'DIFFERENT'
+
+  if (!dimensionCompatible) return false
+
+  if (
+    isNullEffectOpposition(from.statement, to.statement) ||
+    isOpposingDirectionPair(from.statement, to.statement)
+  ) {
+    return true
+  }
+
+  if (scores.polarity !== 'OPPOSE') return false
+  return true
+}
+
+function normalizeOpposingRelationshipType(
+  from: ReasoningClaim,
+  to: ReasoningClaim,
+  type: ReasoningRelationship['type'],
+  scores: VerificationAlignmentScores,
+): ReasoningRelationship['type'] {
+  if (type !== 'TRADE_OFF' && type !== 'TENSION') return type
+  if (
+    shouldTreatOpposingAlignmentAsDivide(from, to, scores) ||
+    isCoalRetirementOpposition(from.statement, to.statement)
+  ) {
+    return 'CONTRADICTION'
+  }
+  return type
 }
 
 function rejectFalseAgreementCollapse(
@@ -192,11 +225,13 @@ export async function generateRelationshipCandidates(input: {
   outputLanguage?: 'ko' | 'en'
   heuristicOnly?: boolean
   claimsAfterRelevance?: number
+  claimAlignments?: import('@/lib/reasoning/v2/claim-question-alignment').ClaimAlignmentRecord[]
 }): Promise<{
   candidates: RelationshipCandidate[]
   stats: DiscoveryStats
   funnel: CandidateFunnel
   generationDiagnostics: CandidateGenerationDiagnostic[]
+  candidateQualityStats?: import('@/lib/reasoning/v2/candidate-quality-gate').CandidateQualityStats
 }> {
   const claimById = new Map(input.claims.map((c) => [c.id, c]))
   const generationDiagnostics: CandidateGenerationDiagnostic[] = []
@@ -316,6 +351,14 @@ Include discoveryLevel: DIRECT_MATCH | SEMANTIC_RELATIONSHIP | CROSS_SOURCE_INFE
     mergedList = [...merged.values()]
   }
 
+  const preFilterCount = mergedList.length
+  const qualityFiltered = filterCandidatesByComparability({
+    candidates: mergedList,
+    claimById,
+    alignments: input.claimAlignments,
+  })
+  mergedList = qualityFiltered.candidates
+
   const candidates = mergedList.slice(0, 35)
   const stats: DiscoveryStats = {
     directCandidates: candidates.filter((c) => c.discoveryLevel === 'DIRECT_MATCH').length,
@@ -334,7 +377,17 @@ Include discoveryLevel: DIRECT_MATCH | SEMANTIC_RELATIONSHIP | CROSS_SOURCE_INFE
     llmCandidatesAdded,
   })
 
-  return { candidates, stats, funnel, generationDiagnostics }
+  return {
+    candidates,
+    stats,
+    funnel,
+    generationDiagnostics,
+    candidateQualityStats: {
+      ...qualityFiltered.stats,
+      inputCandidates: preFilterCount,
+      outputCandidates: candidates.length,
+    },
+  }
 }
 
 export async function verifyRelationships(input: {
@@ -744,6 +797,8 @@ Include discoveryLevel and reasoningBridge when inference distance is high.`,
         continue
       }
     }
+
+    verifiedType = normalizeOpposingRelationshipType(from, to, verifiedType, strictAlignment)
 
     verified.push({
       id: `rel_${i + 1}`,

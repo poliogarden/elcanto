@@ -1,0 +1,26 @@
+{
+  "fixtureId": "blind-complementary-wildfire",
+  "label": "Blind Complementary — Wildfire",
+  "category": "blind",
+  "expectedRelationships": [
+    {
+      "type": "COMPLEMENTARY",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "respiratory inflammation",
+      "toClaimPattern": "cardiovascular emergency admissions",
+      "normalizedProposition": "wildfire smoke harms human health through multiple pathways",
+      "required": true
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "reason": "respiratory and cardiovascular impacts are complementary not identical claims"
+    }
+  ],
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": false,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

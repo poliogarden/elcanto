@@ -1,0 +1,180 @@
+{
+  "architecture": "direct_baseline",
+  "centralQuestion": "Does remote work increase or decrease employee productivity?",
+  "finalAnswer": "The impact of remote work on employee productivity is debated; some believe it increases productivity by reducing office distractions (source 1), while others argue it decreases productivity due to increased interruptions at home (source 2). Hybrid work models (source 3) may help balance these effects.",
+  "agreementCount": 0,
+  "divideCount": 1,
+  "complementaryCount": 0,
+  "nonComparableCount": 0,
+  "evidencePrecision": 1,
+  "hallucinationCount": 0,
+  "goodZero": false,
+  "timingMs": {
+    "perSourceAnswerMs": 1393,
+    "crossSourceMs": 3082,
+    "validationMs": 1,
+    "totalMs": 4476
+  },
+  "costSummary": {
+    "llmCalls": 4,
+    "inputTokens": 1973,
+    "outputTokens": 566,
+    "totalEstimatedCostUsd": 0.0006349999999999999
+  },
+  "raw": {
+    "architecture": "direct_cross_source",
+    "version": "direct-baseline-1.0",
+    "centralQuestion": "Does remote work increase or decrease employee productivity?",
+    "sourceAnswers": [
+      {
+        "sourceId": "source_1",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Remote work increases employee productivity",
+          "Limiting office distractions contributes to better focus",
+          "Employees report fewer interruptions during deep work"
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_1:source_1_seg_section_1",
+            "text": "Remote work increases employee productivity by limiting office distractions during focused tasks.",
+            "startTime": 45,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_2",
+        "answerability": "DIRECT",
+        "position": null,
+        "keyPoints": [
+          "Remote work decreases employee productivity.",
+          "Home environments introduce more interruptions compared to structured offices.",
+          "Common distractions include caregivers, household noise, and informal demands."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_2:source_2_seg_section_1",
+            "text": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
+            "startTime": 35,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.9
+      },
+      {
+        "sourceId": "source_3",
+        "answerability": "PARTIAL",
+        "position": null,
+        "keyPoints": [
+          "Hybrid schedules optimize team coordination by balancing office and remote work.",
+          "In-person days are assigned for collaborative tasks, while remote days are reserved for individual work."
+        ],
+        "evidence": [
+          {
+            "evidenceRef": "source_3:source_3_seg_section_1",
+            "text": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remote days for individual tasks.",
+            "startTime": 25,
+            "endTime": null
+          }
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "agreements": [],
+    "disagreements": [
+      {
+        "issue": "Impact of remote work on productivity",
+        "positions": [
+          {
+            "sourceId": "source_1",
+            "position": "Remote work increases employee productivity",
+            "evidenceRefs": [
+              "source_1:source_1_seg_section_1"
+            ]
+          },
+          {
+            "sourceId": "source_2",
+            "position": "Remote work decreases employee productivity",
+            "evidenceRefs": [
+              "source_2:source_2_seg_section_1"
+            ]
+          }
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "complementaryViews": [],
+    "nonComparableSources": [],
+    "uncertainties": [],
+    "finalAnswer": "The impact of remote work on employee productivity is debated; some believe it increases productivity by reducing office distractions (source 1), while others argue it decreases productivity due to increased interruptions at home (source 2). Hybrid work models (source 3) may help balance these effects.",
+    "confidence": 0.85,
+    "evidenceCatalog": [
+      {
+        "ref": "source_1:source_1_seg_section_1",
+        "sourceId": "source_1",
+        "text": "Remote work increases employee productivity by limiting office distractions during focused tasks. Employees working from home report completing deep work with fewer interruptions from meetings and hallway conversations.",
+        "startTime": 45,
+        "endTime": 420
+      },
+      {
+        "ref": "source_2:source_2_seg_section_1",
+        "sourceId": "source_2",
+        "text": "Remote work decreases employee productivity because home environments introduce more interruptions than structured offices. Caregivers, household noise, and informal demands often fragment the workday.",
+        "startTime": 35,
+        "endTime": 390
+      },
+      {
+        "ref": "source_3:source_3_seg_section_1",
+        "sourceId": "source_3",
+        "text": "Hybrid schedules blend office and remote days depending on team coordination needs. Managers assign in-person days for collaborative work while preserving remote days for individual tasks.",
+        "startTime": 25,
+        "endTime": 300
+      }
+    ],
+    "validation": {
+      "agreementSupported": 0,
+      "agreementUnsupported": 0,
+      "disagreementSupported": 1,
+      "disagreementUnsupported": 0,
+      "complementarySupported": 0,
+      "complementaryUnsupported": 1,
+      "sourcePositionSupported": 0,
+      "sourcePositionUnsupported": 0,
+      "hallucinationFlags": [],
+      "filteredAgreements": [],
+      "filteredDisagreements": [
+        {
+          "issue": "Impact of remote work on productivity",
+          "positions": [
+            {
+              "sourceId": "source_1",
+              "position": "Remote work increases employee productivity",
+              "evidenceRefs": [
+                "source_1:source_1_seg_section_1"
+              ]
+            },
+            {
+              "sourceId": "source_2",
+              "position": "Remote work decreases employee productivity",
+              "evidenceRefs": [
+                "source_2:source_2_seg_section_1"
+              ]
+            }
+          ],
+          "confidence": 0.9
+        }
+      ],
+      "filteredComplementary": []
+    },
+    "timingMs": {
+      "evidenceRetrievalMs": 0,
+      "perSourceAnswerMs": 1393,
+      "crossSourceMs": 3082,
+      "validationMs": 1,
+      "totalMs": 4476
+    }
+  }
+}

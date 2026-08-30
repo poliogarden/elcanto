@@ -360,6 +360,20 @@ export type PipelineStats = {
   verifiedAgreements?: number
   verifiedComplementary?: number
   verifiedContradictions?: number
+  claimAlignmentDirect?: number
+  claimAlignmentSupporting?: number
+  claimAlignmentContextual?: number
+  claimAlignmentUnrelated?: number
+  directlyAnswerableSources?: number
+  questionAlignedCandidates?: number
+  sharedPropositionCandidates?: number
+  topicOnlyRejected?: number
+  differentDimensionRejected?: number
+  genericSuppressed?: number
+  malformedSuppressed?: number
+  candidateQualityInput?: number
+  noRelationshipReason?: string
+  goodZeroResult?: boolean
 }
 
 export type RelationshipVerificationDiagnostic = {
@@ -397,6 +411,9 @@ export type ReasoningDiagnostics = {
   relationshipVerificationDiagnostics?: RelationshipVerificationDiagnostic[]
   verificationDiagnosticsBundle?: import('@/lib/reasoning/verification-diagnostics').VerificationDiagnosticsBundle
   evidenceCoverage?: import('@/lib/reasoning/evidence-coverage').EvidenceCoverageStats
+  questionIntent?: import('@/lib/reasoning/v2/question-intent').QuestionIntent
+  sourceAnswerability?: import('@/lib/reasoning/v2/source-answerability').SourceAnswerabilityRecord[]
+  claimAlignmentDiagnostics?: import('@/lib/reasoning/v2/claim-question-alignment').ClaimAlignmentRecord[]
 }
 
 export type ReasoningLandscape = {

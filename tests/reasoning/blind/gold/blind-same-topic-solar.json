@@ -1,0 +1,40 @@
+{
+  "fixtureId": "blind-same-topic-solar",
+  "label": "Blind Same Topic — Solar",
+  "category": "blind",
+  "expectedRelationships": [],
+  "forbiddenRelationships": [
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_2"],
+      "fromClaimPattern": "higher laboratory conversion efficiency",
+      "toClaimPattern": "manufacturing capacity expanded",
+      "reason": "efficiency vs manufacturing capacity are different dimensions"
+    },
+    {
+      "type": "AGREEMENT",
+      "sources": ["source_1", "source_3"],
+      "fromClaimPattern": "conversion efficiency",
+      "toClaimPattern": "rooftop solar adoption",
+      "reason": "cell efficiency vs residential adoption policy are different dimensions"
+    },
+    {
+      "type": "DIVIDE",
+      "sources": ["source_1", "source_2"],
+      "reason": "no opposing claims on same proposition"
+    }
+  ],
+  "expectedSourceParticipation": [
+    { "sourceId": "source_1", "participateInGeneration": true },
+    { "sourceId": "source_2", "participateInGeneration": true },
+    { "sourceId": "source_3", "participateInGeneration": true }
+  ],
+  "maxAgreement": 0,
+  "maxDivide": 0,
+  "maxComplementary": 0,
+  "requireEvidenceIntegrity": true,
+  "allowZeroRelationships": true,
+  "allowMissingJudgment": true,
+  "minPrecision": 0.95,
+  "criticalRecall": 1
+}

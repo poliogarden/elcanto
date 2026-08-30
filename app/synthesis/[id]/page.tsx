@@ -7,7 +7,9 @@ import { BrandFooter } from '@/components/brand/brand-footer'
 import { HomePageShell } from '@/components/home/home-page-shell'
 import { Masthead } from '@/components/masthead'
 import { SingleSourceBoard } from '@/components/reasoning/single-source-board'
+import { InsightExplorerResult } from '@/components/insight-explorer/insight-explorer-result'
 import { SurvivalBoard } from '@/components/survival/survival-board'
+import { isDirectSynthesisDocument } from '@/lib/direct-synthesis/persisted'
 import { SynthesisView } from '@/components/synthesis-view'
 import { SynthesisPerfDebug } from '@/components/synthesis/synthesis-perf-debug'
 import { getBoardSurvival } from '@/lib/reasoning/adapter-survival'
@@ -91,6 +93,10 @@ export default function SynthesisPage() {
         </HomePageShell>
       </SynthesisPageShell>
     )
+  }
+
+  if (doc.directSynthesis && isDirectSynthesisDocument(doc)) {
+    return <InsightExplorerResult direct={doc.directSynthesis} document={doc} />
   }
 
   if (doc.reasoning?.mode === 'single') {

@@ -1,0 +1,407 @@
+{
+  "caseId": "case-04-mixed",
+  "setType": "mixed",
+  "label": "SET 4 Mixed",
+  "centralQuestion": "What attic insulation R-value is recommended for cold-climate home retrofits?",
+  "outputLanguage": "en",
+  "sources": [
+    {
+      "sourceId": "source_1",
+      "videoId": "bench_attic_01",
+      "voiceIndex": 1,
+      "title": "Cold Climate Retrofit Guide",
+      "summary": "Recommendations for attic insulation in northern retrofits.",
+      "thesis": "Cold-climate attic retrofits should target high R-values.",
+      "centralQuestion": "Cold-climate attic retrofits should target high R-values.",
+      "topics": [
+        "attic insulation",
+        "R-value",
+        "cold climate retrofit"
+      ],
+      "claims": [
+        {
+          "id": "source_1_section_1_claim_1",
+          "sourceId": "source_1",
+          "statement": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+          "topic": "insulation_r_value",
+          "confidence": 0.88,
+          "evidenceSummary": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 40,
+          "segmentEndTime": 420
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Cold-climate attic retrofits should target high R-values."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_1_seg_section_1",
+          "timestamp": 40,
+          "text": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+          "segmentId": "section_1",
+          "endTime": 420
+        }
+      ],
+      "stance": null,
+      "channel": "Home Efficiency Lab",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 40,
+            "endTime": 420,
+            "topic": "Code recommendations",
+            "summary": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is bl",
+            "text": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects so that heated air rising into the attic is blocked before it escapes through the roof assembly.",
+            "claims": [
+              {
+                "id": "source_1_section_1_claim_1",
+                "statement": "Building codes in cold climates recommend attic insulation with an R-value of at least R-49 for retrofit projects.",
+                "topic": "insulation_r_value",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_2",
+      "videoId": "bench_attic_02",
+      "voiceIndex": 2,
+      "title": "Northern Attic Upgrades",
+      "summary": "Practical R-value targets for attic retrofits in cold regions.",
+      "thesis": "Northern attic retrofits commonly use R-49 to R-60 insulation.",
+      "centralQuestion": "Northern attic retrofits commonly use R-49 to R-60 insulation.",
+      "topics": [
+        "attic retrofit",
+        "insulation",
+        "R-value"
+      ],
+      "claims": [
+        {
+          "id": "source_2_section_1_claim_1",
+          "sourceId": "source_2",
+          "statement": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+          "topic": "insulation_r_value",
+          "confidence": 0.88,
+          "evidenceSummary": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 35,
+          "segmentEndTime": 390
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Northern attic retrofits commonly use R-49 to R-60 insulation."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_2_seg_section_1",
+          "timestamp": 35,
+          "text": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+          "segmentId": "section_1",
+          "endTime": 390
+        }
+      ],
+      "stance": null,
+      "channel": "Retrofit Pro",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 35,
+            "endTime": 390,
+            "topic": "Target R-values",
+            "summary": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+            "text": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss through the roof deck during long heating seasons.",
+            "claims": [
+              {
+                "id": "source_2_section_1_claim_1",
+                "statement": "Attic retrofits in northern regions typically target R-49 to R-60 insulation levels to minimize heat loss.",
+                "topic": "insulation_r_value",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_3",
+      "videoId": "bench_attic_03",
+      "voiceIndex": 3,
+      "title": "Car Sound Dampening Tips",
+      "summary": "Automotive insulation products for cabin noise reduction.",
+      "thesis": "Automotive insulation addresses noise, not attic thermal performance.",
+      "centralQuestion": "Automotive insulation addresses noise, not attic thermal performance.",
+      "topics": [
+        "automotive",
+        "sound insulation",
+        "cabin noise"
+      ],
+      "claims": [
+        {
+          "id": "source_3_section_1_claim_1",
+          "sourceId": "source_3",
+          "statement": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin.",
+          "topic": "automotive_insulation",
+          "confidence": 0.88,
+          "evidenceSummary": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen vibration from tires and engines.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 20,
+          "segmentEndTime": 280
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Automotive insulation addresses noise, not attic thermal performance."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_3_seg_section_1",
+          "timestamp": 20,
+          "text": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen vibration from tires and engines.",
+          "segmentId": "section_1",
+          "endTime": 280
+        }
+      ],
+      "stance": null,
+      "channel": "Auto Comfort",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 20,
+            "endTime": 280,
+            "topic": "Cabin insulation",
+            "summary": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen v",
+            "text": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin. These mats are installed under carpets and door panels to dampen vibration from tires and engines.",
+            "claims": [
+              {
+                "id": "source_3_section_1_claim_1",
+                "statement": "Automotive sound insulation mats use dense foam layers to reduce road noise inside the cabin.",
+                "topic": "automotive_insulation",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_4",
+      "videoId": "bench_attic_04",
+      "voiceIndex": 4,
+      "title": "Attic Holiday Storage Ideas",
+      "summary": "Organizing seasonal items stored in residential attics.",
+      "thesis": "Attic storage solutions focus on organization, not insulation performance.",
+      "centralQuestion": "Attic storage solutions focus on organization, not insulation performance.",
+      "topics": [
+        "attic storage",
+        "home organization",
+        "seasonal decor"
+      ],
+      "claims": [
+        {
+          "id": "source_4_section_1_claim_1",
+          "sourceId": "source_4",
+          "statement": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths.",
+          "topic": "attic_storage",
+          "confidence": 0.88,
+          "evidenceSummary": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to keep floor decking clear.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 25,
+          "segmentEndTime": 260
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Attic storage solutions focus on organization, not insulation performance."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_4_seg_section_1",
+          "timestamp": 25,
+          "text": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to keep floor decking clear.",
+          "segmentId": "section_1",
+          "endTime": 260
+        }
+      ],
+      "stance": null,
+      "channel": "Home Organize",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 25,
+            "endTime": 260,
+            "topic": "Storage organizers",
+            "summary": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to ",
+            "text": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths, using labeled bins and ceiling-mounted racks to keep floor decking clear.",
+            "claims": [
+              {
+                "id": "source_4_section_1_claim_1",
+                "statement": "Holiday attic storage organizers help families arrange seasonal decorations without blocking ventilation paths.",
+                "topic": "attic_storage",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    },
+    {
+      "sourceId": "source_5",
+      "videoId": "bench_attic_05",
+      "voiceIndex": 5,
+      "title": "Mountain Valley Weather",
+      "summary": "Weekly weather patterns in cold-climate mountain valleys.",
+      "thesis": "Cold-climate weather forecasts describe temperature swings, not retrofit specs.",
+      "centralQuestion": "Cold-climate weather forecasts describe temperature swings, not retrofit specs.",
+      "topics": [
+        "weather forecast",
+        "cold climate",
+        "mountain valleys"
+      ],
+      "claims": [
+        {
+          "id": "source_5_section_1_claim_1",
+          "sourceId": "source_5",
+          "statement": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys.",
+          "topic": "weather_forecast",
+          "confidence": 0.88,
+          "evidenceSummary": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while afternoon sun warms exposed slopes.",
+          "sourceSegmentId": "section_1",
+          "segmentStartTime": 10,
+          "segmentEndTime": 240
+        }
+      ],
+      "entities": [],
+      "conclusions": [
+        "Cold-climate weather forecasts describe temperature swings, not retrofit specs."
+      ],
+      "implications": [],
+      "evidence": [
+        {
+          "id": "source_5_seg_section_1",
+          "timestamp": 10,
+          "text": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while afternoon sun warms exposed slopes.",
+          "segmentId": "section_1",
+          "endTime": 240
+        }
+      ],
+      "stance": null,
+      "channel": "Regional Forecast",
+      "videoKnowledge": {
+        "sections": [
+          {
+            "sectionId": "section_1",
+            "startTime": 10,
+            "endTime": 240,
+            "topic": "Weekly forecasts",
+            "summary": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while aftern",
+            "text": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys, with overnight lows dropping below freezing while afternoon sun warms exposed slopes.",
+            "claims": [
+              {
+                "id": "source_5_section_1_claim_1",
+                "statement": "Regional weather forecasts for cold climates predict weekly temperature swings across mountain valleys.",
+                "topic": "weather_forecast",
+                "confidence": 0.88
+              }
+            ],
+            "entities": [],
+            "importanceScore": 0.75,
+            "noveltyScore": 0.4,
+            "argumentDensity": 0.7,
+            "evidenceDensity": 0.8,
+            "deepAnalyzed": true
+          }
+        ],
+        "coverage": {
+          "transcriptDurationSeconds": 600,
+          "analyzedDurationSeconds": 600,
+          "coverageRatio": 1,
+          "sectionCount": 1,
+          "coverageSectionCount": 1,
+          "deepAnalyzedSectionCount": 1
+        },
+        "analysisVersion": "benchmark-1.0",
+        "schemaVersion": "1"
+      }
+    }
+  ],
+  "frozenAt": "2026-08-29T18:38:20.135Z",
+  "fixtureId": "mixed-irrelevant",
+  "isRealYouTube": false
+}

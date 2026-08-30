@@ -3,6 +3,17 @@ import {
   assessDimensionCompatibility,
   classifyPropositionDimension,
 } from '@/lib/reasoning/proposition-alignment'
+import {
+  claimEffectPolarity as semanticClaimEffectPolarity,
+  hasPlausibleComparabilitySignal,
+  hasPropositionTargetOverlap,
+  isCoalRetirementOpposition,
+  isHazardHealthComplementaryPair,
+  isNullEffectOpposition,
+  isNumericRangeEquivalent,
+  isOpposingDirectionPair,
+  isPhenomenonOutcomeComplementaryPair,
+} from '@/lib/reasoning/proposition-semantics'
 import { normalizeStatement } from '@/lib/reasoning/source-ingest'
 import type { ReasoningClaim, ReasoningRelationshipType } from '@/lib/reasoning/types'
 
@@ -69,28 +80,36 @@ export function isOpposingProductivityPair(from: ReasoningClaim, to: ReasoningCl
   return a !== null && b !== null && a !== b
 }
 
-function claimPolarity(statement: string): 'pos' | 'neg' | 'neu' {
-  const productivity = productivityDirection(statement)
-  if (productivity === 'up') return 'pos'
-  if (productivity === 'down') return 'neg'
-
-  const commuteBenefit =
-    /\b(reduces?|cuts?|eliminates?|avoids?|reclaiming|fewer|less)\b/i.test(statement) &&
-    /\b(commut|travel|trip|rush)\b/i.test(statement)
-  if (commuteBenefit) return 'pos'
-
-  const pos = POSITIVE_MARKERS.test(statement)
-  const neg = NEGATIVE_MARKERS.test(statement)
-  if (pos && !neg) return 'pos'
-  if (neg && !pos) return 'neg'
-  if (pos && neg) {
-    if (/\b(reduces|simplifies|improves|enables|friendly|faster|quick)\b/i.test(statement)) {
-      return 'pos'
-    }
-    if (/\b(increases|adds|worse|harder|barrier)\b/i.test(statement)) return 'neg'
-    return 'neu'
-  }
+function claimPolarity(statement: string): 'pos' | 'neg' | 'neu' | 'null_effect' {
+  const effect = semanticClaimEffectPolarity(statement)
+  if (effect === 'null_effect') return 'null_effect'
+  if (effect === 'positive') return 'pos'
+  if (effect === 'negative') return 'neg'
   return 'neu'
+}
+
+function polarityAlignment(
+  fromPol: ReturnType<typeof claimPolarity>,
+  toPol: ReturnType<typeof claimPolarity>,
+  fromStatement: string,
+  toStatement: string,
+): PolarityAlignment {
+  if (isNullEffectOpposition(fromStatement, toStatement)) return 'OPPOSE'
+  if (isOpposingDirectionPair(fromStatement, toStatement)) return 'OPPOSE'
+
+  if (fromPol === 'pos' && toPol === 'pos' || fromPol === 'neg' && toPol === 'neg') {
+    return 'MATCH'
+  }
+  if (
+    (fromPol === 'pos' && toPol === 'neg') ||
+    (fromPol === 'neg' && toPol === 'pos') ||
+    (fromPol === 'null_effect' && (toPol === 'pos' || toPol === 'neg')) ||
+    (toPol === 'null_effect' && (fromPol === 'pos' || fromPol === 'neg'))
+  ) {
+    return 'OPPOSE'
+  }
+  if (fromPol === 'neu' && toPol === 'neu') return 'UNKNOWN'
+  return 'NEUTRAL'
 }
 
 export type PolarityAlignment = 'MATCH' | 'OPPOSE' | 'NEUTRAL' | 'UNKNOWN'
@@ -151,6 +170,13 @@ export function assessVerificationAlignment(
   const sharedConcepts = from.conceptIds.filter((id) => to.conceptIds.includes(id))
   const sharedDimension = extractSharedDimension(from.statement, to.statement)
   const subjectOverlap = markerOverlap(from.statement, to.statement, SUBJECT_MARKERS)
+  const propositionOverlap = hasPropositionTargetOverlap(from.statement, to.statement) ? 0.55 : 0
+  const numericEquivalence = isNumericRangeEquivalent(from.statement, to.statement) ? 0.6 : 0
+  const coalOpposition = isCoalRetirementOpposition(from.statement, to.statement) ? 0.5 : 0
+  const phenomenonComplementary = isPhenomenonOutcomeComplementaryPair(from.statement, to.statement)
+    ? 0.55
+    : 0
+  const hazardComplementary = isHazardHealthComplementaryPair(from.statement, to.statement) ? 0.55 : 0
   const topicAlignment = Math.min(
     1,
     Math.max(
@@ -158,6 +184,11 @@ export function assessVerificationAlignment(
       sharedConcepts.length > 0 ? 0.55 : 0,
       sharedDimension ? 0.5 : 0,
       subjectOverlap,
+      propositionOverlap,
+      numericEquivalence,
+      coalOpposition,
+      phenomenonComplementary,
+      hazardComplementary,
     ),
   )
 
@@ -167,27 +198,26 @@ export function assessVerificationAlignment(
       sharedConcepts.length > 0 ? 0.7 : 0,
       subjectOverlap,
       semanticSimilarity * 0.6,
+      propositionOverlap,
+      numericEquivalence,
+      coalOpposition,
+      phenomenonComplementary ? 0.48 : 0,
+      hazardComplementary ? 0.48 : 0,
     ),
-  )
-
-  const predicateAlignment = Math.max(
-    markerOverlap(from.statement, to.statement, PREDICATE_MARKERS),
-    claimPolarity(from.statement) === 'pos' && claimPolarity(to.statement) === 'pos'
-      ? 0.45
-      : 0,
   )
 
   const fromPol = claimPolarity(from.statement)
   const toPol = claimPolarity(to.statement)
-  let polarity: PolarityAlignment = 'NEUTRAL'
-  if (fromPol === 'pos' && toPol === 'pos' || fromPol === 'neg' && toPol === 'neg') {
-    polarity = 'MATCH'
-  } else if (
-    (fromPol === 'pos' && toPol === 'neg') ||
-    (fromPol === 'neg' && toPol === 'pos')
-  ) {
-    polarity = 'OPPOSE'
-  } else if (fromPol === 'neu' && toPol === 'neu') polarity = 'UNKNOWN'
+  const polarity = polarityAlignment(fromPol, toPol, from.statement, to.statement)
+
+  let predicateAlignment = Math.max(
+    markerOverlap(from.statement, to.statement, PREDICATE_MARKERS),
+    fromPol === 'pos' && toPol === 'pos' ? 0.45 : 0,
+    numericEquivalence > 0 ? 0.5 : 0,
+    isNullEffectOpposition(from.statement, to.statement) ? 0.55 : 0,
+    isOpposingDirectionPair(from.statement, to.statement) ? 0.5 : 0,
+    isCoalRetirementOpposition(from.statement, to.statement) ? 0.55 : 0,
+  )
 
   const fromAbs = abstractionLevel(from.statement)
   const toAbs = abstractionLevel(to.statement)
@@ -199,7 +229,7 @@ export function assessVerificationAlignment(
   const evidenceCompatibility =
     from.evidenceIds.length > 0 && to.evidenceIds.length > 0 ? 0.75 : 0.45
 
-  const finalAlignment = Math.min(
+  let finalAlignment = Math.min(
     1,
     semanticSimilarity * 0.22 +
       topicAlignment * 0.28 +
@@ -208,6 +238,23 @@ export function assessVerificationAlignment(
       scopeCompatibility * 0.12 +
       evidenceCompatibility * 0.04,
   )
+
+  if (
+    polarity === 'OPPOSE' &&
+    (isNullEffectOpposition(from.statement, to.statement) ||
+      isCoalRetirementOpposition(from.statement, to.statement) ||
+      isOpposingDirectionPair(from.statement, to.statement))
+  ) {
+    finalAlignment = Math.max(finalAlignment, 0.62)
+  }
+
+  if (
+    COMPLEMENTARY_TYPES.has(relationshipType) &&
+    (isHazardHealthComplementaryPair(from.statement, to.statement) ||
+      isPhenomenonOutcomeComplementaryPair(from.statement, to.statement))
+  ) {
+    finalAlignment = Math.max(finalAlignment, 0.58)
+  }
 
   const evaluation = evaluateVerificationAlignment(relationshipType, {
     semanticSimilarity,
@@ -364,6 +411,17 @@ export function assessPreLlmComparability(
   }
 
   if (isGenericTopicOverlapOnly(scores)) {
+    const dimA = classifyPropositionDimension(from.statement)
+    const dimB = classifyPropositionDimension(to.statement)
+    const dimensionCompat =
+      assessDimensionCompatibility(dimA, dimB, from.statement, to.statement) !== 'DIFFERENT'
+    if (dimensionCompat && hasPlausibleComparabilitySignal(from.statement, to.statement)) {
+      return {
+        verdict: 'PLAUSIBLY_COMPARABLE',
+        reason: 'Comparable proposition target despite low lexical overlap — defer to full verifier.',
+        scores,
+      }
+    }
     return {
       verdict: 'CLEAR_INVALID',
       reason: 'Generic topic overlap without comparable proposition target.',
@@ -374,12 +432,18 @@ export function assessPreLlmComparability(
   }
 
   if (isObviousDifferentDimension(from, to)) {
-    return {
-      verdict: 'CLEAR_INVALID',
-      reason: `Obvious different dimension: ${classifyPropositionDimension(from.statement)} vs ${classifyPropositionDimension(to.statement)}`,
-      scores,
-      rejectingGate: 'DIFFERENT_DIMENSION',
-      rejectingFunction: 'assessDimensionCompatibility',
+    const complementaryMechanismOutcome =
+      COMPLEMENTARY_TYPES.has(relationshipType) &&
+      (isPhenomenonOutcomeComplementaryPair(from.statement, to.statement) ||
+        isHazardHealthComplementaryPair(from.statement, to.statement))
+    if (!complementaryMechanismOutcome) {
+      return {
+        verdict: 'CLEAR_INVALID',
+        reason: `Obvious different dimension: ${classifyPropositionDimension(from.statement)} vs ${classifyPropositionDimension(to.statement)}`,
+        scores,
+        rejectingGate: 'DIFFERENT_DIMENSION',
+        rejectingFunction: 'assessDimensionCompatibility',
+      }
     }
   }
 

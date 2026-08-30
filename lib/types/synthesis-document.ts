@@ -44,6 +44,12 @@ export type SynthesisDocument = {
   mode?: import('@/lib/types/synthesis-mode').SynthesisMode
   /** Browser cache tier — slim docs need server hydration for full board data */
   storageTier?: import('@/lib/storage/synthesis-document-storage').SynthesisStorageTier
+  /** Production trace: engine versions, funnel, cost (not shown in consumer UI) */
+  productionMeta?: import('@/lib/production/types').ProductionMeta
+  /** Primary reasoning engine for this synthesis */
+  reasoningEngine?: import('@/lib/direct-synthesis/engine-config').ReasoningEngine
+  /** Direct cross-source synthesis output (production default) */
+  directSynthesis?: import('@/lib/direct-synthesis/persisted').DirectSynthesisPersisted
 }
 
 export type DraftVoiceInput = {
@@ -83,10 +89,16 @@ export function countFailedVoices(doc: SynthesisDocument): number {
 }
 
 export function isCompleteDocument(doc: SynthesisDocument): boolean {
-  return doc.status === 'complete' && Boolean(doc.result ?? doc.survival ?? doc.reasoning)
+  return (
+    doc.status === 'complete' &&
+    Boolean(doc.result ?? doc.survival ?? doc.reasoning ?? doc.directSynthesis)
+  )
 }
 
 export function getDocumentTopic(doc: SynthesisDocument): string {
+  if (doc.directSynthesis?.directAnswer) {
+    return doc.directSynthesis.directAnswer.slice(0, 200)
+  }
   if (doc.reasoning?.mode === 'multi' && doc.reasoning.judgment?.statement) {
     return doc.reasoning.judgment.statement
   }
