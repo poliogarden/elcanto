@@ -433,6 +433,142 @@ async function serveFile(jobId, filename, res) {
   }
 }
 
+async function renderCreatorScene(scene, outputPath, appUrl, draft) {
+  const duration = Math.max(3, scene.durationSeconds)
+  const text = (scene.captionText || scene.scriptText || scene.visualIntent || '').trim()
+  const fullW = draft ? 640 : 1280
+  const fullH = draft ? 360 : 720
+  const w = fullW
+  const h = fullH
+
+  let audioPath
+  if (scene.voiceAudioUrl) {
+    audioPath = `${outputPath}.mp3`
+    try {
+      await downloadAudio(scene.voiceAudioUrl, audioPath)
+    } catch {
+      audioPath = undefined
+    }
+  }
+
+  const title = text.slice(0, 100)
+  const subtitle = scene.visualIntent?.slice(0, 80) ?? ''
+
+  try {
+    if (scene.visualType === 'chart') {
+      const bars = [0.4, 0.65, 0.52, 0.88, 0.71]
+        .map((v, i) => `drawbox=x=${80 + i * 90}:y=${h - 40 - v * (h * 0.5)}:w=60:h=${v * (h * 0.5)}:color=#c45c4a@0.9:t=fill`)
+        .join(',')
+      const vf = [
+        drawtextFilter(title, 'h*0.12'),
+        drawtextFilter(subtitle, 'h*0.22'),
+        bars,
+      ].join(',')
+      const args = ['-y', '-f', 'lavfi', '-i', `color=c=#1a1a2e:s=${w}x${h}:d=${duration}`]
+      if (audioPath) {
+        args.push('-i', audioPath, '-shortest', '-vf', vf, '-c:v', 'libx264', '-c:a', 'aac', outputPath)
+      } else {
+        args.push('-vf', vf, '-c:v', 'libx264', '-an', outputPath)
+      }
+      await runFfmpeg(args)
+      return outputPath
+    }
+
+    if (scene.imageUrl) {
+      const imgPath = `${outputPath}.img`
+      const resolved = scene.imageUrl.startsWith('http')
+        ? scene.imageUrl
+        : `${appUrl}${scene.imageUrl.startsWith('/') ? '' : '/'}${scene.imageUrl}`
+      await downloadAudio(resolved, imgPath)
+      const vf = `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2,${drawtextFilter(title, 'h-80')}`
+      const args = ['-y', '-loop', '1', '-i', imgPath, '-t', String(duration)]
+      if (audioPath) {
+        args.push('-i', audioPath, '-shortest', '-vf', vf, '-c:v', 'libx264', '-c:a', 'aac', outputPath)
+      } else {
+        args.push('-vf', vf, '-c:v', 'libx264', '-an', outputPath)
+      }
+      await runFfmpeg(args)
+      return outputPath
+    }
+
+    const vf = [
+      drawtextFilter(title, 'h*0.35'),
+      drawtextFilter(subtitle, 'h*0.55'),
+    ].join(',')
+    const args = ['-y', '-f', 'lavfi', '-i', `color=c=#1a1a2e:s=${w}x${h}:d=${duration}`]
+    if (audioPath) {
+      args.push('-i', audioPath, '-shortest', '-vf', vf, '-c:v', 'libx264', '-c:a', 'aac', outputPath)
+    } else {
+      args.push('-vf', vf, '-c:v', 'libx264', '-an', outputPath)
+    }
+    await runFfmpeg(args)
+    return outputPath
+  } catch {
+    await renderBlackVideo(outputPath, duration, audioPath)
+    return outputPath
+  }
+}
+
+async function processCreatorRenderJob({ jobId, manifest, webhookUrl, draft }) {
+  const notify = (patch) => notifyWebhook(webhookUrl, { jobId, ...patch })
+  try {
+    const workDir = path.join(OUTPUT_DIR, jobId)
+    const segmentsDir = path.join(workDir, 'segments')
+    await mkdir(segmentsDir, { recursive: true })
+    await mkdir(path.join(workDir, 'out'), { recursive: true })
+
+    await persistJob(jobId, { status: 'RENDERING', progress: 5, progressLabel: 'Preparing' })
+    await notify({ status: 'RENDERING', progress: 5, progressLabel: 'Preparing' })
+
+    const segments = []
+    const scenes = [...(manifest.scenes ?? [])].sort((a, b) => a.order - b.order)
+
+    for (let i = 0; i < scenes.length; i++) {
+      const scene = scenes[i]
+      const segName = `scene_${String(i + 1).padStart(2, '0')}.mp4`
+      const output = path.join(segmentsDir, segName)
+      const progress = 10 + Math.floor((i / scenes.length) * 70)
+      await persistJob(jobId, { status: 'RENDERING', progress, progressLabel: `Scene ${i + 1}/${scenes.length}` })
+      await notify({ status: 'RENDERING', progress, progressLabel: `Scene ${i + 1}/${scenes.length}` })
+
+      await renderCreatorScene(scene, output, APP_URL, draft)
+      segments.push({ file: output, durationSeconds: scene.durationSeconds })
+    }
+
+    const concatPath = path.join(workDir, 'concat.txt')
+    await writeFile(concatPath, buildConcatList(segments))
+
+    const outFile = path.join(workDir, 'out', `${manifest.projectId}.mp4`)
+    await persistJob(jobId, { status: 'RENDERING', progress: 90, progressLabel: 'Concatenating' })
+    await runFfmpeg(['-y', '-f', 'concat', '-safe', '0', '-i', concatPath, '-c', 'copy', outFile])
+
+    const mp4 = await readFile(outFile)
+    const uploaded = await uploadRenderFile(jobId, `${manifest.projectId}.mp4`, mp4, 'video/mp4')
+    const localFileUrl = `/files/${jobId}/${manifest.projectId}.mp4`
+
+    const complete = {
+      status: 'READY',
+      progress: 100,
+      progressLabel: 'Complete',
+      outputUrl: uploaded?.url ?? localFileUrl,
+      message: 'Creator render complete.',
+      projectId: manifest.projectId,
+    }
+    await persistJob(jobId, complete)
+    await notify(complete)
+  } catch (err) {
+    const failed = {
+      status: 'FAILED',
+      error: err instanceof Error ? err.message.slice(0, 500) : 'Creator render failed.',
+      progress: 100,
+      projectId: manifest.projectId,
+    }
+    await persistJob(jobId, failed)
+    await notify(failed)
+    console.error('[render-creator] failed:', jobId, err)
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/health') {
     return json(res, 200, { ok: true, allowYtdlp: ALLOW_YTDLP })
@@ -473,6 +609,28 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && req.url?.startsWith('/render-status/')) {
     const jobId = req.url.split('/render-status/')[1]?.split('?')[0]
+    const job = (await loadPersistedJob(jobId)) ?? jobs.get(jobId)
+    if (!job) return json(res, 404, { error: 'Job not found.' })
+    return json(res, 200, job)
+  }
+
+  if (req.method === 'POST' && req.url === '/render-creator') {
+    try {
+      const body = JSON.parse(await readBody(req))
+      const { jobId, manifest, webhookUrl, draft } = body
+      if (!jobId || !manifest) {
+        return json(res, 400, { error: 'jobId and manifest required.' })
+      }
+      await persistJob(jobId, { status: 'QUEUED', progress: 0, progressLabel: 'Queued' })
+      void processCreatorRenderJob({ jobId, manifest, webhookUrl, draft: Boolean(draft) })
+      return json(res, 202, { status: 'QUEUED', jobId })
+    } catch (err) {
+      return json(res, 500, { error: err instanceof Error ? err.message : 'Invalid body' })
+    }
+  }
+
+  if (req.method === 'GET' && req.url?.startsWith('/render-creator-status/')) {
+    const jobId = req.url.split('/render-creator-status/')[1]?.split('?')[0]
     const job = (await loadPersistedJob(jobId)) ?? jobs.get(jobId)
     if (!job) return json(res, 404, { error: 'Job not found.' })
     return json(res, 200, job)
